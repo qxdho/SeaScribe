@@ -22,9 +22,11 @@
   animation: splashIn 0.8s var(--ease) both;
 }
 
-.splash-icon {
-  font-size: 4rem;
+.splash-logo {
+  width: 100px;
+  height: 100px;
   animation: splashBounce 0.7s var(--ease) 0.1s both;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.15));
 }
 
 .splash-title {
