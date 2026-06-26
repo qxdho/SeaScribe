@@ -45,6 +45,17 @@ window.__CHEMISTRY_CONFIG__ = {
   defaultRangeStart: 0,
 
   //   结束元素索引（不包含）：30 = 到 Zn(锌)，36 = 到 Kr(氪)
-  defaultRangeEnd: 30
+  defaultRangeEnd: 30,
+
+  // —————— 数据文件 ——————
+  // 默认 CSV 文件路径（相对于页面），包含 symbol,name,electron,orbital 四列
+  // 进入化学页时自动加载，也可在界面上选择其他 CSV 文件
+  dataURL: "data/chemistry/elements.csv",
+
+  // —————— 服务器文件扫描 ——————
+  // 部署到服务器后，点击「🔍 从服务器获取」自动扫描 data/chemistry/ 目录
+  scanURLs: [
+    "/api/chemistry-files"
+  ]
 
 };
