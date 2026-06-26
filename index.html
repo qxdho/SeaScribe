@@ -65,6 +65,7 @@
   <button class="tool-btn icon-btn" id="btn-theme" title="切换夜间模式">🌙</button>
   <button class="topbar-btn" id="btn-changelog" title="更新日志">📜 更新日志</button>
   <button class="topbar-btn" id="btn-syslog" title="系统日志">📋 系统日志</button>
+  <button class="topbar-btn" id="btn-about" title="关于">ℹ️ 关于</button>
 </header>
 
 <!-- ========== 学科选择页 ========== -->
@@ -137,6 +138,15 @@
   </div>
 </div>
 
+<!-- ========== 关于弹窗 ========== -->
+<div id="about-overlay" class="changelog-overlay hidden">
+  <div class="changelog-card">
+    <h2>关于 SeaScribe</h2>
+    <div id="about-body" class="changelog-body"></div>
+    <div class="changelog-actions"><button class="btn btn-dark" id="btn-about-close">关闭</button></div>
+  </div>
+</div>
+
 <!-- ========== Scripts (order matters) ========== -->
 <script src="main/js/core.js"></script>
 <script src="main/js/theme.js"></script>
@@ -157,6 +167,7 @@
 <script src="main/js/picker.js"></script>
 <script src="main/js/changelog.js"></script>
 <script src="main/js/splash.js"></script>
+<script src="main/js/about.js"></script>
 <script src="main/js/app.js"></script>
 </body>
 </html>

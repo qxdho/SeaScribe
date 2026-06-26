@@ -47,6 +47,37 @@
   border-radius: 3px;
 }
 .changelog-body ul { padding-left: 20px; line-height: 1.8; font-size: 0.92rem; }
+.changelog-body table {
+  width: 100%; border-collapse: collapse;
+  margin: 8px 0; font-size: 0.85rem;
+}
+.changelog-body th, .changelog-body td {
+  border: 1px solid var(--border); padding: 6px 10px; text-align: left;
+}
+.changelog-body th { background: var(--hover); font-weight: 600; }
+.changelog-body code {
+  background: var(--orb-bg); padding: 1px 5px; border-radius: 4px;
+  font-family: "SF Mono", "Cascadia Code", "Consolas", monospace;
+  font-size: 0.88em;
+}
+.changelog-body pre {
+  background: var(--orb-bg); padding: 12px 16px; border-radius: 8px;
+  overflow-x: auto; font-size: 0.82rem; line-height: 1.6;
+}
+.changelog-body pre code { background: none; padding: 0; }
+.changelog-body blockquote {
+  border-left: 3px solid var(--accent); margin: 8px 0;
+  padding: 4px 14px; color: var(--muted); font-style: italic;
+}
+.changelog-body hr {
+  border: none; border-top: 1px solid var(--border); margin: 12px 0;
+}
+.changelog-body img { border-radius: 8px; }
+.changelog-body h4, .changelog-body h5, .changelog-body h6 {
+  margin: 12px 0 4px; color: var(--text);
+}
+.changelog-body h2 { font-size: 1.2rem; margin: 16px 0 8px; }
+.changelog-body h3 { margin: 16px 0 6px; font-size: 1rem; color: var(--accent); }
 
 .changelog-actions {
   flex-shrink: 0;
