@@ -1,4 +1,34 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect x="32" y="32" width="448" height="448" rx="116" fill="#1e40af"/>
-  <text x="256" y="290" text-anchor="middle" font-size="220" font-family="sans-serif">✍️🌊</text>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#1e40af"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="32" y="32" width="448" height="448" rx="116" fill="url(#bg)"/>
+
+  <!-- Single mark: a wave that flows into a pen nib -->
+  <!-- The wave crest becomes the pen, the trough is the ink trail -->
+  <g transform="translate(256,200)">
+    <!-- Wave body flowing into nib -->
+    <path d="
+      M-160,40
+      Q-120,-10 -60,20
+      Q0,50 60,20
+      Q100,0 130,30
+    "
+      fill="none" stroke="white" stroke-width="42" stroke-linecap="round"/>
+
+    <!-- The wave tip sharpens into a pen nib -->
+    <path d="
+      M130,30
+      L175,55
+      L130,80
+    "
+      fill="white"/>
+
+    <!-- Ink drop below nib -->
+    <circle cx="165" cy="115" r="12" fill="white" opacity="0.7"/>
+  </g>
 </svg>

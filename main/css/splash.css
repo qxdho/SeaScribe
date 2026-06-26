@@ -22,8 +22,9 @@
   animation: splashIn 0.8s var(--ease) both;
 }
 
-.splash-icon {
-  font-size: 4.5rem;
+.splash-logo {
+  width: 90px;
+  height: 90px;
   animation: splashBounce 0.7s var(--ease) 0.1s both;
 }
 
