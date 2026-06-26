@@ -104,6 +104,7 @@
           overlayText.classList.remove('pop');
           // 淡出头衔
           overlayTitle.classList.remove('show');
+          // 头衔淡出后再等一小会就开始缩小
           var target = pickResult.getBoundingClientRect();
           var overlayRect = overlayText.getBoundingClientRect();
           var dx = target.left + target.width / 2 - (overlayRect.left + overlayRect.width / 2);
@@ -113,7 +114,7 @@
           overlay.style.setProperty('--dx', dx + 'px');
           overlay.style.setProperty('--dy', dy + 'px');
           overlay.style.setProperty('--scale', scale);
-          overlay.style.setProperty('--shrink-dur', '0.6s');
+          overlay.style.setProperty('--shrink-dur', '0.35s');
           overlay.classList.add('shrink');
 
           overlay.addEventListener('animationend', function handler() {
@@ -123,7 +124,7 @@
             overlay.classList.add('hidden');
             animating = false;
           });
-        }, 800);
+        }, 400);
       }
     }
     tick(0);
@@ -139,11 +140,11 @@
         particleCount: Math.floor(count * particleRatio)
       }));
     }
-    fire(0.25, { spread: 26, startVelocity: 55 });
-    fire(0.2,  { spread: 60 });
-    fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
-    fire(0.1,  { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
-    fire(0.1,  { spread: 120, startVelocity: 45 });
+    fire(0.25, { spread: 50, startVelocity: 55 });
+    fire(0.2,  { spread: 90 });
+    fire(0.35, { spread: 150, decay: 0.91, scalar: 0.8 });
+    fire(0.1,  { spread: 180, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+    fire(0.1,  { spread: 180, startVelocity: 45 });
   }
 
   scanFiles();
