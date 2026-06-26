@@ -1,24 +1,36 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Background tile -->
-  <rect x="32" y="32" width="448" height="448" rx="116" fill="#2563eb"/>
+  <!-- Warm sunset gradient background -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#ff6b35"/>
+      <stop offset="100%" stop-color="#f7931e"/>
+    </linearGradient>
+  </defs>
 
-  <!--
-    Single continuous stroke: wave → S-curve → pen nib
-    This is the core mark — reads as ocean wave, letter S, and calligraphy stroke.
-  -->
-  <path d="
-    M 140 180
-    C 140 120, 220 120, 256 170
-    C 292 220, 370 220, 370 160
-    L 370 300
-    C 370 370, 290 370, 256 320
-    C 222 270, 145 270, 145 330
-    L 145 395
-    L 125 415
-    L 165 395
-  "
-    fill="none" stroke="white" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+  <rect x="32" y="32" width="448" height="448" rx="116" fill="url(#bg)"/>
 
-  <!-- Small accent dot (ink drop / period) -->
-  <circle cx="140" cy="425" r="16" fill="white" opacity="0.8"/>
+  <!-- Seagull in flight -->
+  <g transform="translate(256,240)">
+    <!-- Left wing -->
+    <path d="M-20,-20 Q-120,-100 -200,-30 Q-140,-50 -20,-10"
+          fill="white" opacity="0.95"/>
+    <!-- Right wing -->
+    <path d="M20,-20 Q120,-100 200,-30 Q140,-50 20,-10"
+          fill="white" opacity="0.95"/>
+    <!-- Body -->
+    <ellipse cx="0" cy="10" rx="30" ry="45" fill="white"/>
+    <!-- Head -->
+    <circle cx="0" cy="-35" r="20" fill="white"/>
+    <!-- Beak -->
+    <path d="M-5,-42 L-12,-48 L-5,-44Z" fill="#ff6b35"/>
+    <!-- Eye -->
+    <circle cx="-8" cy="-38" r="3" fill="#1a1a2e"/>
+    <!-- Tail feathers -->
+    <path d="M0,55 Q-20,90 -15,105 Q-10,85 0,55" fill="white" opacity="0.9"/>
+    <path d="M0,55 Q20,90 15,105 Q10,85 0,55" fill="white" opacity="0.9"/>
+  </g>
+
+  <!-- Subtle wave at bottom -->
+  <path d="M60 400 Q140 370 220 395 Q300 420 380 390 Q420 378 452 385"
+        fill="none" stroke="white" stroke-width="3" opacity="0.3"/>
 </svg>
