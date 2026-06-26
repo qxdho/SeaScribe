@@ -20,7 +20,7 @@
     function() { logLine('英语配置', !!window.__ENGLISH_CONFIG__); },
     function() { logLine('化学插件', !!SubjectRegistry.get('chemistry')); },
     function() { logLine('英语插件', !!SubjectRegistry.get('english')); },
-    function() { logLine('学生名单', !!(window.__STDLIST_REGISTRY__ && window.__STDLIST_REGISTRY__.length)); },
+    function() { logLine('学生名单', !!document.getElementById('stdlist-select')); },
     function() { logLine('页面元素', !!document.getElementById('card-grid')); }
   ];
 

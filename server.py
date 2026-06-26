@@ -11,20 +11,28 @@ import json
 import os
 import re
 import sys
-import mimetypes
-
-# 确保文本类型文件带有 UTF-8 charset
-mimetypes.init()
-for ext in ['.html','.css','.js','.csv','.xml','.json','.md','.svg']:
-    mt = mimetypes.types_map.get(ext, '')
-    if mt and 'charset' not in mt:
-        mimetypes.add_type(mt + '; charset=utf-8', ext)
 
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 9360
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(ROOT, 'data')
 
+# 为文本文件类型添加 UTF-8 charset
+_TEXT_EXTS = {
+    '.html': 'text/html',
+    '.css':  'text/css',
+    '.js':   'application/javascript',
+    '.csv':  'text/csv',
+    '.md':   'text/markdown',
+    '.svg':  'image/svg+xml',
+    '.json': 'application/json',
+}
+
 class Handler(http.server.SimpleHTTPRequestHandler):
+    # 覆盖 extensions_map，为文本文件添加 charset
+    extensions_map = {
+        **http.server.SimpleHTTPRequestHandler.extensions_map,
+        **{k: v + '; charset=utf-8' for k, v in _TEXT_EXTS.items()}
+    }
     def do_GET(self):
         # /api/<plugin>-files → 列出 data/<plugin>/ 下文件
         m = re.match(r'^/api/(\w+)-files$', self.path)
@@ -38,7 +46,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                     if os.path.isfile(filepath):
                         files.append({'name': f, 'url': f'/data/{name}/{f}'})
             self.send_response(200)
-            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
             self.end_headers()
             self.wfile.write(json.dumps(files, ensure_ascii=False).encode())
             return
