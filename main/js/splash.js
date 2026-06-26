@@ -25,7 +25,7 @@
     function() { logLine('学科页面', !!document.getElementById('subject-page')); },
     function() { logLine('听写页面', !!document.getElementById('dictation-page')); },
     function() { logLine('卡片容器', !!document.getElementById('card-grid')); },
-    function() { logLine('控制面板', !!document.getElementById('controls')); },
+    function() { logLine('控制栏', !!document.querySelector('.controls')); },
   ];
 
   var i = 0;
