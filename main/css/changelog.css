@@ -1,5 +1,5 @@
 /* ============================================================
-   SeaScribe — Changelog Overlay
+   SeaScribe — Changelog / Syslog Overlay
    ============================================================ */
 
 .changelog-overlay {
@@ -18,39 +18,44 @@
 .changelog-card {
   background: var(--surface);
   border-radius: 16px;
-  padding: 32px;
+  padding: 24px 32px 16px;
   max-width: 500px;
   width: 90%;
   max-height: 80vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   color: var(--text);
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
   animation: changelogIn 0.3s ease both;
 }
-.changelog-card::-webkit-scrollbar {
+.changelog-card h2 { margin-bottom: 12px; font-size: 1.4rem; flex-shrink: 0; }
+
+.changelog-body {
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.changelog-body::-webkit-scrollbar {
   width: 6px;
 }
-.changelog-card::-webkit-scrollbar-track {
+.changelog-body::-webkit-scrollbar-track {
   background: transparent;
 }
-.changelog-card::-webkit-scrollbar-thumb {
+.changelog-body::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 3px;
 }
-.changelog-card h2 { margin-bottom: 16px; font-size: 1.4rem; }
-.changelog-card h3 { margin: 16px 0 6px; font-size: 1rem; color: var(--accent); }
 .changelog-body ul { padding-left: 20px; line-height: 1.8; font-size: 0.92rem; }
-.changelog-card .changelog-body { padding-bottom: 8px; }
-.changelog-card .btn {
-  margin-top: 24px;
-  width: auto;
-  min-width: 100px;
-  position: sticky;
-  bottom: 0;
-  background: var(--surface);
-  z-index: 1;
+
+.changelog-actions {
+  flex-shrink: 0;
+  padding-top: 16px;
+  text-align: center;
 }
+.changelog-actions .btn { min-width: 100px; }
+
+.changelog-card h3 { margin: 16px 0 6px; font-size: 1rem; color: var(--accent); }
 
 @keyframes changelogIn {
   from { opacity: 0; transform: translateY(20px) scale(0.96); }
