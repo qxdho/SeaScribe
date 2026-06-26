@@ -49,6 +49,12 @@
             var label = f.name.replace(/\.csv$/i, '');
             return '<option value="' + esc(f.url) + '">' + esc(label) + '</option>';
           }).join('');
+        // 自动选择最后一个（通常是最高班级）
+        var opts = stdlistSelect.options;
+        if (opts.length > 1) {
+          stdlistSelect.selectedIndex = opts.length - 1;
+          stdlistSelect.dispatchEvent(new Event('change'));
+        }
       })
       .catch(function() {
         stdlistSelect.innerHTML = '<option value="">扫描失败</option>';

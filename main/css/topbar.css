@@ -149,6 +149,10 @@
 .pick-overlay.shrink .pick-overlay-text {
   animation: shrinkToCorner var(--shrink-dur, 1s) var(--ease) forwards;
 }
+.pick-overlay.shrink .pick-overlay-title {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
 
 @keyframes nameStop {
   0%   { transform: scale(1.4); }
