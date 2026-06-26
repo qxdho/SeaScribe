@@ -82,20 +82,19 @@
     animating = true;
     pickResult.innerHTML = '';
     var list = _currentList;
-    var start = Math.floor(Math.random() * list.length);
     var total = list.length;
+    // 随机选最终人选
+    var finalIdx = Math.floor(Math.random() * total);
+    // 滚动展示的人数（15~30人，不超过总数）
+    var scrollCount = Math.min(total, 15 + Math.floor(Math.random() * 15));
+    var startIdx = (finalIdx - scrollCount + total) % total;
     overlay.classList.remove('hidden', 'shrink');
 
     function tick(i) {
-      var item = list[(start + i) % list.length];
-      overlayText.textContent = item.name;
-      overlayTitle.textContent = '';
-      overlayTitle.classList.remove('show');
-      if (i < total - 1) {
-        setTimeout(function() { tick(i + 1); }, 1200 / total);
-      } else {
-        // 定格后显示头衔
-        var last = item;
+      if (i >= scrollCount) {
+        // 定格
+        var last = list[finalIdx];
+        overlayText.textContent = last.name;
         overlayTitle.textContent = last.title || '';
         overlayTitle.classList.add('show');
         overlayText.classList.add('pop');
@@ -125,6 +124,13 @@
             animating = false;
           });
         }, 600);
+      } else {
+        // 滚动
+        var item = list[(startIdx + i) % total];
+        overlayText.textContent = item.name;
+        overlayTitle.textContent = '';
+        overlayTitle.classList.remove('show');
+        setTimeout(function() { tick(i + 1); }, 1000 / scrollCount);
       }
     }
     tick(0);
