@@ -75,7 +75,10 @@ window.__MY_SUBJECT_CONFIG__ = {
   answerCol: 1,           // 答案列
   scanURLs: [             // 服务器扫描地址
     "/api/my-subject-files",
-  ]
+  ],
+
+  // 可选：CSV 数据文件
+  dataURL: "data/my-subject/data.csv",  // 默认加载的 CSV
 };
 ```
 
@@ -123,8 +126,20 @@ loadConfig() {
     if (c.answerCol       != null) this._answerCol      = c.answerCol;
     // 可选：扫描地址
     if (c.scanURLs        != null) this._scanURLs       = c.scanURLs;
+    // 可选：CSV 数据文件
+    if (c.dataURL         != null) this._csvURL          = c.dataURL;
   }
   if (this._rangeEnd === 0) this._rangeEnd = this._data.length;
+},
+
+/** 可选：从 CSV 解析数据（带表头跳过） */
+_parseCSV(text) {
+  const lines = text.split(/\r?\n/);
+  let start = lines[0] && /^\w+,/.test(lines[0]) ? 1 : 0;
+  return lines.slice(start).filter(l => l.trim()).map(l => {
+    const c = l.split(',');
+    return { prompt: c[0].trim(), answer: c[1].trim() };
+  });
 },
 ```
 
@@ -246,3 +261,4 @@ const MyPlugin = {
 24. 开屏启动检查 ✅
 25. 更新日志读取 update.md ✅
 26. 代码模块化拆分，CSS/JS 按职责分文件 ✅
+27. 化学数据 CSV 化，可编辑可导入 ✅

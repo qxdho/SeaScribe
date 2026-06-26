@@ -4,7 +4,7 @@
 
 > 课堂听写投屏系统 — 教师大屏随机出题，学生纸笔作答，一键公布答案
 > 
-> by **谦虚の海鸥** · v3.2.0 · [GitHub](https://github.com/qxdho/SeaScribe)
+> by **谦虚の海鸥** · v3.3.0 · [GitHub](https://github.com/qxdho/SeaScribe)
 
 ---
 
@@ -43,7 +43,7 @@ python server.py 9360
 
 | 学科 | 特点 |
 |------|------|
-| **化学** | 价层电子式 + 轨道式，H~Kr 36 元素，支持范围选择，默认网格 4 列 |
+| **化学** | 价层电子式 + 轨道式，H~Kr 36 元素，CSV 可编辑，服务器扫描 + 本地导入，默认网格 4 列 |
 | **英语** | 服务器扫描 + 本地 xlsx/csv 导入，可调听写列/答案列，默认列表 2 列 |
 
 ---
@@ -89,6 +89,7 @@ python server.py 9360
 │   ├── english/            ← 英语插件
 │   └── _template/          ← 插件模板
 └── data/
+    ├── chemistry/          ← 化学元素 CSV
     ├── english/            ← 英语 xlsx/csv 文件
     └── stdlist/            ← 学生名单 CSV
 └── archive/
@@ -123,6 +124,8 @@ window.__SEASCRIBE_CONFIG__ = {
   // 化学特有
   defaultRangeStart: 0,  // 元素范围起点
   defaultRangeEnd: 30,   // 元素范围终点
+  dataURL: "data/chemistry/elements.csv", // 数据文件路径
+  scanURLs: ["/api/chemistry-files"],     // 服务器扫描地址
   // 英语特有
   promptCol: 1,          // 听写内容列（0=A）
   answerCol: 0,          // 答案列
@@ -179,6 +182,7 @@ MIT
 
 | 版本 | 架构 | 亮点 |
 |------|------|------|
+| **v3.3** | 化学数据 CSV 化 | 化学元素可编辑 CSV，文件扫描 + 本地导入 UI |
 | **v3.2** | 名单 CSV 化 + 系统日志 | 名单文件即拖即用，系统日志面板，启动自检 |
 | **v3.1** | 品牌 + Git 工程化 | Logo 设计，GitHub 托管，目录拍平 |
 | **v3.0** | 9 CSS + 9 JS 模块化 | SubjectRegistry + DictationEngine，配置分离，插件模板 |
