@@ -16,7 +16,7 @@
 .topbar-brand {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: -0.02em;
@@ -27,9 +27,10 @@
 .topbar-brand:hover { opacity: 0.7; }
 
 .topbar-logo {
-  width: 22px;
-  height: 22px;
+  width: 1.1em;
+  height: 1.1em;
   flex-shrink: 0;
+  vertical-align: middle;
 }
 
 .topbar-version {
