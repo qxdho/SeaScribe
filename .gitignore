@@ -17,7 +17,7 @@ Thumbs.db
 *.zip
 
 # 内部规范（不公开）
-RULES.md
+docs/RULES.md
 
 # CodeBuddy
 .reasonix/

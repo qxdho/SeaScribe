@@ -8,7 +8,7 @@
 
   document.getElementById('btn-changelog').addEventListener('click', function() {
     overlay.classList.remove('hidden');
-    fetch('update.md')
+    fetch('docs/update.md')
       .then(function(r) { return r.text(); })
       .then(function(md) {
         body.innerHTML = md
