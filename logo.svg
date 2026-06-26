@@ -8,27 +8,24 @@
 
   <rect x="32" y="32" width="448" height="448" rx="116" fill="url(#bg)"/>
 
-  <!-- Single mark: a wave that flows into a pen nib -->
-  <!-- The wave crest becomes the pen, the trough is the ink trail -->
-  <g transform="translate(256,200)">
-    <!-- Wave body flowing into nib -->
-    <path d="
-      M-160,40
-      Q-120,-10 -60,20
-      Q0,50 60,20
-      Q100,0 130,30
-    "
-      fill="none" stroke="white" stroke-width="42" stroke-linecap="round"/>
+  <!-- Wave arc -->
+  <path d="M 100 240 Q 180 170 256 200 Q 332 230 370 190"
+    fill="none" stroke="white" stroke-width="36" stroke-linecap="round"/>
 
-    <!-- The wave tip sharpens into a pen nib -->
-    <path d="
-      M130,30
-      L175,55
-      L130,80
-    "
-      fill="white"/>
-
-    <!-- Ink drop below nib -->
-    <circle cx="165" cy="115" r="12" fill="white" opacity="0.7"/>
+  <!-- Pen body (thick vertical bar turning into nib) -->
+  <g fill="white">
+    <!-- Pen shaft -->
+    <rect x="231" y="165" width="20" height="95" rx="4"/>
+    <!-- Pen nib — large triangle -->
+    <polygon points="241,260 170,380 312,380"/>
+    <!-- Nib slit -->
+    <rect x="238" y="310" width="6" height="70" rx="2" fill="#1e40af"/>
   </g>
+
+  <!-- Ink drop — big and bold -->
+  <circle cx="241" cy="410" r="22" fill="white"/>
+
+  <!-- Small splatter dots -->
+  <circle cx="200" cy="430" r="6" fill="white" opacity="0.6"/>
+  <circle cx="280" cy="438" r="4" fill="white" opacity="0.4"/>
 </svg>
