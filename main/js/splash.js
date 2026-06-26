@@ -26,7 +26,7 @@
 
   var i = 0;
   function runCheck() {
-    if (i < checks.length) { checks[i](); i++; setTimeout(runCheck, 120); }
+    if (i < checks.length) { checks[i](); i++; setTimeout(runCheck, 30); }
   }
   setTimeout(runCheck, 400);
 

@@ -1,7 +1,7 @@
 /* ============================================================
    SeaScribe — Name Picker (v3.3)
-   从 data/stdlist/ 扫描 CSV/XLSX 文件
-   CSV 格式：第1列=姓名，第2列=头衔（可选）
+   从 data/stdlist/ 扫描 CSV 文件，纯 JS 解析（零依赖）
+   CSV 格式（无表头）：第1列=姓名，第2列=头衔（可选）
    ============================================================ */
 
 (function() {
@@ -14,28 +14,16 @@
   var _currentList = [];  // [{name, title}]
   var animating = false;
 
-  function ensureXLSX() {
-    if (window.XLSX) return Promise.resolve();
-    return new Promise(function(resolve, reject) {
-      var s = document.createElement('script');
-      s.src = 'https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js';
-      s.onload = resolve;
-      s.onerror = function() { reject(new Error('无法加载 xlsx 解析库')); };
-      document.head.appendChild(s);
-    });
-  }
-
-  // Parse: col A = name, col B = title (optional)
-  function parseNames(buf) {
-    var wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
-    var wsname = wb.SheetNames[0];
-    if (!wsname) return [];
-    var ws = wb.Sheets[wsname];
-    var rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+  // 纯 JS 解析 CSV（不用 SheetJS，避免编码问题）
+  function parseCSV(text) {
     var items = [];
-    for (var i = 0; i < rows.length; i++) {
-      var name = String(rows[i][0] || '').trim();
-      var title = String(rows[i][1] || '').trim();
+    var lines = text.split(/\r?\n/);
+    for (var i = 0; i < lines.length; i++) {
+      var line = lines[i].trim();
+      if (!line) continue;
+      var cols = line.split(',');
+      var name = (cols[0] || '').trim();
+      var title = (cols[1] || '').trim();
       if (name) {
         items.push({ name: name, title: title || '' });
       }
@@ -48,16 +36,16 @@
     fetch('/api/stdlist-files')
       .then(function(r) { return r.json(); })
       .then(function(files) {
-        var csvXlsx = files.filter(function(f) {
-          return /\.(csv|xlsx|xls)$/i.test(f.name);
+        var csvFiles = files.filter(function(f) {
+          return /\.csv$/i.test(f.name);
         });
-        if (!csvXlsx.length) {
+        if (!csvFiles.length) {
           stdlistSelect.innerHTML = '<option value="">无名单文件</option>';
           return;
         }
         stdlistSelect.innerHTML = '<option value="">— 选择班级 —</option>' +
-          csvXlsx.map(function(f) {
-            var label = f.name.replace(/\.(csv|xlsx|xls)$/i, '');
+          csvFiles.map(function(f) {
+            var label = f.name.replace(/\.csv$/i, '');
             return '<option value="' + esc(f.url) + '">' + esc(label) + '</option>';
           }).join('');
       })
@@ -69,17 +57,15 @@
   stdlistSelect.addEventListener('change', function() {
     var url = stdlistSelect.value;
     if (!url) { _currentList = []; return; }
-    ensureXLSX().then(function() {
-      return fetch(url);
-    }).then(function(r) {
-      if (!r.ok) throw new Error('加载失败');
-      return r.arrayBuffer();
-    }).then(function(buf) {
-      _currentList = parseNames(buf);
-    }).catch(function(err) {
-      console.error('名单加载失败:', err);
-      _currentList = [];
-    });
+    fetch(url)
+      .then(function(r) { return r.text(); })
+      .then(function(text) {
+        _currentList = parseCSV(text);
+      })
+      .catch(function(err) {
+        console.error('名单加载失败:', err);
+        _currentList = [];
+      });
   });
 
   btnPick.addEventListener('click', function() {
