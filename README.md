@@ -1,4 +1,4 @@
-<p align="center"><img src="logo.svg" width="80" alt="SeaScribe"></p>
+<p align="center"><sub>✍️🌊</sub></p>
 
 # SeaScribe
 

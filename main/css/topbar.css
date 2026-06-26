@@ -27,10 +27,8 @@
 .topbar-brand:hover { opacity: 0.7; }
 
 .topbar-logo {
-  width: 1.1em;
-  height: 1.1em;
+  font-size: 1.2em;
   flex-shrink: 0;
-  vertical-align: middle;
 }
 
 .topbar-version {
