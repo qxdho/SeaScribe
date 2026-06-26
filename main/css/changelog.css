@@ -27,6 +27,10 @@
   color: var(--text);
   animation: changelogIn 0.3s ease both;
 }
+/* 关于页面更宽 */
+#about-overlay .changelog-card {
+  max-width: 700px;
+}
 .changelog-card h2 { margin-bottom: 12px; font-size: 1.4rem; flex-shrink: 0; }
 
 .changelog-body {

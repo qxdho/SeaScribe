@@ -34,7 +34,7 @@
 
     var lines = md.split('\n');
     var out = [];
-    var inCode = false, codeBuf = [], codeLang = '';
+    var inCode = false, codeBuf = [];
     var inTable = false, tableBuf = [];
 
     function flushCode() {
@@ -48,7 +48,7 @@
       var html = '<table>';
       tableBuf.forEach(function(row, i) {
         var tag = i === 0 ? 'th' : 'td';
-        html += '<tr>' + row.map(function(c) { return '<' + tag + '>' + c.trim() + '</' + tag + '>'; }).join('') + '</tr>';
+        html += '<tr>' + row.map(function(c) { return '<' + tag + '>' + inlineMarkdown(c.trim()) + '</' + tag + '>'; }).join('') + '</tr>';
       });
       html += '</table>';
       out.push(html);
@@ -101,9 +101,6 @@
         continue;
       }
 
-      // Image
-      line = line.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%">');
-
       // Empty line
       if (!line.trim()) { out.push('<br>'); continue; }
 
@@ -117,12 +114,28 @@
     return out.join('\n');
   }
 
-  /** 行内 Markdown：粗体、斜体、代码、链接 */
+  /** 行内 Markdown：保护已有 HTML，再处理粗体/代码/链接 */
   function inlineMarkdown(text) {
-    return esc(text)
-      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-      .replace(/`([^`]+)`/g, '<code>$1</code>')
-      .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+    // 1. 保护已有的 HTML 标签不被转义
+    var tags = [];
+    text = text.replace(/<[^>]+>/g, function(m) {
+      tags.push(m);
+      return '\x00' + (tags.length - 1) + '\x00';
+    });
+    // 2. 处理图片语法 ![alt](url)
+    text = text.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(_, alt, url) {
+      tags.push('<img src="' + url + '" alt="' + alt + '" style="max-width:100%">');
+      return '\x00' + (tags.length - 1) + '\x00';
+    });
+    // 3. 转义剩余纯文本
+    text = esc(text);
+    // 4. 还原 HTML 标签
+    text = text.replace(/\x00(\d+)\x00/g, function(_, n) { return tags[+n]; });
+    // 5. Markdown 语法
+    text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+    text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+    return text;
   }
 
   function esc(s) {
