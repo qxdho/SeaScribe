@@ -27,19 +27,8 @@
   function runCheck() {
     if (i < checks.length) {
       checks[i](); i++;
-      // 滚动到底部
       log.scrollTop = log.scrollHeight;
       setTimeout(runCheck, 30);
-    } else {
-      // 全部检查完成后 0.5s 自动关闭
-      setTimeout(function() {
-        splash.style.animation = 'splashOut 0.5s var(--ease) forwards';
-        splash.addEventListener('animationend', function(e) {
-          if (e.target === splash && e.animationName === 'splashOut') {
-            splash.remove();
-          }
-        });
-      }, 500);
     }
   }
   setTimeout(runCheck, 400);
