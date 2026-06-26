@@ -81,7 +81,7 @@
   margin: 12px 0 4px; color: var(--text);
 }
 .changelog-body h2 { font-size: 1.2rem; margin: 16px 0 8px; }
-.changelog-body h3 { margin: 16px 0 6px; font-size: 1rem; color: var(--accent); }
+.changelog-body h3 { margin: 16px 0 6px; font-size: 1rem; color: var(--text); }
 
 .changelog-actions {
   flex-shrink: 0;
@@ -90,7 +90,7 @@
 }
 .changelog-actions .btn { min-width: 100px; }
 
-.changelog-card h3 { margin: 16px 0 6px; font-size: 1rem; color: var(--accent); }
+.changelog-card h3 { margin: 16px 0 6px; font-size: 1rem; color: var(--text); }
 
 @keyframes changelogIn {
   from { opacity: 0; transform: translateY(20px) scale(0.96); }

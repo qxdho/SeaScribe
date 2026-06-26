@@ -94,11 +94,11 @@
   margin-bottom: 2px; flex-wrap: wrap;
 }
 .a-label {
-  font-size: 0.85em; color: var(--accent);
+  font-size: 0.85em; color: var(--text); opacity: 0.75;
   font-weight: 600; min-width: 3.2em; flex-shrink: 0;
 }
 .a-val { font-weight: 600; white-space: pre-wrap; word-break: break-word; }
-.a-val sup { font-size: 0.65em; color: var(--accent); }
+.a-val sup { font-size: 0.65em; color: var(--text); opacity: 0.75; }
 .a-val.orbital {
   font-family: "SF Mono", "Cascadia Code", "Fira Code", "Consolas", "Microsoft YaHei", monospace;
   font-size: 0.88em; letter-spacing: 0.03em;
