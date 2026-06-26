@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>SeaScribe — 课堂听写</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%234f6ef7'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white'>✍</text></svg>">
+<script src="config.js"></script>
+<script>
+// 同步应用主题，消除夜间模式闪白
+(function(){
+  var t = (window.__SEASCRIBE_CONFIG__ && window.__SEASCRIBE_CONFIG__.theme) || 'light';
+  document.documentElement.setAttribute('data-theme', t);
+})();
+</script>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ========== 全屏点名覆盖层 ========== -->
+<div id="pick-overlay" class="pick-overlay hidden">
+  <span id="pick-overlay-text" class="pick-overlay-text"></span>
+</div>
+
+<!-- ========== 开屏动画 ========== -->
+<div id="splash" class="splash">
+  <div class="splash-content">
+    <span class="splash-icon">✍</span>
+    <span class="splash-title">SeaScribe</span>
+    <span class="splash-author">谦虚の海鸥</span>
+  </div>
+</div>
+
+<!-- ========== 顶栏 ========== -->
+<header class="topbar">
+  <span class="topbar-brand" id="brand-logo" title="回到学科选择">SeaScribe</span>
+  <span class="topbar-author">谦虚の海鸥</span>
+  <span class="topbar-spacer"></span>
+  <div class="topbar-picker" id="topbar-picker">
+    <select class="range-select topbar-select" id="stdlist-select"></select>
+    <button id="btn-pick" class="btn btn-dark btn-sm">点名</button>
+    <span id="pick-result" class="pick-result"></span>
+  </div>
+  <button class="tool-btn icon-btn" id="btn-theme" title="切换夜间模式">🌙</button>
+</header>
+
+<!-- ========== 学科选择页 ========== -->
+<main id="subject-page" class="page">
+  <div class="page-hero">
+    <h2 class="page-title">选择学科</h2>
+    <p class="page-sub">点击卡片开始听写</p>
+  </div>
+  <div id="subject-list" class="subject-grid"></div>
+</main>
+
+<!-- ========== 听写页 ========== -->
+<main id="dictation-page" class="page hidden">
+  <div class="dictation-header">
+    <button class="back-btn" id="btn-back">← 返回</button>
+    <h2 class="page-title" id="dictation-title"></h2>
+  </div>
+
+  <div class="controls">
+    <div id="plugin-config" class="plugin-config-row"></div>
+
+    <div class="control-row">
+      <div class="control-item">
+        <label class="ctrl-label">数量</label>
+        <div class="stepper">
+          <button class="stepper-btn" id="count-minus">−</button>
+          <input type="number" class="stepper-input" id="count-input" value="12" min="1" max="36" step="1">
+          <button class="stepper-btn" id="count-plus">+</button>
+        </div>
+      </div>
+      <div class="control-item">
+        <label class="ctrl-label">列数</label>
+        <div class="stepper">
+          <button class="stepper-btn" id="col-minus">−</button>
+          <span class="stepper-val" id="col-display">3</span>
+          <button class="stepper-btn" id="col-plus">+</button>
+        </div>
+      </div>
+      <div class="control-item">
+        <label class="ctrl-label">字号</label>
+        <button class="tool-btn fs-btn" id="fs-minus" title="缩小">A−</button>
+        <input type="range" class="font-slider" id="font-slider" min="60" max="200" value="100" step="5">
+        <button class="tool-btn fs-btn" id="fs-plus" title="放大">A+</button>
+        <span class="tool-val" id="fs-display">100%</span>
+      </div>
+      <button id="btn-shuffle" class="btn btn-dark">随机出题</button>
+      <button id="btn-reveal" class="btn btn-ghost" disabled>公布答案</button>
+    </div>
+  </div>
+
+  <div id="card-grid" class="card-grid"></div>
+</main>
+
+<script src="js/core.js"></script>
+<script src="data/stdlist/_registry.js"></script>
+<script src="data/stdlist/class11.js"></script>
+<script src="data/stdlist/class12.js"></script>
+<script src="plugins/english/config.js"></script>
+<script src="plugins/english/plugin.js"></script>
+<script src="plugins/chemistry/config.js"></script>
+<script src="plugins/chemistry/plugin.js"></script>
+<script>
+SubjectRegistry.register(EnglishPlugin);
+SubjectRegistry.register(ChemistryPlugin);
+
+const subjectPage    = document.getElementById('subject-page');
+const dictationPage  = document.getElementById('dictation-page');
+const subjectList    = document.getElementById('subject-list');
+const dictationTitle = document.getElementById('dictation-title');
+const pluginConfig   = document.getElementById('plugin-config');
+const cardGrid       = document.getElementById('card-grid');
+const countInput     = document.getElementById('count-input');
+const colDisp        = document.getElementById('col-display');
+const fontSlider     = document.getElementById('font-slider');
+const fsDisp         = document.getElementById('fs-display');
+const btnShuffle     = document.getElementById('btn-shuffle');
+const btnReveal      = document.getElementById('btn-reveal');
+const btnBack        = document.getElementById('btn-back');
+const btnTheme       = document.getElementById('btn-theme');
+const brandLogo      = document.getElementById('brand-logo');
+const stdlistSelect  = document.getElementById('stdlist-select');
+const btnPick        = document.getElementById('btn-pick');
+const pickResult     = document.getElementById('pick-result');
+
+let activePlugin   = null;
+let currentItems   = [];
+let answersVisible = false;
+let columnCount    = 3;
+let fontSizePct    = 100;
+
+// ---- THEME ----
+function applyTheme(dark) {
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  btnTheme.textContent = dark ? '☀️' : '🌙';
+}
+btnTheme.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
+btnTheme.addEventListener('click', () => {
+  applyTheme(document.documentElement.getAttribute('data-theme') !== 'dark');
+});
+
+// ---- PAGE TRANSITIONS ----
+function switchToPage(show, hide) {
+  return new Promise(resolve => {
+    hide.classList.add('page-exit');
+    hide.addEventListener('animationend', function h() {
+      hide.removeEventListener('animationend', h);
+      hide.classList.add('hidden'); hide.classList.remove('page-exit');
+      show.classList.remove('hidden'); show.classList.add('page-enter');
+      show.addEventListener('animationend', function s() {
+        show.removeEventListener('animationend', s);
+        show.classList.remove('page-enter');
+        resolve();
+      }, { once: true });
+    }, { once: true });
+  });
+}
+async function goHome() {
+  dictationPage.style.removeProperty('--card-font-scale');
+  await switchToPage(subjectPage, dictationPage);
+  subjectPage.scrollIntoView({ behavior: 'smooth' });
+}
+brandLogo.addEventListener('click', () => goHome());
+btnBack.addEventListener('click', () => goHome());
+
+// ---- FONT SIZE ----
+function applyFontSize(pct) {
+  fontSizePct = pct;
+  fsDisp.textContent = pct + '%'; fontSlider.value = pct;
+  dictationPage.style.setProperty('--card-font-scale', (pct/100).toFixed(2));
+}
+fontSlider.addEventListener('input', () => applyFontSize(parseInt(fontSlider.value)));
+document.getElementById('fs-minus').addEventListener('click', () => applyFontSize(Math.max(60, fontSizePct-5)));
+document.getElementById('fs-plus').addEventListener('click', () => applyFontSize(Math.min(200, fontSizePct+5)));
+
+// ---- COLUMNS ----
+function applyColumns(n) {
+  columnCount = n; colDisp.textContent = n;
+  cardGrid.classList.add('grid-morph');
+  cardGrid.style.gridTemplateColumns = `repeat(${n}, 1fr)`;
+  setTimeout(() => cardGrid.classList.remove('grid-morph'), 350);
+}
+document.getElementById('col-minus').addEventListener('click', () => { if (columnCount>1) applyColumns(columnCount-1); });
+document.getElementById('col-plus').addEventListener('click', () => { if (columnCount<6) applyColumns(columnCount+1); });
+
+// ---- NAME PICKER ----
+(function initNamePicker() {
+  var reg = window.__STDLIST_REGISTRY__ || [];
+  reg.forEach(function(entry) {
+    var opt = document.createElement('option');
+    opt.value = entry.id;
+    opt.textContent = entry.label;
+    stdlistSelect.appendChild(opt);
+  });
+  if (reg.length) stdlistSelect.value = reg[0].id;
+
+  var overlay = document.getElementById('pick-overlay');
+  var overlayText = document.getElementById('pick-overlay-text');
+  var animating = false;
+
+  btnPick.addEventListener('click', function() {
+    if (animating) return;
+    var listId = stdlistSelect.value;
+    if (!listId) return;
+    var list = window['__STDLIST_' + listId + '__'];
+    if (!list || !list.length) return;
+
+    animating = true;
+    pickResult.textContent = '';
+    var start = Math.floor(Math.random() * list.length);
+    var total = list.length;
+    overlay.classList.remove('hidden', 'shrink');
+
+    function tick(i) {
+      overlayText.textContent = list[(start + i) % list.length];
+      if (i < total - 1) {
+        setTimeout(function(){ tick(i + 1); }, 1200 / total);
+      } else {
+        // Bounce in place, then pause 0.3s, then shrink to corner
+        overlayText.classList.add('pop');
+        setTimeout(function() {
+          overlayText.classList.remove('pop');
+          var target = pickResult.getBoundingClientRect();
+          var overlayRect = overlayText.getBoundingClientRect();
+          var dx = target.left + target.width/2 - (overlayRect.left + overlayRect.width/2);
+          var dy = target.top + target.height/2 - (overlayRect.top + overlayRect.height/2);
+          var scale = parseFloat(getComputedStyle(pickResult).fontSize) / parseFloat(getComputedStyle(overlayText).fontSize);
+
+          overlay.style.setProperty('--dx', dx + 'px');
+          overlay.style.setProperty('--dy', dy + 'px');
+          overlay.style.setProperty('--scale', scale);
+          overlay.style.setProperty('--shrink-dur', '0.6s');
+          overlay.classList.add('shrink');
+
+          overlay.addEventListener('animationend', function handler() {
+            overlay.removeEventListener('animationend', handler);
+            pickResult.textContent = list[(start + total - 1) % list.length];
+            overlay.classList.add('hidden');
+            animating = false;
+          });
+        }, 300);
+      }
+    }
+    tick(0);
+  });
+})();
+
+// ---- COUNT ----
+function getMaxCount() {
+  if (activePlugin && typeof activePlugin.getRange==='function') {
+    const [s,e] = activePlugin.getRange(); return e-s;
+  }
+  return activePlugin&&activePlugin._data ? activePlugin._data.length : 36;
+}
+function clampCount(v) { const m=getMaxCount(); if(v<1)v=1; if(v>m)v=m; return v; }
+document.getElementById('count-minus').addEventListener('click', () => { countInput.value = clampCount(parseInt(countInput.value)-1); });
+document.getElementById('count-plus').addEventListener('click', () => { countInput.value = clampCount(parseInt(countInput.value)+1); });
+countInput.addEventListener('change', () => { countInput.value = clampCount(parseInt(countInput.value)||12); });
+countInput.addEventListener('keydown', e => { if(e.key==='Enter') doShuffle(); });
+
+// ---- SUBJECT PAGE ----
+function renderSubjectPage() {
+  subjectList.innerHTML = '';
+  SubjectRegistry.list().forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'subject-card';
+    card.innerHTML = `<span class="subject-icon">${p.meta.icon||'📚'}</span><span class="subject-name">${p.meta.name}</span><span class="subject-desc">${p.meta.description}</span>`;
+    card.addEventListener('click', () => openSubject(p));
+    subjectList.appendChild(card);
+  });
+}
+
+// ---- OPEN ----
+async function openSubject(plugin) {
+  activePlugin = plugin;
+  if (typeof plugin.loadConfig==='function') plugin.loadConfig();
+
+  dictationTitle.textContent = plugin.meta.name + '听写';
+  pluginConfig.innerHTML = '';
+  cardGrid.innerHTML = '';
+  if (typeof plugin.configUI==='function') plugin.configUI(pluginConfig, plugin);
+
+  const max = getMaxCount();
+  countInput.value = Math.min(plugin.defaultCount, max);
+  countInput.max = max;
+  applyColumns(plugin.defaultColumns||3);
+  fontSlider.value = plugin.defaultFontSize||100;
+  applyFontSize(plugin.defaultFontSize||100);
+  answersVisible = false;
+  btnReveal.disabled = true;
+  btnReveal.textContent = '公布答案';
+
+  await switchToPage(dictationPage, subjectPage);
+  doShuffle();
+}
+
+// ---- SHUFFLE ----
+async function doShuffle() {
+  if (!activePlugin) return;
+  const items = await activePlugin.loadData();
+  let pool = items;
+  if (typeof activePlugin.getRange==='function') {
+    const [s,e] = activePlugin.getRange(); pool = items.slice(s,e);
+  }
+  const count = Math.min(parseInt(countInput.value)||activePlugin.defaultCount, pool.length);
+  countInput.value = count; countInput.max = pool.length;
+  currentItems = new DictationEngine().shuffleAndPick(pool, count);
+  answersVisible = false;
+  btnReveal.disabled = false; btnReveal.textContent = '公布答案';
+  renderCards(currentItems, false);
+}
+btnShuffle.addEventListener('click', doShuffle);
+
+// ---- REVEAL ----
+btnReveal.addEventListener('click', () => {
+  answersVisible = !answersVisible;
+  btnReveal.textContent = answersVisible ? '隐藏答案' : '公布答案';
+  renderCards(currentItems, answersVisible);
+});
+
+// ---- RENDER CARDS ----
+function renderCards(items, showAnswers) {
+  cardGrid.innerHTML = '';
+  items.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.animationDelay = `${i*0.04}s`;
+    card.innerHTML = `<span class="card-num">${i+1}</span><div class="card-prompt">${activePlugin.renderPrompt(item,i)}</div><div class="card-answers${showAnswers?' visible':''}">${activePlugin.renderAnswer(item)}</div>`;
+    cardGrid.appendChild(card);
+  });
+  if (showAnswers) {
+    requestAnimationFrame(() => {
+      cardGrid.querySelectorAll('.card-answers.visible').forEach(el => {
+        el.classList.remove('visible'); void el.offsetWidth; el.classList.add('visible');
+      });
+    });
+  }
+}
+
+renderSubjectPage();
+
+// ---- SPLASH ----
+(function(){
+  var splash = document.getElementById('splash');
+  splash.addEventListener('animationend', function(e){
+    if (e.target === splash && e.animationName === 'splashOut') {
+      splash.remove();
+    }
+  });
+})();
+</script>
+</body>
+</html>
