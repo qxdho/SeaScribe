@@ -85,9 +85,14 @@
       if (i < total - 1) {
         setTimeout(function() { tick(i + 1); }, 1200 / total);
       } else {
+        // 定格后显示头衔（仅在全屏下）
+        var last = item;
+        overlayText.innerHTML = esc(last.name) + (last.title ? '<br><small style="font-size:0.3em;opacity:0.7">' + esc(last.title) + '</small>' : '');
         overlayText.classList.add('pop');
         setTimeout(function() {
           overlayText.classList.remove('pop');
+          // 去掉头衔，只保留姓名用于缩小动画
+          overlayText.innerHTML = esc(last.name);
           var target = pickResult.getBoundingClientRect();
           var overlayRect = overlayText.getBoundingClientRect();
           var dx = target.left + target.width / 2 - (overlayRect.left + overlayRect.width / 2);
@@ -102,12 +107,11 @@
 
           overlay.addEventListener('animationend', function handler() {
             overlay.removeEventListener('animationend', handler);
-            var last = list[(start + total - 1) % list.length];
-            pickResult.innerHTML = esc(last.name) + (last.title ? ' <small style="font-size:0.5em;opacity:0.6">' + esc(last.title) + '</small>' : '');
+            pickResult.innerHTML = esc(last.name);
             overlay.classList.add('hidden');
             animating = false;
           });
-        }, 300);
+        }, 800);
       }
     }
     tick(0);
