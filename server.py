@@ -11,6 +11,14 @@ import json
 import os
 import re
 import sys
+import mimetypes
+
+# 确保文本类型文件带有 UTF-8 charset
+mimetypes.init()
+for ext in ['.html','.css','.js','.csv','.xml','.json','.md','.svg']:
+    mt = mimetypes.types_map.get(ext, '')
+    if mt and 'charset' not in mt:
+        mimetypes.add_type(mt + '; charset=utf-8', ext)
 
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 9360
 ROOT = os.path.dirname(os.path.abspath(__file__))
