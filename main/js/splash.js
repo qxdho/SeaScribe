@@ -6,14 +6,14 @@
   var splash = document.getElementById('splash');
   var log = document.getElementById('splash-log');
 
-  // 全局日志存储
   window.__SEASCRIBE_LOG__ = [];
 
-  function logLine(msg, ok) {
-    window.__SEASCRIBE_LOG__.push({ msg: msg, ok: ok });
+  function logLine(label, ok, okMsg, failMsg) {
+    var text = ok ? (okMsg || 'OK') : (failMsg || 'FAIL');
+    window.__SEASCRIBE_LOG__.push({ label: label, ok: ok, text: text });
     var span = document.createElement('div');
     span.className = 'splash-log-line';
-    span.innerHTML = (ok ? '✅ ' : '❌ ') + msg;
+    span.innerHTML = (ok ? '✅ ' : '❌ ') + label + ' <span style="opacity:0.6">' + text + '</span>';
     log.appendChild(span);
   }
 
@@ -27,18 +27,54 @@
   }
 
   var checks = [
-    function() { logLine('主题系统', !!document.documentElement.getAttribute('data-theme')); },
-    function() { logLine('主配置', !!window.__SEASCRIBE_CONFIG__); },
-    function() { logLine('化学配置', !!window.__CHEMISTRY_CONFIG__); },
-    function() { logLine('英语配置', !!window.__ENGLISH_CONFIG__); },
-    function() { logLine('插件注册表', !!SubjectRegistry); },
-    function() { logLine('化学插件', !!SubjectRegistry.get('chemistry')); },
-    function() { logLine('英语插件', !!SubjectRegistry.get('english')); },
-    function() { logLine('点名系统', !!document.getElementById('stdlist-select')); },
-    function() { logLine('学科页面', !!document.getElementById('subject-page')); },
-    function() { logLine('听写页面', !!document.getElementById('dictation-page')); },
-    function() { logLine('卡片容器', !!document.getElementById('card-grid')); },
-    function() { logLine('控制栏', !!document.querySelector('.controls')); },
+    function() {
+      var ok = !!document.documentElement.getAttribute('data-theme');
+      logLine('主题系统', ok, '已加载', '未找到data-theme属性');
+    },
+    function() {
+      var ok = !!window.__SEASCRIBE_CONFIG__;
+      logLine('主配置', ok, '已加载', 'config.js 未加载');
+    },
+    function() {
+      var ok = !!window.__CHEMISTRY_CONFIG__;
+      logLine('化学配置', ok, '已加载', 'config/chemistry/config.js 缺失');
+    },
+    function() {
+      var ok = !!window.__ENGLISH_CONFIG__;
+      logLine('英语配置', ok, '已加载', 'config/english/config.js 缺失');
+    },
+    function() {
+      var ok = !!SubjectRegistry;
+      logLine('插件注册表', ok, '已就绪', 'core.js 未加载');
+    },
+    function() {
+      var ok = !!SubjectRegistry.get('chemistry');
+      logLine('化学插件', ok, '已注册', 'chemistry/plugin.js 未注册');
+    },
+    function() {
+      var ok = !!SubjectRegistry.get('english');
+      logLine('英语插件', ok, '已注册', 'english/plugin.js 未注册');
+    },
+    function() {
+      var ok = !!document.getElementById('stdlist-select');
+      logLine('点名系统', ok, 'DOM已就绪', '下拉框未渲染');
+    },
+    function() {
+      var ok = !!document.getElementById('subject-page');
+      logLine('学科页面', ok, 'DOM已就绪', '未找到#subject-page');
+    },
+    function() {
+      var ok = !!document.getElementById('dictation-page');
+      logLine('听写页面', ok, 'DOM已就绪', '未找到#dictation-page');
+    },
+    function() {
+      var ok = !!document.getElementById('card-grid');
+      logLine('卡片容器', ok, 'DOM已就绪', '未找到#card-grid');
+    },
+    function() {
+      var ok = !!document.querySelector('.controls');
+      logLine('控制栏', ok, 'DOM已就绪', '未找到.controls');
+    },
   ];
 
   var i = 0;
@@ -69,7 +105,9 @@
   document.getElementById('btn-syslog').addEventListener('click', function() {
     syslogOverlay.classList.remove('hidden');
     syslogBody.innerHTML = window.__SEASCRIBE_LOG__.map(function(l) {
-      return '<div style="padding:3px 0;font-size:0.9rem">' + (l.ok ? '✅ ' : '❌ ') + l.msg + '</div>';
+      return '<div style="padding:3px 0;font-size:0.9rem">' +
+        (l.ok ? '✅ ' : '❌ ') + l.label +
+        ' <span style="opacity:0.5">' + l.text + '</span></div>';
     }).join('');
   });
 
