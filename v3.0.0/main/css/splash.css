@@ -1,0 +1,111 @@
+/* ============================================================
+   SeaScribe — Splash Screen
+   ============================================================ */
+
+.splash {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 9999;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.splash-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  animation: splashIn 0.8s var(--ease) both;
+}
+
+.splash-icon {
+  font-size: 4rem;
+  animation: splashBounce 0.7s var(--ease) 0.1s both;
+}
+
+.splash-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: rgba(255,255,255,0.95);
+  animation: splashFade 0.5s var(--ease) 0.5s both;
+}
+
+[data-theme="light"] .splash-title {
+  color: rgba(0,0,0,0.85);
+}
+
+.splash-author {
+  font-size: 1.15rem;
+  color: rgba(255,255,255,0.65);
+  font-style: italic;
+  animation: splashFade 0.5s var(--ease) 0.7s both;
+}
+
+[data-theme="light"] .splash-author {
+  color: rgba(0,0,0,0.5);
+}
+
+.splash-version {
+  font-size: 0.95rem;
+  color: rgba(255,255,255,0.45);
+  animation: splashFade 0.5s var(--ease) 0.85s both;
+}
+[data-theme="light"] .splash-version { color: rgba(0,0,0,0.35); }
+
+.splash-vibecoding {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.4);
+  animation: splashFade 0.5s var(--ease) 0.95s both;
+}
+[data-theme="light"] .splash-vibecoding { color: rgba(0,0,0,0.3); }
+
+/* splash startup logs */
+.splash-log {
+  margin-top: 16px;
+  width: 280px;
+  height: 140px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.splash-log::-webkit-scrollbar { display: none; }
+.splash-log-line {
+  white-space: nowrap;
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.7);
+  animation: splashFade 0.4s var(--ease) both;
+}
+[data-theme="light"] .splash-log-line { color: rgba(0,0,0,0.5); }
+
+.splash-hint {
+  margin-top: 14px;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.35);
+  animation: splashFade 0.5s var(--ease) 1.2s both;
+}
+[data-theme="light"] .splash-hint { color: rgba(0,0,0,0.25); }
+
+@keyframes splashIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes splashOut {
+  to { opacity: 0; visibility: hidden; }
+}
+
+@keyframes splashBounce {
+  0%   { opacity: 0; transform: scale(0.3); }
+  60%  { opacity: 1; transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+
+@keyframes splashFade {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

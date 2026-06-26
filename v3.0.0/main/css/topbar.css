@@ -1,0 +1,139 @@
+/* ============================================================
+   SeaScribe — Topbar
+   ============================================================ */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 28px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-wrap: wrap;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.topbar-brand {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.15s;
+}
+.topbar-brand:hover { opacity: 0.7; }
+
+.topbar-version {
+  font-size: 0.65rem;
+  font-weight: 400;
+  color: var(--muted);
+  vertical-align: middle;
+}
+
+.topbar-author { font-size: 0.8rem; color: var(--muted); font-style: italic; }
+.topbar-spacer { flex: 1; }
+
+.topbar-btn {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text);
+  transition: background 0.2s;
+}
+.topbar-btn:hover { background: var(--hover); }
+
+.tool-btn {
+  width: 28px; height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  font-size: 0.8rem;
+  cursor: pointer;
+  color: var(--text);
+  display: flex;
+  align-items: center; justify-content: center;
+  transition: background 0.15s, border-color 0.15s;
+}
+.tool-btn:hover { background: var(--hover); }
+
+.icon-btn { font-size: 1rem; border: none; background: transparent; }
+
+/* ---- topbar picker ---- */
+.topbar-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.topbar-select {
+  max-width: 120px;
+  font-size: 0.82rem;
+  padding: 5px 26px 5px 10px;
+}
+
+.btn-sm {
+  padding: 5px 12px;
+  font-size: 0.82rem;
+}
+
+.pick-result {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  min-width: 5em;
+  text-align: center;
+  display: inline-block;
+  white-space: nowrap;
+  transition: color 0.3s;
+}
+
+/* ---- fullscreen pick overlay ---- */
+.pick-overlay {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 10000;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+}
+
+.pick-overlay.hidden { display: none; }
+
+.pick-overlay-text {
+  font-size: 12vw;
+  font-weight: 800;
+  color: var(--text);
+  transition: color 0.3s;
+}
+
+.pick-overlay-text.pop {
+  animation: nameStop 0.35s var(--ease);
+}
+
+.pick-overlay.shrink {
+  animation: overlayFade var(--shrink-dur, 1s) var(--ease) forwards;
+}
+
+.pick-overlay.shrink .pick-overlay-text {
+  animation: shrinkToCorner var(--shrink-dur, 1s) var(--ease) forwards;
+}
+
+@keyframes nameStop {
+  0%   { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+@keyframes overlayFade {
+  0%   { background: var(--bg); }
+  100% { background: transparent; }
+}
+
+@keyframes shrinkToCorner {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(var(--dx), var(--dy)) scale(var(--scale)); }
+}

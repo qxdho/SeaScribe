@@ -1,0 +1,108 @@
+/* ============================================================
+   SeaScribe — Dictation Cards
+   ============================================================ */
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--gap);
+  transition: grid-template-columns 0.35s var(--ease);
+}
+
+.card-grid.grid-morph {
+  animation: gridPulse 0.35s var(--ease);
+}
+
+.card-grid.layout-morph {
+  animation: layoutMorph 0.28s var(--ease);
+}
+
+@keyframes layoutMorph {
+  0%   { opacity: 0.6; transform: scale(0.97); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes gridPulse {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* list mode */
+.card-grid.list {
+  display: block;
+  column-gap: 12px;
+}
+.card-grid.list .card {
+  break-inside: avoid;
+  margin-bottom: 8px;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  padding: 10px 14px;
+}
+.card-grid.list .card-num { flex-shrink: 0; min-width: 1.8em; }
+.card-grid.list .card-prompt { flex: 1; min-width: 0; }
+.card-grid.list .card-answers { flex-basis: 100%; }
+.card-grid.list .card-answers:not(.visible) { display: none; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 16px;
+  display: flex; flex-direction: column; gap: 8px;
+  animation: fadeUp 0.4s var(--ease) both;
+  transition: background 0.3s, border-color 0.3s;
+  min-width: 0;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-num { font-size: calc(1.3rem * var(--card-font-scale, 1)); color: #666; font-weight: 800; }
+[data-theme="dark"] .card-num { color: #aaa; }
+
+.card-prompt {
+  display: flex; align-items: baseline; gap: 6px;
+  font-size: calc(1em * var(--card-font-scale, 1));
+}
+
+.card-symbol {
+  font-size: 1.6em; font-weight: 700;
+  letter-spacing: 0.02em; line-height: 1;
+}
+
+.card-cn { font-size: 0.8em; color: var(--muted); font-weight: 400; }
+
+/* ---- answers ---- */
+.card-answers {
+  padding-top: 4px;
+  opacity: 0; max-height: 0; overflow: hidden;
+  transition: all 0.35s var(--ease);
+  font-size: calc(0.9em * var(--card-font-scale, 1));
+}
+.card-answers.visible {
+  opacity: 1; max-height: 300px; overflow: visible;
+}
+
+.a-line {
+  display: flex; align-items: baseline; gap: 6px;
+  margin-bottom: 2px; flex-wrap: wrap;
+}
+.a-label {
+  font-size: 0.85em; color: var(--accent);
+  font-weight: 600; min-width: 3.2em; flex-shrink: 0;
+}
+.a-val { font-weight: 600; white-space: pre-wrap; word-break: break-word; }
+.a-val sup { font-size: 0.65em; color: var(--accent); }
+.a-val.orbital {
+  font-family: "SF Mono", "Cascadia Code", "Fira Code", "Consolas", "Microsoft YaHei", monospace;
+  font-size: 0.88em; letter-spacing: 0.03em;
+  background: var(--orb-bg);
+  padding: 1px 5px; border-radius: 4px;
+  white-space: normal; word-break: break-all; line-height: 1.5;
+}

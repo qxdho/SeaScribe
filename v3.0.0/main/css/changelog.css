@@ -1,0 +1,28 @@
+/* ============================================================
+   SeaScribe — Changelog Overlay
+   ============================================================ */
+
+.changelog-overlay {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 20000;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.changelog-overlay.hidden { display: none; }
+.changelog-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  color: var(--text);
+}
+.changelog-card h2 { margin-bottom: 16px; font-size: 1.4rem; }
+.changelog-card h3 { margin: 16px 0 6px; font-size: 1rem; color: var(--accent); }
+.changelog-body ul { padding-left: 20px; line-height: 1.8; font-size: 0.92rem; }
+.changelog-card .btn { margin-top: 24px; width: auto; min-width: 100px; }

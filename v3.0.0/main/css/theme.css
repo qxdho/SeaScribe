@@ -1,0 +1,33 @@
+/* ============================================================
+   SeaScribe — Theme Variables
+   ============================================================ */
+
+/* ---- Light Theme ---- */
+:root, [data-theme="light"] {
+  --bg:       #fafafa;
+  --surface:  #ffffff;
+  --text:     #333;
+  --muted:    #999;
+  --border:   #e5e5e5;
+  --dark:     #2a2a2a;
+  --accent:   #d6394e;
+  --hover:    #f5f5f5;
+  --orb-bg:   #f0f0f0;
+  --slider-track: #ddd;
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%23999' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+/* ---- Dark Theme ---- */
+[data-theme="dark"] {
+  --bg:       #1a1a1a;
+  --surface:  #262626;
+  --text:     #e5e5e5;
+  --muted:    #888;
+  --border:   #3a3a3a;
+  --dark:     #e5e5e5;
+  --accent:   #f06070;
+  --hover:    #333;
+  --orb-bg:   #333;
+  --slider-track: #444;
+  --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+}

@@ -1,0 +1,70 @@
+/* ============================================================
+   SeaScribe — Page Transitions & Subject Cards
+   ============================================================ */
+
+.page {
+  margin: 0 auto;
+  padding: 32px 24px 60px;
+}
+.page.hidden { display: none; }
+
+.page-exit {
+  animation: pageOut 0.22s var(--ease) forwards;
+}
+.page-enter {
+  animation: pageIn 0.28s var(--ease) forwards;
+}
+
+@keyframes pageOut {
+  to { opacity: 0; transform: translateY(-8px); }
+}
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.page-hero { text-align: center; margin-bottom: 32px; }
+.page-title { font-size: 1.6rem; font-weight: 700; }
+.page-sub { font-size: 0.9rem; color: var(--muted); margin-top: 6px; }
+
+/* ---- Subject Cards ---- */
+.subject-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--gap);
+}
+
+.subject-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 20px;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: all 0.2s var(--ease);
+}
+.subject-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.subject-icon { font-size: 2.6rem; line-height:1; }
+.subject-name { font-size: 1.2rem; font-weight:700; }
+.subject-desc { font-size: 0.8rem; color:var(--muted); text-align:center; }
+
+/* ---- Dictation Header ---- */
+.dictation-header {
+  display: flex; align-items: center; gap: 16px; margin-bottom: 20px;
+}
+
+.back-btn {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.back-btn:hover { background: var(--hover); }

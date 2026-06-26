@@ -1,0 +1,15 @@
+/* ============================================================
+   SeaScribe — Responsive
+   ============================================================ */
+
+@media (max-width: 640px) {
+  .card-grid { grid-template-columns: 1fr 1fr; }
+  .subject-grid { grid-template-columns: 1fr 1fr; }
+  .topbar { padding: 12px 14px; gap: 8px; }
+  .page { padding: 16px 10px 32px; }
+  .control-row { gap: 8px; }
+}
+
+@media (min-width: 1600px) {
+  .page { padding: 32px 48px 60px; }
+}

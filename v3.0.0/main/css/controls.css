@@ -1,0 +1,204 @@
+/* ============================================================
+   SeaScribe — Controls
+   ============================================================ */
+
+.controls { margin-bottom: 14px; }
+
+.plugin-config-row {
+  margin-bottom: 8px;
+  display: flex; flex-wrap: wrap; gap: 8px; align-items: center;
+}
+
+.control-row {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+}
+
+.control-item {
+  display: flex; align-items: center; gap: 4px;
+}
+
+.ctrl-label {
+  font-size: 0.75rem; color: var(--muted); font-weight: 500;
+}
+
+/* ---- stepper ---- */
+.stepper {
+  display: flex; align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 6px; overflow: hidden;
+}
+.stepper-btn {
+  width: 28px; height: 28px;
+  border: none; background: var(--surface);
+  font-size: 0.9rem; cursor: pointer;
+  color: var(--text);
+  transition: background 0.15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.stepper-btn:hover { background: var(--hover); }
+.stepper-val {
+  width: 30px; text-align: center;
+  font-weight: 600; font-size: 0.85rem;
+}
+
+/* stepper with editable input */
+.stepper-input {
+  width: 44px; height: 28px;
+  text-align: center;
+  border: none;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.85rem; font-weight: 600;
+  -moz-appearance: textfield;
+}
+.stepper-input::-webkit-inner-spin-button,
+.stepper-input::-webkit-outer-spin-button { -webkit-appearance:none; margin:0; }
+.stepper-input:focus { outline: none; background: var(--hover); }
+
+/* ---- font slider ---- */
+.font-slider {
+  -webkit-appearance: none;
+  width: 64px; height: 5px;
+  border-radius: 3px;
+  background: var(--slider-track);
+  outline: none; cursor: pointer;
+}
+.font-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--dark);
+  border: 2px solid var(--surface);
+  cursor: pointer;
+}
+.font-slider::-moz-range-thumb {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--dark);
+  border: 2px solid var(--surface);
+  cursor: pointer;
+}
+
+.fs-btn {
+  font-size: 0.75rem;
+  font-weight: 600;
+  width: 28px; height: 28px;
+}
+
+.tool-val {
+  font-size: 0.8rem; color: var(--text);
+  font-weight: 500; min-width: 3.2em; text-align: center;
+}
+
+.layout-btn {
+  font-size: 1.1rem;
+  width: 32px; height: 32px;
+  border-radius: 8px;
+}
+
+/* ---- beautiful selects ---- */
+.range-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 8px 32px 8px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  background-image: var(--select-arrow);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px 12px;
+  color: var(--text);
+  font-size: 0.92rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  max-width: 160px;
+  text-overflow: ellipsis;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted) transparent;
+}
+.range-select::-webkit-scrollbar {
+  width: 6px;
+}
+.range-select::-webkit-scrollbar-track {
+  background: transparent;
+}
+.range-select::-webkit-scrollbar-thumb {
+  background: var(--muted);
+  border-radius: 3px;
+}
+.range-select:hover {
+  border-color: var(--muted);
+  background-color: var(--hover);
+}
+.range-select:focus {
+  outline: none;
+  border-color: var(--dark);
+  box-shadow: 0 0 0 3px rgba(128,128,128,0.1);
+}
+.range-select option {
+  background: var(--surface);
+  color: var(--text);
+  padding: 8px;
+}
+.range-sep {
+  font-size: 0.85rem;
+  color: var(--muted);
+  font-weight: 500;
+  user-select: none;
+}
+
+.ctrl-sep {
+  width: 16px;
+}
+
+/* ---- import button ---- */
+.import-btn {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.import-btn input[type=file] {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.import-msg {
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+.import-msg.loading  { color: var(--muted); }
+.import-msg.success  { color: #4caf50; }
+.import-msg.error    { color: #f44336; }
+
+/* ---- url input ---- */
+.url-input {
+  padding: 8px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 0.88rem;
+  width: 280px;
+  transition: border-color 0.2s;
+}
+.url-input::placeholder { color: var(--muted); }
+.url-input:focus { outline: none; border-color: var(--dark); }
+
+/* ---- buttons ---- */
+.btn {
+  padding: 7px 14px; border: none; border-radius: 8px;
+  font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; transition: all 0.15s; white-space: nowrap;
+}
+.btn-dark { background: var(--dark); color: var(--bg); }
+.btn-dark:hover { opacity: 0.85; }
+.btn-ghost {
+  background: transparent; color: var(--muted);
+  border: 1px solid var(--border);
+}
+.btn-ghost:hover { border-color: var(--text); color: var(--text); }
+.btn-ghost:disabled { opacity: 0.35; cursor: default; }
