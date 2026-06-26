@@ -1,36 +1,43 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Warm sunset gradient background -->
+  <!-- Warm gradient background -->
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#ff6b35"/>
-      <stop offset="100%" stop-color="#f7931e"/>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ff7b42"/>
+      <stop offset="100%" stop-color="#ffb347"/>
     </linearGradient>
   </defs>
 
   <rect x="32" y="32" width="448" height="448" rx="116" fill="url(#bg)"/>
 
-  <!-- Seagull in flight -->
-  <g transform="translate(256,240)">
-    <!-- Left wing -->
-    <path d="M-20,-20 Q-120,-100 -200,-30 Q-140,-50 -20,-10"
-          fill="white" opacity="0.95"/>
-    <!-- Right wing -->
-    <path d="M20,-20 Q120,-100 200,-30 Q140,-50 20,-10"
-          fill="white" opacity="0.95"/>
-    <!-- Body -->
-    <ellipse cx="0" cy="10" rx="30" ry="45" fill="white"/>
+  <!-- Simple line-drawn seagull (简笔画风格) -->
+  <g transform="translate(256,180)" fill="none" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Body: single flowing curve -->
+    <path d="M-70,40 Q-40,0 0,-10 Q40,0 70,40"/>
+
+    <!-- Left wing in flight -->
+    <path d="M-20,5 Q-80,-60 -140,-30 Q-100,-20 -20,10"/>
+
+    <!-- Right wing in flight -->
+    <path d="M20,5 Q80,-60 140,-30 Q100,-20 20,10"/>
+
     <!-- Head -->
-    <circle cx="0" cy="-35" r="20" fill="white"/>
+    <circle cx="0" cy="-15" r="12" fill="white" stroke="none"/>
+
+    <!-- Eye (dot) -->
+    <circle cx="-5" cy="-17" r="3" fill="#ff7b42" stroke="none"/>
+
     <!-- Beak -->
-    <path d="M-5,-42 L-12,-48 L-5,-44Z" fill="#ff6b35"/>
-    <!-- Eye -->
-    <circle cx="-8" cy="-38" r="3" fill="#1a1a2e"/>
-    <!-- Tail feathers -->
-    <path d="M0,55 Q-20,90 -15,105 Q-10,85 0,55" fill="white" opacity="0.9"/>
-    <path d="M0,55 Q20,90 15,105 Q10,85 0,55" fill="white" opacity="0.9"/>
+    <path d="M-12,-12 L-22,-16 L-12,-10" fill="#ff7b42" stroke="none"/>
+
+    <!-- Tail -->
+    <path d="M70,40 Q100,50 110,70"/>
+    <path d="M70,40 Q95,55 100,80"/>
   </g>
 
-  <!-- Subtle wave at bottom -->
-  <path d="M60 400 Q140 370 220 395 Q300 420 380 390 Q420 378 452 385"
-        fill="none" stroke="white" stroke-width="3" opacity="0.3"/>
+  <!-- Waves at bottom — three simple arcs -->
+  <g fill="none" stroke="white" stroke-width="7" stroke-linecap="round" opacity="0.4">
+    <path d="M60,400 Q130,370 200,400 Q270,430 340,400 Q400,370 452,390"/>
+    <path d="M70,420 Q150,390 230,420 Q310,450 390,420 Q440,400 452,415"/>
+    <path d="M80,440 Q160,415 240,440 Q320,465 400,440 Q435,430 452,435"/>
+  </g>
 </svg>
