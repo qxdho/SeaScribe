@@ -37,7 +37,11 @@
   font-size: 0.65rem;
   font-weight: 400;
   color: var(--muted);
-  vertical-align: middle;
+  position: relative;
+  top: 0.4em;
+  margin-left: -4px;
+  pointer-events: none;
+  user-select: none;
 }
 
 .topbar-author { font-size: 0.8rem; color: var(--muted); font-style: italic; }
