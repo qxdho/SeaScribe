@@ -1,6 +1,7 @@
 /* ============================================================
-   SeaScribe — Name Picker (v3.2)
-   从 data/stdlist/ 扫描 CSV/XLSX 文件，类似英语插件
+   SeaScribe — Name Picker (v3.3)
+   从 data/stdlist/ 扫描 CSV/XLSX 文件
+   CSV 格式：第1列=姓名，第2列=头衔（可选）
    ============================================================ */
 
 (function() {
@@ -10,10 +11,9 @@
   var overlay = document.getElementById('pick-overlay');
   var overlayText = document.getElementById('pick-overlay-text');
 
-  var _currentList = [];
+  var _currentList = [];  // [{name, title}]
   var animating = false;
 
-  // ---- Load XLXS lib ----
   function ensureXLSX() {
     if (window.XLSX) return Promise.resolve();
     return new Promise(function(resolve, reject) {
@@ -25,24 +25,24 @@
     });
   }
 
-  // ---- Parse xlsx/csv buffer → array of names (col A) ----
+  // Parse: col A = name, col B = title (optional)
   function parseNames(buf) {
     var wb = XLSX.read(new Uint8Array(buf), { type: 'array' });
     var wsname = wb.SheetNames[0];
     if (!wsname) return [];
     var ws = wb.Sheets[wsname];
     var rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
-    var names = [];
+    var items = [];
     for (var i = 0; i < rows.length; i++) {
       var name = String(rows[i][0] || '').trim();
-      if (name && name !== '姓名' && name !== 'name' && name !== 'Name') {
-        names.push(name);
+      var title = String(rows[i][1] || '').trim();
+      if (name) {
+        items.push({ name: name, title: title || '' });
       }
     }
-    return names;
+    return items;
   }
 
-  // ---- Scan API ----
   function scanFiles() {
     stdlistSelect.innerHTML = '<option value="">扫描中…</option>';
     fetch('/api/stdlist-files')
@@ -66,7 +66,6 @@
       });
   }
 
-  // ---- Load selected file ----
   stdlistSelect.addEventListener('change', function() {
     var url = stdlistSelect.value;
     if (!url) { _currentList = []; return; }
@@ -83,20 +82,20 @@
     });
   });
 
-  // ---- Pick animation ----
   btnPick.addEventListener('click', function() {
     if (animating) return;
     if (!_currentList.length) return;
 
     animating = true;
-    pickResult.textContent = '';
+    pickResult.innerHTML = '';
     var list = _currentList;
     var start = Math.floor(Math.random() * list.length);
     var total = list.length;
     overlay.classList.remove('hidden', 'shrink');
 
     function tick(i) {
-      overlayText.textContent = list[(start + i) % list.length];
+      var item = list[(start + i) % list.length];
+      overlayText.innerHTML = esc(item.name) + (item.title ? '<br><small style="font-size:0.3em;opacity:0.7">' + esc(item.title) + '</small>' : '');
       if (i < total - 1) {
         setTimeout(function() { tick(i + 1); }, 1200 / total);
       } else {
@@ -117,7 +116,8 @@
 
           overlay.addEventListener('animationend', function handler() {
             overlay.removeEventListener('animationend', handler);
-            pickResult.textContent = list[(start + total - 1) % list.length];
+            var last = list[(start + total - 1) % list.length];
+            pickResult.innerHTML = esc(last.name) + (last.title ? ' <small style="font-size:0.5em;opacity:0.6">' + esc(last.title) + '</small>' : '');
             overlay.classList.add('hidden');
             animating = false;
           });
@@ -127,7 +127,6 @@
     tick(0);
   });
 
-  // ---- Init ----
   scanFiles();
 
   function esc(s) {
