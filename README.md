@@ -2,7 +2,7 @@
 
 > 课堂听写投屏系统 — 教师大屏随机出题，学生纸笔作答，一键公布答案
 > 
-> by **谦虚の海鸥** · v3.0.0
+> by **谦虚の海鸥** · v3.0.0 · [GitHub](https://github.com/qxdho/SeaScribe)
 
 ---
 
@@ -139,3 +139,15 @@ HTML5 + CSS3 + Vanilla JS · 零框架 · CSS Custom Properties · CSS Grid · C
 ## License
 
 MIT
+
+---
+
+## 版本历史
+
+| 版本 | 架构 | 亮点 |
+|------|------|------|
+| **v3.0** | 9 CSS + 9 JS 模块化 | SubjectRegistry + DictationEngine，配置分离，插件模板 |
+| **v2.0** | CSS/JS 初步拆分 | 网格/列表双布局，config/ 目录，英语服务器扫描 |
+| **v1.0** | 单文件 style.css + core.js | 化学轨道式，英语 xlsx 导入，随机点名，插件化架构 |
+
+> 旧版本源码归档在 `v1.0/` 和 `v2.0/` 目录中，也可下载 [v1.0.zip](v1.0.zip) / [v2.0.zip](v2.0.zip)

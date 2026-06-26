@@ -15,6 +15,13 @@
 - 控制栏按钮回归单行，紧跟字号控件
 - 开屏添加「本项目使用 vibecoding 开发」
 
+### 工程化
+- 接入 Git 版本管理，托管于 [GitHub](https://github.com/qxdho/SeaScribe)
+- 添加 `.gitignore`（排除 data/、zip、reasonix 等敏感文件）
+- v1.0 / v2.0 旧版本源码归档至仓库
+- 制定 `RULES.md` 编码规范（8 条规则，含 Git 工作流、版本号管理）
+- 遵循语义化版本（SemVer），每次发版打 tag
+
 ---
 
 ## v2.0
