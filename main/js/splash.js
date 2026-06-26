@@ -33,10 +33,10 @@
     if (i < checks.length) {
       checks[i](); i++;
       log.scrollTop = log.scrollHeight;
-      setTimeout(runCheck, 30);
+      setTimeout(runCheck, 60);
     }
   }
-  setTimeout(runCheck, 400);
+  setTimeout(runCheck, 500);
 
   splash.addEventListener('click', function closeSplash() {
     splash.style.animation = 'splashOut 0.5s var(--ease) forwards';
