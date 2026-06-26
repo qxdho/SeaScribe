@@ -10,6 +10,7 @@
   var pickResult = document.getElementById('pick-result');
   var overlay = document.getElementById('pick-overlay');
   var overlayText = document.getElementById('pick-overlay-text');
+  var overlayTitle = document.getElementById('pick-overlay-title');
 
   var _currentList = [];  // [{name, title}]
   var animating = false;
@@ -81,18 +82,21 @@
 
     function tick(i) {
       var item = list[(start + i) % list.length];
-      overlayText.innerHTML = esc(item.name);
+      overlayText.textContent = item.name;
+      overlayTitle.textContent = '';
+      overlayTitle.classList.remove('show');
       if (i < total - 1) {
         setTimeout(function() { tick(i + 1); }, 1200 / total);
       } else {
-        // 定格后显示头衔（仅在全屏下）
+        // 定格后显示头衔
         var last = item;
-        overlayText.innerHTML = esc(last.name) + (last.title ? '<br><small style="font-size:0.3em;opacity:0.7">' + esc(last.title) + '</small>' : '');
+        overlayTitle.textContent = last.title || '';
+        overlayTitle.classList.add('show');
         overlayText.classList.add('pop');
         setTimeout(function() {
           overlayText.classList.remove('pop');
-          // 去掉头衔，只保留姓名用于缩小动画
-          overlayText.innerHTML = esc(last.name);
+          // 淡出头衔
+          overlayTitle.classList.remove('show');
           var target = pickResult.getBoundingClientRect();
           var overlayRect = overlayText.getBoundingClientRect();
           var dx = target.left + target.width / 2 - (overlayRect.left + overlayRect.width / 2);
@@ -107,7 +111,8 @@
 
           overlay.addEventListener('animationend', function handler() {
             overlay.removeEventListener('animationend', handler);
-            pickResult.innerHTML = esc(last.name);
+            pickResult.textContent = last.name;
+            overlayTitle.textContent = '';
             overlay.classList.add('hidden');
             animating = false;
           });

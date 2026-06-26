@@ -114,11 +114,28 @@
 
 .pick-overlay.hidden { display: none; }
 
+.pick-overlay-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .pick-overlay-text {
   font-size: 12vw;
   font-weight: 800;
   color: var(--text);
   transition: color 0.3s;
+}
+
+.pick-overlay-title {
+  font-size: 3vw;
+  color: var(--text);
+  opacity: 0;
+  transition: opacity 0.4s ease, color 0.3s;
+  margin-top: 8px;
+}
+.pick-overlay-title.show {
+  opacity: 0.65;
 }
 
 .pick-overlay-text.pop {
