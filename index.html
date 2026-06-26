@@ -64,6 +64,7 @@
   </div>
   <button class="tool-btn icon-btn" id="btn-theme" title="切换夜间模式">🌙</button>
   <button class="topbar-btn" id="btn-changelog" title="更新日志">更新日志</button>
+  <button class="topbar-btn" id="btn-syslog" title="系统日志">📋 系统日志</button>
 </header>
 
 <!-- ========== 学科选择页 ========== -->
@@ -124,6 +125,15 @@
     <h2>更新日志</h2>
     <div class="changelog-body" id="changelog-body"></div>
     <button class="btn btn-dark" id="btn-changelog-close">关闭</button>
+  </div>
+</div>
+
+<!-- ========== 系统日志弹窗 ========== -->
+<div id="syslog-overlay" class="changelog-overlay hidden">
+  <div class="changelog-card">
+    <h2>系统日志</h2>
+    <div id="syslog-body" class="changelog-body"></div>
+    <button class="btn btn-dark" id="btn-syslog-close">关闭</button>
   </div>
 </div>
 
