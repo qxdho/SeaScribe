@@ -8,6 +8,21 @@
 
   window.__SEASCRIBE_LOG__ = [];
 
+  // 拦截 console 输出到系统日志
+  (function() {
+    var orig = { log: console.log, error: console.error, warn: console.warn };
+    function push(level, args) {
+      var msg = Array.prototype.slice.call(args).map(function(a) {
+        try { return typeof a === 'object' ? JSON.stringify(a) : String(a); }
+        catch(e) { return String(a); }
+      }).join(' ');
+      window.__SEASCRIBE_LOG__.push({ label: '[' + level + ']', ok: level !== 'error', text: msg });
+    }
+    console.log   = function() { orig.log.apply(console, arguments);   push('log', arguments); };
+    console.error = function() { orig.error.apply(console, arguments); push('error', arguments); };
+    console.warn  = function() { orig.warn.apply(console, arguments);  push('warn', arguments); };
+  })();
+
   function logLine(label, ok, okMsg, failMsg) {
     var text = ok ? (okMsg || 'OK') : (failMsg || 'FAIL');
     window.__SEASCRIBE_LOG__.push({ label: label, ok: ok, text: text });
