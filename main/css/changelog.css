@@ -10,8 +10,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s;
 }
-.changelog-overlay.hidden { display: none; }
+.changelog-overlay:not(.hidden) {
+  opacity: 1;
+  visibility: visible;
+}
+.changelog-overlay:not(.hidden) .changelog-card {
+  animation: changelogIn 0.3s ease both;
+}
 .changelog-card {
   background: var(--surface);
   border-radius: 16px;
@@ -21,8 +30,26 @@
   max-height: 80vh;
   overflow-y: auto;
   color: var(--text);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+.changelog-card::-webkit-scrollbar {
+  width: 6px;
+}
+.changelog-card::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 0 16px 16px 0;
+}
+.changelog-card::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
 }
 .changelog-card h2 { margin-bottom: 16px; font-size: 1.4rem; }
 .changelog-card h3 { margin: 16px 0 6px; font-size: 1rem; color: var(--accent); }
 .changelog-body ul { padding-left: 20px; line-height: 1.8; font-size: 0.92rem; }
 .changelog-card .btn { margin-top: 24px; width: auto; min-width: 100px; }
+
+@keyframes changelogIn {
+  from { opacity: 0; transform: translateY(20px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
