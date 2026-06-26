@@ -81,7 +81,7 @@
 
     function tick(i) {
       var item = list[(start + i) % list.length];
-      overlayText.innerHTML = esc(item.name) + (item.title ? '<br><small style="font-size:0.3em;opacity:0.7">' + esc(item.title) + '</small>' : '');
+      overlayText.innerHTML = esc(item.name);
       if (i < total - 1) {
         setTimeout(function() { tick(i + 1); }, 1200 / total);
       } else {
