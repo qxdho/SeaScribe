@@ -1,3 +1,5 @@
+<p align="center"><img src="logo.svg" width="120" alt="SeaScribe"></p>
+
 # SeaScribe
 
 > 课堂听写投屏系统 — 教师大屏随机出题，学生纸笔作答，一键公布答案

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#2b5fd9"/>
+      <stop offset="100%" stop-color="#1a3a8a"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#64b5f6" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#4fc3f7" stop-opacity="0.4"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="248" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="248" fill="none" stroke="#4fc3f7" stroke-width="4" opacity="0.3"/>
+
+  <!-- Seagull silhouette -->
+  <path d="M120 220 Q190 140 256 170 Q322 140 392 220 Q350 200 310 210 Q280 200 256 210 Q232 200 202 210 Q162 200 120 220Z"
+        fill="white" opacity="0.95"/>
+
+  <!-- Waves -->
+  <path d="M60 340 Q120 300 180 340 Q240 380 300 340 Q360 300 420 340 Q440 350 452 340 L452 460 L60 460Z"
+        fill="url(#wave)" opacity="0.7"/>
+  <path d="M60 380 Q130 350 200 380 Q270 410 340 380 Q400 350 452 370 L452 460 L60 460Z"
+        fill="url(#wave)" opacity="0.5"/>
+  <path d="M60 420 Q140 400 220 420 Q300 440 380 420 Q420 410 452 415 L452 460 L60 460Z"
+        fill="url(#wave)" opacity="0.3"/>
+
+  <!-- Pen nib at bottom, emerging from waves -->
+  <path d="M230 340 L256 460 L282 340Z" fill="white" opacity="0.9"/>
+  <line x1="256" y1="340" x2="256" y2="420" stroke="#1a3a8a" stroke-width="2" opacity="0.4"/>
+
+  <!-- Swoosh accent -->
+  <path d="M140 260 Q200 230 256 245 Q312 230 372 260" fill="none" stroke="white" stroke-width="3" opacity="0.4"/>
+</svg>
