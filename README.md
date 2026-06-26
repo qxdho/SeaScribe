@@ -1,4 +1,4 @@
-<p align="center"><img src="main/logo.svg" width="80" alt="SeaScribe"></p>
+<p align="center"><img src="main/logo.png" width="80" alt="SeaScribe"></p>
 
 # SeaScribe
 
@@ -59,7 +59,7 @@ python server.py 9360
 │   ├── PLUGINS.md          ← 插件开发指南
 │   └── RULES.md            ← 编码规范（本地）
 ├── main/
-│   ├── logo.svg            ← 项目 logo
+│   ├── logo.png            ← 项目 logo
 │   ├── css/                ← 样式（9 个文件，按职责拆分）
 │   │   ├── theme.css       ← CSS 变量 + 亮/暗主题
 │   │   ├── base.css        ← reset + 排版
