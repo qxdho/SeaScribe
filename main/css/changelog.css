@@ -10,17 +10,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.25s ease, visibility 0.25s;
 }
-.changelog-overlay:not(.hidden) {
-  opacity: 1;
-  visibility: visible;
+.changelog-overlay.hidden {
+  display: none;
 }
-.changelog-overlay:not(.hidden) .changelog-card {
-  animation: changelogIn 0.3s ease both;
-}
+
 .changelog-card {
   background: var(--surface);
   border-radius: 16px;
@@ -32,13 +26,13 @@
   color: var(--text);
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
+  animation: changelogIn 0.3s ease both;
 }
 .changelog-card::-webkit-scrollbar {
   width: 6px;
 }
 .changelog-card::-webkit-scrollbar-track {
   background: transparent;
-  border-radius: 0 16px 16px 0;
 }
 .changelog-card::-webkit-scrollbar-thumb {
   background: var(--border);
