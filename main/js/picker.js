@@ -134,7 +134,7 @@
   function fireConfetti() {
     if (typeof confetti === 'undefined') return;
     var count = 200;
-    var defaults = { origin: { y: 0.7 }, zIndex: 10001 };
+    var defaults = { origin: { y: 0.7 }, zIndex: 10001, gravity: 1.4 };
     function fire(particleRatio, opts) {
       confetti(Object.assign({}, defaults, opts, {
         particleCount: Math.floor(count * particleRatio)
