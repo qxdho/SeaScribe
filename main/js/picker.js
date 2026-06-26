@@ -124,7 +124,7 @@
             overlay.classList.add('hidden');
             animating = false;
           });
-        }, 400);
+        }, 600);
       }
     }
     tick(0);
