@@ -16,5 +16,8 @@ Thumbs.db
 # 打包产物
 *.zip
 
+# 内部规范（不公开）
+RULES.md
+
 # CodeBuddy
 .reasonix/
