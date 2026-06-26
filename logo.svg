@@ -1,5 +1,4 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Warm gradient background -->
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0%" stop-color="#ff7b42"/>
@@ -9,35 +8,22 @@
 
   <rect x="32" y="32" width="448" height="448" rx="116" fill="url(#bg)"/>
 
-  <!-- Simple line-drawn seagull (简笔画风格) -->
-  <g transform="translate(256,180)" fill="none" stroke="white" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
-    <!-- Body: single flowing curve -->
-    <path d="M-70,40 Q-40,0 0,-10 Q40,0 70,40"/>
+  <!-- ONE continuous line: seagull in flight -->
+  <!-- Starts at left wingtip → sweeps up into wing → dips down for body → sweeps up into right wing → ends at right wingtip -->
+  <path d="
+    M 90 280
+    Q 150 160 200 210
+    Q 240 250 256 240
+    Q 272 250 312 210
+    Q 362 160 422 280
+  "
+    fill="none" stroke="white" stroke-width="7" stroke-linecap="round"/>
 
-    <!-- Left wing in flight -->
-    <path d="M-20,5 Q-80,-60 -140,-30 Q-100,-20 -20,10"/>
-
-    <!-- Right wing in flight -->
-    <path d="M20,5 Q80,-60 140,-30 Q100,-20 20,10"/>
-
-    <!-- Head -->
-    <circle cx="0" cy="-15" r="12" fill="white" stroke="none"/>
-
-    <!-- Eye (dot) -->
-    <circle cx="-5" cy="-17" r="3" fill="#ff7b42" stroke="none"/>
-
-    <!-- Beak -->
-    <path d="M-12,-12 L-22,-16 L-12,-10" fill="#ff7b42" stroke="none"/>
-
-    <!-- Tail -->
-    <path d="M70,40 Q100,50 110,70"/>
-    <path d="M70,40 Q95,55 100,80"/>
-  </g>
-
-  <!-- Waves at bottom — three simple arcs -->
-  <g fill="none" stroke="white" stroke-width="7" stroke-linecap="round" opacity="0.4">
-    <path d="M60,400 Q130,370 200,400 Q270,430 340,400 Q400,370 452,390"/>
-    <path d="M70,420 Q150,390 230,420 Q310,450 390,420 Q440,400 452,415"/>
-    <path d="M80,440 Q160,415 240,440 Q320,465 400,440 Q435,430 452,435"/>
-  </g>
+  <!-- Waves: three simple arcs -->
+  <path d="M 70 390 Q 150 355 230 390 Q 310 425 380 390 Q 430 370 452 385"
+    fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity="0.35"/>
+  <path d="M 80 415 Q 160 385 240 415 Q 320 445 400 415 Q 435 400 452 410"
+    fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity="0.25"/>
+  <path d="M 90 440 Q 170 415 250 440 Q 330 465 410 440 Q 440 430 452 435"
+    fill="none" stroke="white" stroke-width="5" stroke-linecap="round" opacity="0.15"/>
 </svg>
