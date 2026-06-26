@@ -1,5 +1,17 @@
 # SeaScribe 更新日志
 
+## v3.1.0
+
+### 品牌与工程化
+- 设计项目 logo（波浪弧线+笔尖+墨滴，统一图形）
+- logo 应用于顶栏、开屏动画、favicon、README
+- 接入 Git 版本管理，托管于 [GitHub](https://github.com/qxdho/SeaScribe)
+- 目录拍平：v3.0.0 内容提至根目录，旧版本归档至 `archive/`
+- 制定 `RULES.md` 编码规范（8 条规则）
+- 遵循语义化版本（SemVer），每次发版打 tag
+
+---
+
 ## v3.0.0
 
 ### 代码模块化

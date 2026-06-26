@@ -4,7 +4,7 @@
 
 > 课堂听写投屏系统 — 教师大屏随机出题，学生纸笔作答，一键公布答案
 > 
-> by **谦虚の海鸥** · v3.0.0 · [GitHub](https://github.com/qxdho/SeaScribe)
+> by **谦虚の海鸥** · v3.1.0 · [GitHub](https://github.com/qxdho/SeaScribe)
 
 ---
 
