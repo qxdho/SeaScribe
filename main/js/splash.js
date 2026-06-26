@@ -90,6 +90,32 @@
       var ok = !!document.querySelector('.controls');
       logLine('控制栏', ok, 'DOM已就绪', '未找到.controls');
     },
+    function() {
+      var ok = !!document.getElementById('btn-about');
+      logLine('关于页面', ok, 'DOM已就绪', '未找到#btn-about');
+    },
+    function() {
+      var ok = !!document.getElementById('btn-changelog');
+      logLine('更新日志', ok, 'DOM已就绪', '未找到#btn-changelog');
+    },
+    function() {
+      var ok = !!document.getElementById('btn-syslog');
+      logLine('系统日志', ok, 'DOM已就绪', '未找到#btn-syslog');
+    },
+    function() {
+      var ok = !!document.getElementById('pick-overlay');
+      logLine('点名覆盖层', ok, 'DOM已就绪', '未找到#pick-overlay');
+    },
+    function() {
+      // confetti CDN 延迟检测
+      var ok = typeof confetti !== 'undefined' || document.querySelector('script[src*=\"canvas-confetti\"]') !== null;
+      logLine('点名特效', ok, 'confetti已就绪', 'CDN未加载（离线模式正常）');
+    },
+    function() {
+      var img = document.querySelector('.topbar-logo');
+      var ok = img && img.src.indexOf('.png') !== -1;
+      logLine('Logo PNG', ok, '已加载', 'Logo未切换PNG');
+    },
   ];
 
   var i = 0;
