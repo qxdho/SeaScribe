@@ -11,16 +11,18 @@
    * @param {Array<{name, signature}>} list — 名单
    * @param {string} method — 'pure' | 'binary' | 'fair'
    * @param {Object} timestamps — { 姓名: "ISO时间字符串", ... }
+   * @param {Object} options — { skipDelays: boolean }
    * @returns {AsyncGenerator} yield {type, ...}
    *   步骤: {type:'step', ...}  结果: {type:'result', person:{name,signature}, lastPickedTime}
    */
-  async function* pick(list, method, timestamps) {
+  async function* pick(list, method, timestamps, options) {
     timestamps = timestamps || {};
+    options = options || {};
 
     if (method === 'binary') {
-      yield* binaryPick(list);
+      yield* binaryPick(list, options);
     } else if (method === 'fair') {
-      yield* fairPick(list, timestamps);
+      yield* fairPick(list, timestamps, options);
     } else {
       yield* purePick(list);
     }
@@ -33,7 +35,8 @@
   }
 
   /* ---------- 二分法 ---------- */
-  async function* binaryPick(list) {
+  async function* binaryPick(list, options) {
+    var skip = options && options.skipDelays;
     var group = list.slice();
     var rejected = [];
 
@@ -62,7 +65,7 @@
       };
 
       // 短暂延迟让动画帧渲染
-      if (group.length > 1) {
+      if (group.length > 1 && !skip) {
         await delay(cfg.binaryStepDelay || 1000);
       }
     }
@@ -72,7 +75,8 @@
   }
 
   /* ---------- 公平随机 ---------- */
-  async function* fairPick(list, timestamps) {
+  async function* fairPick(list, timestamps, options) {
+    var skip = options && options.skipDelays;
     var ratio = cfg.fairSubsetRatio != null ? cfg.fairSubsetRatio : 0.3;
     var minSize = cfg.fairSubsetMin != null ? cfg.fairSubsetMin : 3;
     var subsetSize = Math.max(minSize, Math.floor(list.length * ratio));
@@ -97,7 +101,7 @@
       total: list.length,
     };
 
-    await delay(cfg.fairStepDelay || 1200);
+    if (!skip) await delay(cfg.fairStepDelay || 1200);
 
     // 找从未被点过的人
     var neverPicked = [];
@@ -152,7 +156,7 @@
       };
     }
 
-    await delay(cfg.fairResultDelay || 1000);
+    if (!skip) await delay(cfg.fairResultDelay || 1000);
 
     var lastTime = timestamps[person.name] || null;
     yield { type: 'result', person: person, lastPickedTime: lastTime };

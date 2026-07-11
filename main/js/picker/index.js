@@ -194,7 +194,7 @@
     }
 
     // 启动随机算法
-    var generator = PickerRandom.pick(_currentList, method, timestamps);
+    var generator = PickerRandom.pick(_currentList, method, timestamps, { skipDelays: !showProcess });
 
     // 运行动画编排
     var result = await PickerAnimation.run(_currentList, generator, {
