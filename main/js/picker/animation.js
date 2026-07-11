@@ -199,41 +199,77 @@
     if (data.phase === 'subset') {
       // 公平随机 —— 显示子集筛选
       var subsetNames = data.subset.map(function(p) { return p.name; }).join('、');
-      var restNames = data.rest.map(function(p) { return p.name; }).join('、');
-      el.innerHTML = '<div class="proc-phase">公平随机 — 第 ' + idx + ' 步</div>' +
-        '<div class="proc-step-title">随机选出子集（' + data.subset.length + ' 人）</div>' +
+      var restCount = (data.rest || []).length;
+      el.innerHTML = '<div class="proc-phase">公平随机 · 随机筛选</div>' +
+        '<div class="proc-step-title">从 ' + data.total + ' 人中随机选出 <strong>' + data.subset.length + '</strong> 人作为候选子集</div>' +
         '<div class="proc-subset">' + esc(subsetNames) + '</div>' +
-        '<div class="proc-rest-label">其余：</div>' +
-        '<div class="proc-rest">' + esc(restNames) + '</div>';
+        '<div class="proc-rest-label">其余 ' + restCount + ' 人暂不参与</div>';
     } else if (data.phase === 'select') {
-      // 公平随机 —— 选定结果
-      var reason = data.reason === 'never' ? '未被点过，优先选出' : '距上次点名间隔最长';
-      el.innerHTML = '<div class="proc-phase">公平随机 — 选定</div>' +
-        '<div class="proc-step-title">' + reason + '</div>' +
-        '<div class="proc-chosen-name">🎯 ' + esc(data.chosen.name) + '</div>';
+      // 公平随机 —— 显示选中逻辑
+      var neverCount = (data.neverPicked || []).length;
+      var chosenName = data.chosen ? data.chosen.name : '';
+      var reasonText;
+      var detailHtml = '';
+
+      if (data.reason === 'never') {
+        reasonText = '子集中有 <strong>' + neverCount + '</strong> 人从未被点过';
+        if (neverCount > 1) {
+          reasonText += '，从中随机选出一人';
+        }
+        // 高亮从未点过的人
+        var neverNames = (data.neverPicked || []).map(function(p) { return p.name; });
+        var subsetNames = (data.subset || []).map(function(p) {
+          var name = p.name;
+          if (neverNames.indexOf(name) >= 0) {
+            return '<span class="proc-highlight">' + esc(name) + '</span>';
+          }
+          return esc(name);
+        }).join('、');
+        detailHtml = '<div class="proc-subset">' + subsetNames + '</div>';
+      } else {
+        reasonText = '子集中所有人均已点过名，选<strong>距上次点名最久</strong>的人';
+        var subsetNames2 = (data.subset || []).map(function(p) { return p.name; }).join('、');
+        detailHtml = '<div class="proc-subset">' + esc(subsetNames2) + '</div>';
+      }
+
+      el.innerHTML = '<div class="proc-phase">公平随机 · 选定结果</div>' +
+        '<div class="proc-reason">' + reasonText + '</div>' +
+        detailHtml +
+        '<div class="proc-chosen-name">🎯 ' + esc(chosenName) + '</div>';
     } else {
       // 二分法
       var leftNames = (data.left || []).map(function(p) { return p.name; });
       var rightNames = (data.right || []).map(function(p) { return p.name; });
       var elimNames = (data.eliminated || []).map(function(p) { return p.name; });
+      var elimIsRight = data.eliminated === data.right;
+      var keepSide = elimIsRight ? leftNames : rightNames;
+      var elimSide = elimIsRight ? rightNames : leftNames;
+      var remaining = (data.remaining || []).length;
+      var total = data.total;
 
-      var elimClass = data.eliminated === data.right ? 'proc-right' : 'proc-left';
+      var pct = Math.round((remaining / total) * 100);
+      var barHtml = '<div class="proc-bar"><div class="proc-bar-fill" style="width:' + pct + '%"></div></div>';
 
-      el.innerHTML = '<div class="proc-phase">二分法 — 第 ' + idx + ' 轮</div>' +
+      el.innerHTML = '<div class="proc-phase">二分法 · 第 ' + idx + ' 轮</div>' +
         '<div class="proc-split">' +
           '<div class="proc-group proc-keep">' +
-            (data.eliminated === data.right ? esc(leftNames.join(' ')) : esc(rightNames.join(' '))) +
+            '<div class="proc-group-label">✔ 保留</div>' +
+            esc(keepSide.join(' ')) +
           '</div>' +
-          '<div class="proc-group ' + elimClass + '">' +
-            esc(elimNames.join(' ')) +
+          '<div class="proc-group proc-elim proc-out">' +
+            '<div class="proc-group-label">✘ 淘汰</div>' +
+            esc(elimSide.join(' ')) +
           '</div>' +
         '</div>' +
-        '<div class="proc-elim-msg">淘汰 ' + elimNames.length + ' 人，剩余 ' + (data.remaining || []).length + ' 人</div>';
+        '<div class="proc-elim-msg">淘汰 ' + elimNames.length + ' 人，剩余 <strong>' + remaining + '</strong> / ' + total + '</div>' +
+        barHtml;
     }
   }
 
   function renderProcessResult(el, person) {
-    el.innerHTML = '<div class="proc-result-name">🎯 ' + esc(person.name) + '</div>';
+    el.innerHTML = '<div class="proc-phase">结果</div>' +
+      '<div class="proc-result-name">🎯 ' + esc(person.name) + '</div>' +
+      '<div class="proc-result-sub">点击屏幕继续</div>';
   }
 
   async function consumeSilent(generator) {

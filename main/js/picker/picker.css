@@ -194,23 +194,32 @@
 
 .pick-decorative.hidden { display: none; }
 
+/* 内层容器：名字+签名+时间垂直居中，始终占位避免跳动 */
+.pick-decorative-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .pick-decorative-text {
   font-size: 12vw;
   font-weight: 800;
   color: var(--text);
   transition: color 0.3s;
+  line-height: 1.1;
 }
 
 .pick-decorative-text.pop {
   animation: pickPop 0.35s var(--ease);
 }
 
-/* 签名和时间（display 模块动态追加到修饰层） */
+/* 签名 —— 始终占位，min-height 防止名字跳动 */
 .pick-decorative-sig {
   font-size: 3vw;
   color: var(--text);
   opacity: 0.55;
   margin-top: 10px;
+  min-height: 1.2em;
   transition: opacity 0.3s;
 }
 
@@ -218,11 +227,13 @@
   opacity: 0;
 }
 
+/* 上次时间 —— 始终占位 */
 .pick-decorative-time {
   font-size: 1.8vw;
   color: var(--text);
   opacity: 0.35;
   margin-top: 6px;
+  min-height: 1.2em;
 }
 
 .pick-decorative-time.never {
@@ -382,6 +393,71 @@
 .proc-result-name {
   font-size: 2.5rem;
   font-weight: 800;
+}
+
+.proc-result-sub {
+  font-size: 0.95rem;
+  opacity: 0.4;
+  margin-top: 10px;
+}
+
+.proc-reason {
+  font-size: 0.95rem;
+  opacity: 0.7;
+  margin-bottom: 12px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.proc-highlight {
+  color: #4caf50;
+  font-weight: 700;
+}
+
+.pick-process.windowed .proc-highlight {
+  color: #2e7d32;
+}
+
+/* 淘汰组样式 */
+.proc-group.proc-elim.proc-out {
+  opacity: 0.6;
+  border-color: rgba(244,67,54,0.4);
+  background: rgba(244,67,54,0.06);
+}
+
+.proc-group-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+  opacity: 0.6;
+}
+
+/* 进度条 */
+.proc-bar {
+  margin-top: 14px;
+  width: 100%;
+  max-width: 400px;
+  height: 6px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.proc-bar-fill {
+  height: 100%;
+  background: rgba(76,175,80,0.6);
+  border-radius: 3px;
+  transition: width 0.4s var(--ease);
+}
+
+.pick-process.windowed .proc-bar {
+  background: var(--border);
+}
+
+.pick-process.windowed .proc-bar-fill {
+  background: var(--dark);
 }
 
 /* ====== 展示层（全屏等待点击） ====== */
