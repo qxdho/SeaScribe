@@ -41,13 +41,19 @@
     var rejected = [];
 
     while (group.length > 1) {
-      var mid = Math.floor(group.length / 2);
-      // 奇数时随机分配多余者到左组或右组
-      if (group.length % 2 !== 0) {
+      // 先洗牌再对半分，实现随机分组
+      var shuffled = group.slice();
+      var n = shuffled.length;
+      for (var i = n - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = shuffled[i]; shuffled[i] = shuffled[j]; shuffled[j] = tmp;
+      }
+      var mid = Math.floor(shuffled.length / 2);
+      if (shuffled.length % 2 !== 0) {
         mid += Math.random() < 0.5 ? 0 : 1;
       }
-      var left = group.slice(0, mid);
-      var right = group.slice(mid);
+      var left = shuffled.slice(0, mid);
+      var right = shuffled.slice(mid);
       // 随机淘汰一组
       var eliminateRight = Math.random() < 0.5;
       var eliminated = eliminateRight ? right : left;
