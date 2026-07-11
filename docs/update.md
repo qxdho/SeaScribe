@@ -1,5 +1,22 @@
 # SeaScribe 更新日志
 
+## v4.0.1
+
+### 安全加固
+- 密码升级为 PBKDF2-HMAC-SHA256（600,000 迭代），替代旧 SHA256
+- session 增加 4 小时过期时间，自动清理过期会话
+- 新增登录限流：同 IP 5 次失败锁定 60 秒
+- session token 通过 HttpOnly Secure SameSite=Strict Cookie 下发，XSS 不可窃取
+- 修复路径穿越漏洞（picker-timestamps / delete-file 文件名注入）
+- 请求体大小限制（普通 API 1MB，上传 60MB）
+- user-avatar 接口补登录校验
+
+### 用户系统
+- 每个用户新增唯一 UUID（`uid`），API 响应中返回
+- users.json 结构改为 `{by_id: {uid: {...}}, by_name: {username: uid}}`
+- 昵称、头像字段增加长度限制（100 / 2000 字符）
+
+---
 ## v4.0.0
 
 ### 管理后台系统

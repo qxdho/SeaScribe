@@ -35,6 +35,7 @@
       options.body = JSON.stringify(options.body);
     }
     options.headers = headers;
+    options.credentials = 'same-origin';
     return fetch(url, options).then(function(r) {
       return r.json().then(function(data) {
         if (r.status === 401) {
