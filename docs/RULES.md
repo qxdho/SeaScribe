@@ -111,7 +111,7 @@
 
 - 模块化架构：random.js（算法）、timestamp.js（时间戳）、animation.js（动画编排）、display.js（展示）、index.js（入口）
 - 配置集中管理：`config/picker/config.js`，所有默认值零硬编码兜底
-- 三种随机方式：纯随机（Fisher-Yates）、二分法（逐步淘汰）、时间加权随机法（优先未点名者 + 最长间隔）
+- 三种随机方式：纯随机（Fisher-Yates）、二分法（每轮洗牌后对半随机淘汰）、时间加权随机法（多轮缩小子集至≤5人，优先未点名者+最长间隔）
 - 双层动画：修饰动画（始终运行）+ 过程动画（可选，展示算法真实过程）
 - CSV 第 1 列姓名、第 2 列个性签名
 - 时间戳存储：服务端 `data/picker/` JSON 文件，通过 `/api/picker-timestamps` 读写
