@@ -11,6 +11,7 @@
   var resultEl = document.getElementById('pick-result');
   var modal = document.getElementById('picker-modal');
   var listSelect = document.getElementById('picker-list-select');
+  var decorativeSelect = document.getElementById('picker-decorative');
   var showProcessCheck = document.getElementById('picker-show-process');
   var processModeGroup = document.getElementById('picker-process-mode-group');
   var btnStart = document.getElementById('picker-start');
@@ -35,6 +36,12 @@
           '<span class="desc">' + esc(m.desc) + '</span>' +
         '</span>' +
       '</label>';
+    }).join('');
+
+    // 修饰动画 select
+    decorativeSelect.innerHTML = (cfg.decorativeAnimations || []).map(function(a) {
+      var sel = a.id === cfg.defaultDecorative ? ' selected' : '';
+      return '<option value="' + escAttr(a.id) + '"' + sel + '>' + esc(a.name) + '</option>';
     }).join('');
 
     // 过程动画模式 radio
@@ -170,6 +177,7 @@
 
     // 读取配置
     var method = getRadioValue(methodRadios, cfg.defaultMethod);
+    var decorativeType = decorativeSelect.value || cfg.defaultDecorative;
     var showProcess = showProcessCheck.checked;
     var processMode = getRadioValue(processModeRadios, cfg.processMode);
 
@@ -187,6 +195,7 @@
     var result = await PickerAnimation.run(_currentList, generator, {
       showProcess: showProcess,
       processMode: processMode,
+      decorativeType: decorativeType,
       timestamps: timestamps,
     });
 
