@@ -141,7 +141,7 @@
         html += '<div class="admin-config-field">' +
           '<div class="admin-config-label">' + Admin.esc(key) +
             '<small>数组（JSON 格式，可增删条目）</small></div>' +
-          '<textarea data-key="' + key + '" data-array="1" rows="4" style="width:100%;font-size:0.78rem;font-family:monospace">' +
+          '<textarea name="cfg-' + key + '" data-key="' + key + '" data-array="1" rows="4" style="width:100%;font-size:0.78rem;font-family:monospace">' +
             Admin.esc(JSON.stringify(val, null, 2)) +
           '</textarea>' +
         '</div>';
@@ -150,7 +150,7 @@
       if (typeof val === 'boolean') {
         html += '<div class="admin-config-field">' +
           '<div class="admin-config-label">' + Admin.esc(key) + '</div>' +
-          '<select data-key="' + key + '" style="width:100px">' +
+          '<select name="cfg-' + key + '" data-key="' + key + '" style="width:100px">' +
             '<option value="true"' + (val ? ' selected' : '') + '>true</option>' +
             '<option value="false"' + (val ? '' : ' selected') + '>false</option>' +
           '</select>' +
@@ -158,12 +158,12 @@
       } else if (typeof val === 'number') {
         html += '<div class="admin-config-field">' +
           '<div class="admin-config-label">' + Admin.esc(key) + '</div>' +
-          '<input type="number" data-key="' + key + '" value="' + val + '" style="width:120px">' +
+          '<input type="number" name="cfg-' + key + '" data-key="' + key + '" value="' + val + '" style="width:120px">' +
         '</div>';
       } else if (typeof val === 'string') {
         html += '<div class="admin-config-field">' +
           '<div class="admin-config-label">' + Admin.esc(key) + '</div>' +
-          '<input type="text" data-key="' + key + '" value="' + Admin.esc(val) + '" style="width:200px">' +
+          '<input type="text" name="cfg-' + key + '" data-key="' + key + '" value="' + Admin.esc(val) + '" style="width:200px">' +
         '</div>';
       }
     });
