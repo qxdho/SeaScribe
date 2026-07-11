@@ -19,23 +19,20 @@
   background: var(--surface);
   border-radius: 16px;
   padding: 24px 32px 16px;
-  max-width: 500px;
-  width: 90%;
+  max-width: 460px;
+  width: auto;
+  min-width: 340px;
   max-height: 80vh;
   display: flex;
   flex-direction: column;
   color: var(--text);
   animation: changelogIn 0.3s ease both;
 }
-/* 关于页面更宽 */
 #about-overlay .changelog-card {
-  max-width: 700px;
+  max-width: 600px;
 }
-/* 系统日志自适应宽度 */
 #syslog-overlay .changelog-card {
-  max-width: 85vw;
-  width: auto;
-  min-width: 380px;
+  max-width: 80vw;
 }
 .changelog-card h2 { margin-bottom: 12px; font-size: 1.4rem; flex-shrink: 0; }
 
