@@ -28,7 +28,7 @@ window.__PICKER_CONFIG__ = {
   /* ====== 动画时序 ====== */
 
   /* 修饰动画最短滚动时长 (ms) */
-  decorMinMs: 3000,
+  decorMinMs: 2500,
 
   /* 修饰动画滚名字间隔 (ms) */
   decorIntervalMs: 80,
