@@ -183,6 +183,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.send_error(403, 'Forbidden')
             return
 
+        # /favicon.ico → /main/logo.png
+        if path == '/favicon.ico':
+            self.send_response(301)
+            self.send_header('Location', '/main/logo.png')
+            self.end_headers()
+            return
+
         m = re.match(r'^/api/(\w+)-files$', path)
         if m:
             name = m.group(1)
