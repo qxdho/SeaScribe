@@ -382,7 +382,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 u['nickname'] = (p['nickname'] or '')[:100]
             if 'avatar' in p:
                 u['avatar'] = (p['avatar'] or '')[:2000]
-            if 'oldPassword' in p and 'newPassword' in p:
+            if p.get('oldPassword') and p.get('newPassword'):
                 if _hash_password(p['oldPassword'], u.get('salt', '')) != u.get('passwordHash', ''):
                     self.send_json(400, {'error': '\u65e7\u5bc6\u7801\u9519\u8bef'})
                     return

@@ -51,6 +51,11 @@
       document.getElementById('profile-avatar-preview').innerHTML = avatarHTML({ avatar: this.value });
     });
 
+    // 更换头像按钮 → 聚焦输入框
+    document.getElementById('profile-avatar-btn').addEventListener('click', function() {
+      document.getElementById('profile-avatar').focus();
+    });
+
     // save
     document.getElementById('profile-save').addEventListener('click', async function() {
       var body = {
