@@ -107,22 +107,23 @@
   var _decorRunning = false;
   var _decorTarget = null;
   var _decorResolve = null;
+  var _decorStartTime = 0;
+  var _decorMinMs = 800; // 最短滚动时长
 
   function startDecorative(list) {
     _decorRunning = true;
     _decorTarget = null;
+    _decorStartTime = performance.now();
 
     return new Promise(function(resolve) {
       _decorResolve = resolve;
 
-      // 滚动展示姓名
-      var interval = 80; // ms per name
+      var interval = 80;
       var idx = 0;
       var lastTick = 0;
 
       function tick(ts) {
         if (!_decorRunning) {
-          // 停止：定位到最终名字
           if (_decorTarget) {
             decorativeText.textContent = _decorTarget;
           }
@@ -142,8 +143,16 @@
   }
 
   function stopDecorative(finalName) {
-    _decorRunning = false;
     _decorTarget = finalName;
+    var elapsed = performance.now() - _decorStartTime;
+    if (elapsed < _decorMinMs) {
+      // 还没滚够，延迟停止
+      setTimeout(function() {
+        _decorRunning = false;
+      }, _decorMinMs - elapsed);
+    } else {
+      _decorRunning = false;
+    }
   }
 
   /* ====== 过程动画 ====== */
