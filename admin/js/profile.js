@@ -29,7 +29,11 @@
           '<input type="text" id="profile-username" value="' + Admin.esc(user.username) + '">' +
         '</div>' +
         '<div class="admin-form-group">' +
-          '<label for="profile-nickname">昵称（课堂显示名称）</label>' +
+          '<label>姓名（点名名单中绑定，不可修改）</label>' +
+          '<input type="text" value="' + Admin.esc(user.displayName || '—') + '" disabled>' +
+        '</div>' +
+        '<div class="admin-form-group">' +
+          '<label for="profile-nickname">昵称</label>' +
           '<input type="text" id="profile-nickname" value="' + Admin.esc(user.nickname || '') + '" placeholder="给自己起个名字">' +
         '</div>' +
         '<p id="profile-msg" class="admin-msg hidden"></p>' +
@@ -101,6 +105,7 @@
       var sess = Admin.getSession();
       sess.user.username = res.data.username;
       sess.user.nickname = res.data.nickname;
+      sess.user.displayName = res.data.displayName;
       sess.user.avatar = res.data.avatar;
       _avatarUrl = res.data.avatar;
       Admin.saveSession(sess.token, sess.user);

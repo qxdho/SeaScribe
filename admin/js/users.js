@@ -31,11 +31,12 @@
     var res = await Admin.api('/api/admin/users');
     if (!res.ok) return;
     var users = res.data;
-    var html = '<table class="admin-table"><thead><tr><th>头像</th><th>用户名</th><th>昵称</th><th>角色</th><th>操作</th></tr></thead><tbody>';
+    var html = '<table class="admin-table"><thead><tr><th>头像</th><th>用户名</th><th>姓名</th><th>昵称</th><th>角色</th><th>操作</th></tr></thead><tbody>';
     users.forEach(function(u) {
       html += '<tr>' +
         '<td>' + avatarCell(u) + '</td>' +
         '<td><code>' + Admin.esc(u.username) + '</code></td>' +
+        '<td>' + Admin.esc(u.displayName || '—') + '</td>' +
         '<td>' + Admin.esc(u.nickname || '—') + '</td>' +
         '<td>' + roleBadge(u.role) + '</td>' +
         '<td>' +
@@ -87,8 +88,12 @@
         '<input type="text" id="uform-username" ' + (isEdit ? 'disabled' : '') + ' placeholder="用户名">' +
       '</div>' +
       '<div class="admin-form-group">' +
-        '<label for="uform-nickname">昵称（课堂显示名称）</label>' +
-        '<input type="text" id="uform-nickname" placeholder="显示名称">' +
+        '<label for="uform-displayname">姓名（绑定点名名单）</label>' +
+        '<input type="text" id="uform-displayname" placeholder="名单中的姓名">' +
+      '</div>' +
+      '<div class="admin-form-group">' +
+        '<label for="uform-nickname">昵称</label>' +
+        '<input type="text" id="uform-nickname" placeholder="给自己起个名字">' +
       '</div>' +
       '<div class="admin-form-group">' +
         '<label for="uform-avatar">头像（emoji 或图片 URL）</label>' +
@@ -122,6 +127,7 @@
       Admin.api('/api/admin/users/' + username).then(function(res) {
         if (res.ok) {
           document.getElementById('uform-username').value = res.data.username;
+          document.getElementById('uform-displayname').value = res.data.displayName || '';
           document.getElementById('uform-nickname').value = res.data.nickname || '';
           document.getElementById('uform-avatar').value = res.data.avatar || '';
           document.getElementById('uform-role').value = res.data.role || 'student';
@@ -129,6 +135,7 @@
       });
       document.getElementById('uform-save').addEventListener('click', async function() {
         var body = {
+          displayName: document.getElementById('uform-displayname').value.trim(),
           nickname: document.getElementById('uform-nickname').value.trim(),
           avatar: document.getElementById('uform-avatar').value.trim(),
           role: document.getElementById('uform-role').value,
@@ -143,6 +150,7 @@
       document.getElementById('uform-save').addEventListener('click', async function() {
         var body = {
           username: document.getElementById('uform-username').value.trim(),
+          displayName: document.getElementById('uform-displayname').value.trim(),
           nickname: document.getElementById('uform-nickname').value.trim(),
           avatar: document.getElementById('uform-avatar').value.trim(),
           role: document.getElementById('uform-role').value,

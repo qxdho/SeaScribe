@@ -94,10 +94,10 @@ def _clean_expired_sessions():
     if changed:
         _write_json(SESSIONS_PATH, sessions)
 
-def _make_session(username, uid, nickname, avatar, role):
+def _make_session(username, uid, nickname, displayName, avatar, role):
     return {
         'username': username, 'uid': uid, 'nickname': nickname,
-        'avatar': avatar, 'role': role,
+        'displayName': displayName, 'avatar': avatar, 'role': role,
         'expires_at': int(time.time()) + 4 * 3600,
     }
 
@@ -220,8 +220,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             if not user: return
             self.send_json(200, {
                 'username': user['username'], 'uid': user.get('uid', ''),
-                'nickname': user.get('nickname', ''), 'avatar': user.get('avatar', ''),
-                'role': user.get('role', 'student'),
+                'nickname': user.get('nickname', ''), 'displayName': user.get('displayName', ''),
+                'avatar': user.get('avatar', ''), 'role': user.get('role', 'student'),
             })
             return
 
@@ -233,8 +233,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             for uid, u in users.get('by_id', {}).items():
                 result.append({
                     'uid': uid, 'username': u.get('username', ''),
-                    'nickname': u.get('nickname', ''), 'avatar': u.get('avatar', ''),
-                    'role': u.get('role', 'student'),
+                    'nickname': u.get('nickname', ''), 'displayName': u.get('displayName', ''),
+                    'avatar': u.get('avatar', ''), 'role': u.get('role', 'student'),
                 })
             self.send_json(200, result)
             return
@@ -249,8 +249,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 return
             self.send_json(200, {
                 'uid': uid, 'username': u.get('username', ''),
-                'nickname': u.get('nickname', ''), 'avatar': u.get('avatar', ''),
-                'role': u.get('role', 'student'),
+                'nickname': u.get('nickname', ''), 'displayName': u.get('displayName', ''),
+                'avatar': u.get('avatar', ''), 'role': u.get('role', 'student'),
             })
             return
 
@@ -263,7 +263,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 return
             users = _load_users()
             for u in users.get('by_id', {}).values():
-                if u.get('nickname', u.get('username', '')) == name:
+                if u.get('displayName', u.get('nickname', u.get('username', ''))) == name:
                     self.send_json(200, {'name': name, 'avatar': u.get('avatar', '')})
                     return
             self.send_json(200, {'name': name, 'avatar': ''})
@@ -334,8 +334,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             sessions = _read_json(SESSIONS_PATH)
             sessions = {k: v for k, v in sessions.items() if v.get('uid') != uid}
             sessions[token] = _make_session(
-                u['username'], uid, u.get('nickname', ''), u.get('avatar', ''),
-                u.get('role', 'student'))
+                u['username'], uid, u.get('nickname', ''), u.get('displayName', ''),
+                u.get('avatar', ''), u.get('role', 'student'))
             _write_json(SESSIONS_PATH, sessions)
             self.send_response(200)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
@@ -386,6 +386,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 u['username'] = new_name
             if 'nickname' in p:
                 u['nickname'] = (p['nickname'] or '')[:100]
+            if 'displayName' in p:
+                u['displayName'] = (p['displayName'] or '')[:100]
             if 'avatar' in p:
                 u['avatar'] = (p['avatar'] or '')[:2000]
             if p.get('oldPassword') and p.get('newPassword'):
@@ -404,8 +406,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             _write_json(SESSIONS_PATH, sessions)
             self.send_json(200, {
                 'ok': True, 'uid': old_uid, 'username': old_username,
-                'nickname': u.get('nickname', ''), 'avatar': u.get('avatar', ''),
-                'role': u.get('role', 'student'),
+                'nickname': u.get('nickname', ''), 'displayName': u.get('displayName', ''),
+                'avatar': u.get('avatar', ''), 'role': u.get('role', 'student'),
             })
             return
 
@@ -431,6 +433,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 'passwordHash': _hash_password(p.get('password', '123456'), salt),
                 'salt': salt,
                 'nickname': (p.get('nickname', '') or '')[:100],
+                'displayName': (p.get('displayName', '') or '')[:100],
                 'avatar': (p.get('avatar', '') or '')[:2000],
                 'role': p.get('role', 'student'),
             }
@@ -460,6 +463,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             else:
                 p = parse_body()
                 if 'nickname' in p: u['nickname'] = (p['nickname'] or '')[:100]
+                if 'displayName' in p: u['displayName'] = (p['displayName'] or '')[:100]
                 if 'avatar' in p: u['avatar'] = (p['avatar'] or '')[:2000]
                 if 'role' in p: u['role'] = p['role']
                 if 'password' in p and p['password']:
