@@ -74,7 +74,7 @@
     yield { type: 'result', person: person, lastPickedTime: null };
   }
 
-  /* ---------- 公平随机 ---------- */
+  /* ---------- 时间加权随机法 ---------- */
   async function* fairPick(list, timestamps, options) {
     var skip = options && options.skipDelays;
     var ratio = cfg.fairSubsetRatio != null ? cfg.fairSubsetRatio : 0.3;

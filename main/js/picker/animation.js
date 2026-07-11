@@ -197,15 +197,15 @@
 
   function renderProcessStep(el, data, idx) {
     if (data.phase === 'subset') {
-      // 公平随机 —— 显示子集筛选
+      // 时间加权随机法 —— 显示子集筛选
       var subsetNames = data.subset.map(function(p) { return p.name; }).join('、');
       var restCount = (data.rest || []).length;
-      el.innerHTML = '<div class="proc-phase">公平随机 · 随机筛选</div>' +
+      el.innerHTML = '<div class="proc-phase">时间加权随机法 · 随机筛选</div>' +
         '<div class="proc-step-title">从 ' + data.total + ' 人中随机选出 <strong>' + data.subset.length + '</strong> 人作为候选子集</div>' +
         '<div class="proc-subset">' + esc(subsetNames) + '</div>' +
         '<div class="proc-rest-label">其余 ' + restCount + ' 人暂不参与</div>';
     } else if (data.phase === 'select') {
-      // 公平随机 —— 显示选中逻辑
+      // 时间加权随机法 —— 显示选中逻辑
       var neverCount = (data.neverPicked || []).length;
       var chosenName = data.chosen ? data.chosen.name : '';
       var reasonText;
@@ -232,7 +232,7 @@
         detailHtml = '<div class="proc-subset">' + esc(subsetNames2) + '</div>';
       }
 
-      el.innerHTML = '<div class="proc-phase">公平随机 · 选定结果</div>' +
+      el.innerHTML = '<div class="proc-phase">时间加权随机法 · 选定结果</div>' +
         '<div class="proc-reason">' + reasonText + '</div>' +
         detailHtml +
         '<div class="proc-chosen-name">🎯 ' + esc(chosenName) + '</div>';

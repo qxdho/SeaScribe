@@ -19,10 +19,10 @@ window.__PICKER_CONFIG__ = {
   /* 时间戳记录开关，默认开启 */
   timestampEnabled: true,
 
-  /* 公平随机 —— 子集比例（0~1） */
+  /* 时间加权随机法 —— 子集比例（0~1） */
   fairSubsetRatio: 0.3,
 
-  /* 公平随机 —— 最小子集人数 */
+  /* 时间加权随机法 —— 最小子集人数 */
   fairSubsetMin: 3,
 
   /* ====== 动画时序 ====== */
@@ -42,10 +42,10 @@ window.__PICKER_CONFIG__ = {
   /* 二分法每步间隔 (ms) */
   binaryStepDelay: 1000,
 
-  /* 公平随机子集展示后等待 (ms) */
+  /* 时间加权随机法子集展示后等待 (ms) */
   fairStepDelay: 1200,
 
-  /* 公平随机结果选定后等待 (ms) */
+  /* 时间加权随机法结果选定后等待 (ms) */
   fairResultDelay: 1000,
 
   /* confetti 粒子数量 */
@@ -56,7 +56,7 @@ window.__PICKER_CONFIG__ = {
   methods: [
     { id: 'pure',    name: '纯随机',      desc: '经典 Fisher-Yates 洗牌，完全随机抽取一人' },
     { id: 'binary',  name: '二分法',      desc: '名单不断对半分组并淘汰，逐步缩小直到剩一人' },
-    { id: 'fair',    name: '公平随机',    desc: '先随机子集，优先从未被点过的人中选，否则选间隔最长者' },
+    { id: 'fair',    name: '时间加权随机法',    desc: '先随机子集，优先从未被点过的人中选，否则选间隔最长者' },
   ],
 
   decorativeAnimations: [
