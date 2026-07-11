@@ -150,10 +150,12 @@
   document.getElementById('btn-syslog').addEventListener('click', function() {
     syslogOverlay.classList.remove('hidden');
     syslogBody.innerHTML = window.__SEASCRIBE_LOG__.map(function(l) {
-      return '<div style="padding:3px 0;font-size:0.9rem">' +
+      return '<div style="padding:3px 0;font-size:0.9rem;white-space:nowrap">' +
         (l.ok ? '✅ ' : '❌ ') + l.label +
         ' <span style="opacity:0.5">' + l.text + '</span></div>';
     }).join('');
+    // 自动滚动到底部
+    setTimeout(function() { syslogBody.scrollTop = syslogBody.scrollHeight; }, 50);
   });
 
   document.getElementById('btn-syslog-close').addEventListener('click', function() {

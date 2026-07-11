@@ -31,6 +31,12 @@
 #about-overlay .changelog-card {
   max-width: 700px;
 }
+/* 系统日志自适应宽度 */
+#syslog-overlay .changelog-card {
+  max-width: 90vw;
+  width: auto;
+  min-width: 500px;
+}
 .changelog-card h2 { margin-bottom: 12px; font-size: 1.4rem; flex-shrink: 0; }
 
 .changelog-body {
