@@ -464,62 +464,6 @@
   background: var(--dark);
 }
 
-/* ====== 展示层（全屏等待点击） ====== */
-.pick-display {
-  position: fixed;
-  top: 0; right: 0; bottom: 0; left: 0;
-  z-index: 10003;
-  background: var(--bg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.3s;
-  gap: 16px;
-}
-
-.pick-display.hidden { display: none; }
-
-.pick-display-name {
-  font-size: 14vw;
-  font-weight: 800;
-  color: var(--text);
-  transition: color 0.3s;
-  animation: pickPop 0.35s var(--ease);
-}
-
-.pick-display-sig {
-  font-size: 3vw;
-  color: var(--text);
-  opacity: 0.55;
-  transition: color 0.3s, opacity 0.3s;
-}
-
-.pick-display-sig.empty {
-  opacity: 0;
-}
-
-.pick-display-time {
-  font-size: 1.8vw;
-  color: var(--text);
-  opacity: 0.35;
-  transition: color 0.3s;
-}
-
-.pick-display-time.never {
-  opacity: 0.5;
-  color: #4caf50;
-}
-
-.pick-display-hint {
-  position: absolute;
-  bottom: 8vh;
-  font-size: 1.2vw;
-  color: var(--text);
-  opacity: 0.2;
-  transition: color 0.3s;
-}
 
 /* ====== 结果展示位（顶栏） ====== */
 .pick-result {

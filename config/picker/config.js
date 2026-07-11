@@ -25,6 +25,32 @@ window.__PICKER_CONFIG__ = {
   /* 公平随机 —— 最小子集人数 */
   fairSubsetMin: 3,
 
+  /* ====== 动画时序 ====== */
+
+  /* 修饰动画最短滚动时长 (ms) */
+  decorMinMs: 3000,
+
+  /* 修饰动画滚名字间隔 (ms) */
+  decorIntervalMs: 80,
+
+  /* 过程动画结果展示时长 (ms) */
+  processResultMs: 800,
+
+  /* 过程动画淡出时长 (ms) */
+  processFadeMs: 300,
+
+  /* 二分法每步间隔 (ms) */
+  binaryStepDelay: 1000,
+
+  /* 公平随机子集展示后等待 (ms) */
+  fairStepDelay: 1200,
+
+  /* 公平随机结果选定后等待 (ms) */
+  fairResultDelay: 1000,
+
+  /* confetti 粒子数量 */
+  confettiCount: 200,
+
   /* ====== 可用选项列表（供 Modal 渲染） ====== */
 
   methods: [

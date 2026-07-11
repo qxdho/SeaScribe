@@ -110,7 +110,7 @@
   var _decorTarget = null;
   var _decorResolve = null;
   var _decorStartTime = 0;
-  var _decorMinMs = 3000; // 最短滚动时长
+  var _decorMinMs = cfg.decorMinMs || 3000;
 
   function startDecorative(list) {
     _decorRunning = true;
@@ -120,7 +120,7 @@
     return new Promise(function(resolve) {
       _decorResolve = resolve;
 
-      var interval = 80;
+      var interval = cfg.decorIntervalMs || 80;
       var idx = 0;
       var lastTick = 0;
 
@@ -178,7 +178,7 @@
         result = data.person;
         lastTime = data.lastPickedTime;
         renderProcessResult(el, data.person);
-        await delay(800);
+        await delay(cfg.processResultMs || 800);
         break;
       } else if (data.type === 'step') {
         stepIdx++;
@@ -188,7 +188,7 @@
 
     // 淡出消失
     el.style.opacity = '0';
-    await delay(300);
+    await delay(cfg.processFadeMs || 300);
     el.style.opacity = '';
     el.style.transition = '';
 
@@ -322,7 +322,7 @@
   /* ====== Confetti ====== */
   function fireConfetti() {
     if (typeof confetti === 'undefined') return;
-    var count = 200;
+    var count = cfg.confettiCount || 200;
     var defaults = { origin: { y: 0.7 }, zIndex: 10001, gravity: 1.4 };
     function fire(particleRatio, opts) {
       confetti(Object.assign({}, defaults, opts, {
