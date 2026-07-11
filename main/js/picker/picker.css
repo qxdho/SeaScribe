@@ -219,7 +219,8 @@
   color: var(--text);
   opacity: 0.55;
   margin-top: 10px;
-  min-height: 1.2em;
+  height: 1.4em;
+  line-height: 1.4em;
   transition: opacity 0.3s;
 }
 
@@ -227,13 +228,14 @@
   opacity: 0;
 }
 
-/* 上次时间 —— 始终占位 */
+/* 上次时间 —— 固定高度，始终占位 */
 .pick-decorative-time {
   font-size: 1.8vw;
   color: var(--text);
   opacity: 0.35;
   margin-top: 6px;
-  min-height: 1.2em;
+  height: 1.4em;
+  line-height: 1.4em;
 }
 
 .pick-decorative-time.never {
