@@ -185,6 +185,7 @@
       showProcess: showProcess,
       processMode: processMode,
       decorativeType: decorativeType,
+      timestamps: timestamps,
     });
 
     // 保存时间戳

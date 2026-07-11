@@ -69,6 +69,11 @@
     // 停止修饰动画
     stopDecorative(finalPerson ? finalPerson.name : (list[0] ? list[0].name : ''));
 
+    // 从时间戳查询上次点名时间（覆盖算法返回值，保证所有方式一致）
+    if (options.timestamps && finalPerson) {
+      lastPickedTime = options.timestamps[finalPerson.name] || null;
+    }
+
     // 等待修饰动画定格
     await delay(400);
 
@@ -77,23 +82,16 @@
 
     await delay(300);
 
-    // 在 display 显示前隐藏修饰层文字，避免两个名字叠加错位
-    if (decorativeText) decorativeText.style.visibility = 'hidden';
-
-    // 调用 display 模块
-    if (window.PickerDisplay) {
-      await PickerDisplay.show({
+    // 直接在修饰层上追加签名和时间（不再用独立 display 层）
+    if (window.PickerDisplay && decorativeEl && decorativeText) {
+      // 重置 pop 类，名字保持定格但不弹跳
+      decorativeText.classList.remove('pop');
+      await PickerDisplay.showOnDecorative(decorativeEl, decorativeText, {
         name: finalPerson.name,
         signature: finalPerson.signature || '',
         lastPickedTime: lastPickedTime,
       });
     }
-
-    // 恢复修饰层文字
-    if (decorativeText) decorativeText.style.visibility = '';
-
-    // 所有层消失
-    hideAllLayers();
 
     // 缩小飞入（固定动画）
     await shrinkToResult(finalPerson.name);
@@ -235,9 +233,9 @@
       var textEl = decorativeText;
       var target = resultTarget;
 
-      // 短暂显示 overlay 用于飞入
-      overlay.classList.remove('hidden');
-      textEl.style.visibility = '';
+      // 清空结果位，避免飞入时重影
+      target.textContent = '';
+
       textEl.textContent = name;
       textEl.classList.add('pop');
 

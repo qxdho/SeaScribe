@@ -1,75 +1,65 @@
 /* ============================================================
    SeaScribe — Picker Display Module
-   纯展示：接收 {name, signature, lastPickedTime}
-   全屏渲染 → 等待用户点击屏幕 → resolve
+   在修饰动画层上追加签名 + 上次时间，等待用户点击
    ============================================================ */
 
 (function() {
-  var displayEl, displayName, displaySig, displayTime;
-
-  function initRefs() {
-    displayEl = document.getElementById('pick-display');
-    displayName = document.getElementById('pick-display-name');
-    displaySig = document.getElementById('pick-display-sig');
-    displayTime = document.getElementById('pick-display-time');
-  }
 
   /**
-   * 全屏显示点名结果，等待用户点击
+   * 在修饰层上追加签名和时间信息，等待点击
+   * @param {HTMLElement} overlay — #pick-decorative 容器
+   * @param {HTMLElement} nameEl — 已有的名字 span
    * @param {Object} data — { name, signature, lastPickedTime }
-   * @returns {Promise<void>} 用户点击后 resolve
+   * @returns {Promise<void>}
    */
-  function show(data) {
-    initRefs();
+  function showOnDecorative(overlay, nameEl, data) {
+    if (!overlay || !nameEl) return Promise.resolve();
 
-    if (!displayEl) {
-      console.warn('[PickerDisplay] DOM 未就绪');
-      return Promise.resolve();
-    }
-
-    displayEl.classList.remove('hidden');
-
-    // 渲染姓名
-    displayName.textContent = data.name || '';
-
-    // 渲染个性签名
-    displaySig.textContent = data.signature || '';
+    // 名字已经由修饰动画定格显示，这里追加签名和时间
+    var sigEl = document.createElement('div');
+    sigEl.className = 'pick-decorative-sig';
     if (data.signature) {
-      displaySig.classList.remove('empty');
+      sigEl.textContent = data.signature;
     } else {
-      displaySig.classList.add('empty');
+      sigEl.classList.add('empty');
     }
+    overlay.appendChild(sigEl);
 
-    // 渲染上次点名时间
+    var timeEl = document.createElement('div');
+    timeEl.className = 'pick-decorative-time';
     if (data.lastPickedTime) {
       var formatted = window.PickerTimestamp
         ? PickerTimestamp.format(data.lastPickedTime)
         : data.lastPickedTime;
-      displayTime.textContent = '上次点名：' + (formatted || data.lastPickedTime);
-      displayTime.classList.remove('never');
+      timeEl.textContent = '上次点名：' + (formatted || data.lastPickedTime);
     } else {
-      displayTime.textContent = '✨ 未被点过';
-      displayTime.classList.add('never');
+      timeEl.textContent = '✨ 未被点过';
+      timeEl.classList.add('never');
     }
+    overlay.appendChild(timeEl);
+
+    var hintEl = document.createElement('div');
+    hintEl.className = 'pick-decorative-hint';
+    hintEl.textContent = '点击屏幕继续';
+    overlay.appendChild(hintEl);
 
     return new Promise(function(resolve) {
       function onClick(e) {
-        // 阻止事件冒泡和默认行为
         e.preventDefault();
         e.stopPropagation();
-        displayEl.removeEventListener('click', onClick);
-        displayEl.removeEventListener('pointerup', onClick);
-        displayEl.classList.add('hidden');
+        overlay.removeEventListener('click', onClick);
+        overlay.removeEventListener('pointerup', onClick);
+        // 清理追加的元素
+        if (sigEl.parentNode) sigEl.parentNode.removeChild(sigEl);
+        if (timeEl.parentNode) timeEl.parentNode.removeChild(timeEl);
+        if (hintEl.parentNode) hintEl.parentNode.removeChild(hintEl);
         resolve();
       }
-
-      // 使用 pointerup 在现代设备上更可靠
-      displayEl.addEventListener('pointerup', onClick, { once: false });
-      // click 作为 fallback
-      displayEl.addEventListener('click', onClick, { once: false });
+      overlay.addEventListener('pointerup', onClick);
+      overlay.addEventListener('click', onClick);
     });
   }
 
   /* ====== 导出 ====== */
-  window.PickerDisplay = { show: show };
+  window.PickerDisplay = { showOnDecorative: showOnDecorative };
 })();

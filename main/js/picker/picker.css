@@ -186,6 +186,7 @@
   z-index: 10001;
   background: var(--bg);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   transition: background 0.3s;
@@ -202,6 +203,39 @@
 
 .pick-decorative-text.pop {
   animation: pickPop 0.35s var(--ease);
+}
+
+/* 签名和时间（display 模块动态追加到修饰层） */
+.pick-decorative-sig {
+  font-size: 3vw;
+  color: var(--text);
+  opacity: 0.55;
+  margin-top: 10px;
+  transition: opacity 0.3s;
+}
+
+.pick-decorative-sig.empty {
+  opacity: 0;
+}
+
+.pick-decorative-time {
+  font-size: 1.8vw;
+  color: var(--text);
+  opacity: 0.35;
+  margin-top: 6px;
+}
+
+.pick-decorative-time.never {
+  opacity: 0.5;
+  color: #4caf50;
+}
+
+.pick-decorative-hint {
+  position: fixed;
+  bottom: 8vh;
+  font-size: 1.2vw;
+  color: var(--text);
+  opacity: 0.2;
 }
 
 .pick-decorative.shrink {
