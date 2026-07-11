@@ -258,11 +258,8 @@
       target.textContent = '';
 
       textEl.textContent = name;
-      textEl.classList.add('pop');
 
       setTimeout(function() {
-        textEl.classList.remove('pop');
-
         var targetRect = target.getBoundingClientRect();
         var overlayRect = textEl.getBoundingClientRect();
         var dx = targetRect.left + targetRect.width / 2 - (overlayRect.left + overlayRect.width / 2);
@@ -288,7 +285,7 @@
           overlay.style.removeProperty('--shrink-dur');
           resolve();
         });
-      }, 500);
+      }, 200);
     });
   }
 
