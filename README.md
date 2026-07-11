@@ -28,6 +28,8 @@ python server.py 9360
 
 访问 `http://服务器IP:9360`
 
+管理后台：`http://服务器IP:9360/admin/`（默认账号 `admin` / `admin123`）
+
 ---
 
 ## 功能
@@ -35,16 +37,17 @@ python server.py 9360
 - **随机出题**：选中学科，设定数量，点击「随机出题」
 - **公布答案**：点击「公布答案」，答案卡片内展开
 - **布局切换**：网格模式（卡片方阵）/ 列表模式（横向排列），点击 `☰`/`⊞` 按钮切换
-- **随机点名**：点击「🎲 随机点名」弹出配置弹窗，三种随机方式可选（纯随机/二分法/时间加权随机法），双层动画系统，支持时间戳记录防重复
+- **随机点名**：点击「🎲 随机点名」弹出配置弹窗，三种随机方式可选（纯随机/二分法/时间加权随机法），双层动画系统，支持时间戳记录防重复，点名展示用户头像
 - **夜间模式**：点击 `🌙`/`☀️` 切换深色/浅色主题
-- **插件化**：`plugins/` 目录下每学科独立文件夹，复制模板即可添加新学科`n- **管理后台**：访问 `/admin/` 进入后台，用户管理/可视化配置/文件上传，三种角色（管理员/教师/学生）
+- **插件化**：`plugins/` 目录下每学科独立文件夹，复制模板即可添加新学科
+- **管理后台**：访问 `/admin/` 进入后台，用户管理 / 可视化配置 / 文件上传 / 个人资料，三种角色（管理员/教师/学生）
 
 ### 学科插件
 
 | 学科 | 特点 |
 |------|------|
 | **化学** | 价层电子式 + 轨道式，H~Kr 36 元素，CSV 可编辑，服务器扫描 + 本地导入，默认网格 4 列 |
-| **英语** | 服务器扫描 + 本地 xlsx/csv 导入，可调听写列/答案列，默认列表 2 列 |
+| **英语** | 服务器扫描 + 本地 xlsx/csv 导入，可调听写列/答案列，默认列表 2 列，支持管理后台上传文件 |
 
 ---
 
@@ -52,35 +55,20 @@ python server.py 9360
 
 ```
 ├── index.html              ← 主页面（仅 HTML 骨架）
-├── server.py               ← 生产服务器
+├── server.py               ← 生产服务器（含管理后台 API）
 ├── start.bat               ← 一键启动脚本
 ├── docs/
 │   ├── update.md           ← 更新日志
 │   ├── PLUGINS.md          ← 插件开发指南
 │   └── RULES.md            ← 编码规范（本地）
+├── admin/                  ← 管理后台 SPA
+│   ├── index.html
+│   ├── css/admin.css
+│   └── js/ (auth/common/profile/users/config/files/dashboard)
 ├── main/
 │   ├── logo.png            ← 项目 logo
 │   ├── css/                ← 样式（9 个文件，按职责拆分）
-│   │   ├── theme.css       ← CSS 变量 + 亮/暗主题
-│   │   ├── base.css        ← reset + 排版
-│   │   ├── topbar.css      ← 顶栏
-│   │   ├── pages.css       ← 页面切换 + 学科卡片
-│   │   ├── controls.css    ← 控件（stepper/slider/按钮）
-│   │   ├── cards.css       ← 听写卡片 + 答案展开
-│   │   ├── splash.css      ← 开屏动画
-│   │   ├── changelog.css   ← 更新日志弹窗
-│   │   └── responsive.css  ← 响应式
 │   └── js/                 ← 脚本（10 个文件 + picker 子模块）
-│       ├── core.js         ← SubjectRegistry + DictationEngine
-│       ├── theme.js        ← 夜间模式切换
-│       ├── navigator.js    ← 页面切换 + hash 路由
-│       ├── controls.js     ← 字号/列数/布局/数量控件
-│       ├── cards.js        ← 卡片渲染 + 随机出题 + 公布答案
-│       ├── modal.js        ← 弹窗关闭公共模块
-│       ├── picker/          ← 随机点名（random/animation/display/timestamp/index）
-│       ├── changelog.js    ← 更新日志弹窗
-│       ├── splash.js       ← 开屏动画 + 启动自检
-│       └── app.js          ← 入口：注册插件 + 渲染学科页
 ├── config/
 │   ├── config.js           ← 主配置（主题）
 │   ├── picker/             ← 点名配置
@@ -90,49 +78,24 @@ python server.py 9360
 │   ├── chemistry/          ← 化学插件
 │   ├── english/            ← 英语插件
 │   └── _template/          ← 插件模板
-└── data/
-    ├── chemistry/          ← 化学元素 CSV
-    ├── english/            ← 英语 xlsx/csv 文件
-    └── stdlist/            ← 学生名单 CSV
 └── archive/
     ├── v1.0/               ← v1.0 源码归档
     └── v2.0/               ← v2.0 源码归档
 ```
 
+> `admin/_store/` 和 `data/` 目录不入库（含用户数据/学生名单等隐私信息）
+
 ---
 
 ## 配置
 
-所有配置在 `config/` 目录中，修改后刷新页面即可生效。
+所有配置在 `config/` 目录中，修改后刷新页面即可生效。也可通过管理后台可视化编辑。
 
 **主配置** `config/config.js`：
 ```js
 window.__SEASCRIBE_CONFIG__ = {
   theme: "light"  // "light" 或 "dark"
 };
-```
-
-**学科配置** `config/化学/config.js`、`config/英语/config.js`：
-```js
-{
-  defaultCount: 8,       // 每次出题数量
-  defaultColumns: 4,     // 初始列数
-  defaultLayout: "grid", // 默认布局
-  defaultFontSize: 100,  // 初始字号（%）
-  gridColumns: 4,        // 网格模式列数
-  gridFontSize: 100,     // 网格模式字号
-  listColumns: 2,        // 列表模式列数
-  listFontSize: 100,     // 列表模式字号
-  // 化学特有
-  defaultRangeStart: 0,  // 元素范围起点
-  defaultRangeEnd: 30,   // 元素范围终点
-  dataURL: "data/chemistry/elements.csv", // 数据文件路径
-  scanURLs: ["/api/chemistry-files"],     // 服务器扫描地址
-  // 英语特有
-  promptCol: 1,          // 听写内容列（0=A）
-  answerCol: 0,          // 答案列
-  scanURLs: ["/api/english-files"]  // 服务器扫描地址
-}
 ```
 
 ---
@@ -151,6 +114,7 @@ window.__SEASCRIBE_CONFIG__ = {
 - 第 2 列：个性签名（可选，点名时名字下方显示）
 - 文件名即班级名，如 `11班.csv`、`12班.csv`
 - 新增班级只需放入 CSV 文件，系统自动识别
+- 如需点名显示头像，在管理后台为用户设置「姓名」与名单第 1 列一致，并上传头像
 
 ---
 
@@ -172,7 +136,7 @@ window.__SEASCRIBE_CONFIG__ = {
 
 ## 技术栈
 
-HTML5 + CSS3 + Vanilla JS · 零框架 · CSS Custom Properties · CSS Grid · CSS Multi-Column
+HTML5 + CSS3 + Vanilla JS · Python stdlib 服务器 · PBKDF2 密码哈希 · HttpOnly Cookie 鉴权
 
 ## License
 
@@ -184,7 +148,8 @@ MIT
 
 | 版本 | 架构 | 亮点 |
 |------|------|------|
-| **v4.0** | 管理后台 + 鉴权 | 用户系统、可视化配置、文件上传、点名头像、三种角色 |`n| **v3.5** | 弹窗统一 + 顶栏精简 | 右上角 ✕ 关闭，更多下拉菜单，SVG 手绘图标，键盘关开屏 |
+| **v4.0** | 管理后台 + 鉴权 | 用户系统、可视化配置、文件上传、点名头像、三种角色、安全加固 |
+| **v3.5** | 弹窗统一 + 顶栏精简 | 右上角 ✕ 关闭，更多下拉菜单，SVG 手绘图标，键盘关开屏 |
 | **v3.4** | 点名系统模块化重构 | 三种随机方式，双层动画，时间戳记录，签名展示，配置集中 |
 | **v3.3** | 化学数据 CSV 化 | 化学元素可编辑 CSV，文件扫描 + 本地导入 UI |
 | **v3.2** | 名单 CSV 化 + 系统日志 | 名单文件即拖即用，系统日志面板，启动自检 |

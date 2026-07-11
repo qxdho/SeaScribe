@@ -132,3 +132,20 @@
 - Git 推送走 v2ray 代理：`git config http.proxy http://127.0.0.1:10808`
 - 远程地址：`https://github.com/qxdho/SeaScribe.git`
 - `start.bat` 自动启动服务器并打开浏览器
+
+## 17. 管理后台（admin/）
+
+- `admin/` 独立 SPA，顶栏导航，与主站风格统一
+- JS 模块：auth（登录/登出）、common（API 封装/session）、dashboard（路由）、profile/users/config/files（功能模块）
+- 所有 API 路径 `/api/admin/*` 统一鉴权（cookie + Bearer header 双通道）
+- RBAC 三种角色：admin（全局）、teacher（配置+文件）、student（资料）
+- 用户密码 PBKDF2-HMAC-SHA256 600k 迭代存储
+- session 4 小时过期，登录 5 次/60s 限流
+- `admin/_store/` 不入库（`.gitignore`），HTTP 直接访问返回 403
+
+## 18. server.py 安全规范
+
+- 所有用户输入文件名先 `os.path.basename()` 防路径穿越
+- 请求体大小限制：普通 API 1MB，上传 60MB
+- 昵称 ≤ 100 字符，头像 URL ≤ 2000 字符
+- `send_json` 包裹 try/except 静默 ConnectionAbortedError
