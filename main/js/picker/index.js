@@ -144,6 +144,13 @@
         items.push({ name: name, signature: signature || '' });
       }
     }
+    var withSig = items.filter(function(p) { return p.signature; });
+    console.log('[Picker] 解析完成: ' + items.length + ' 人, 有签名: ' + withSig.length + ' 人');
+    if (withSig.length > 0) {
+      console.log('[Picker] 签名样本:', withSig.slice(0, 3).map(function(p) {
+        return p.name + ' → "' + p.signature + '"';
+      }));
+    }
     return items;
   }
 
