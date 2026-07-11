@@ -19,6 +19,7 @@ DATA = os.path.join(ROOT, 'data')
 PICKER_DIR = os.path.join(DATA, 'picker')
 STORE_DIR = os.path.join(ROOT, 'admin', '_store')
 ENGLISH_DIR = os.path.join(DATA, 'english')
+AVATAR_DIR = os.path.join(STORE_DIR, 'avatars')
 USERS_PATH = os.path.join(STORE_DIR, 'users.json')
 SESSIONS_PATH = os.path.join(STORE_DIR, 'sessions.json')
 MAX_BODY = 60 * 1024 * 1024
@@ -179,7 +180,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         path = parsed.path
         params = parse_qs(parsed.query)
 
-        if path.startswith('/admin/_store/'):
+        if path.startswith('/admin/_store/') and not path.startswith('/admin/_store/avatars/'):
             self.send_error(403, 'Forbidden')
             return
 
@@ -517,9 +518,57 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.send_json(200, {'ok': True})
             return
 
+        # /api/admin/upload/avatar
+        if path == '/api/admin/upload/avatar':
+            user = _require_auth(self)
+            if not user: return
+            body2 = self.read_body(MAX_BODY)
+            if body2 is None: return
+            try: p = json.loads(body2.decode('utf-8'))
+            except: self.send_json(400, {'error': 'JSON parse failed'}); return
+            content_b64 = p.get('content', '')
+            filename = p.get('filename', 'avatar.png')
+            if not content_b64:
+                self.send_json(400, {'error': 'missing content'})
+                return
+            ext = os.path.splitext(_safe_filename(filename))[1].lower()
+            if ext not in ('.png', '.jpg', '.jpeg', '.gif', '.webp'):
+                ext = '.png'
+            safe_name = user.get('uid', 'anon') + '_' + secrets.token_hex(4) + ext
+            os.makedirs(AVATAR_DIR, exist_ok=True)
+            filepath = os.path.join(AVATAR_DIR, safe_name)
+            with open(filepath, 'wb') as f:
+                f.write(base64.b64decode(content_b64))
+            self.send_json(200, {'ok': True, 'url': '/admin/_store/avatars/' + safe_name})
+            return
+
         self.send_error(404, 'Not Found')
 
     def list_directory(self, path):
+        # /api/admin/upload/avatar
+        if path == '/api/admin/upload/avatar':
+            user = _require_auth(self)
+            if not user: return
+            body2 = self.read_body(MAX_BODY)
+            if body2 is None: return
+            try: p = json.loads(body2.decode('utf-8'))
+            except: self.send_json(400, {'error': 'JSON parse failed'}); return
+            content_b64 = p.get('content', '')
+            filename = p.get('filename', 'avatar.png')
+            if not content_b64:
+                self.send_json(400, {'error': 'missing content'})
+                return
+            ext = os.path.splitext(_safe_filename(filename))[1].lower()
+            if ext not in ('.png', '.jpg', '.jpeg', '.gif', '.webp'):
+                ext = '.png'
+            safe_name = user.get('uid', 'anon') + '_' + secrets.token_hex(4) + ext
+            os.makedirs(AVATAR_DIR, exist_ok=True)
+            filepath = os.path.join(AVATAR_DIR, safe_name)
+            with open(filepath, 'wb') as f:
+                f.write(base64.b64decode(content_b64))
+            self.send_json(200, {'ok': True, 'url': '/admin/_store/avatars/' + safe_name})
+            return
+
         self.send_error(404, 'Not Found')
 
 print(f'SeaScribe \u2192 http://localhost:{PORT}')

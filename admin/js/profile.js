@@ -18,7 +18,8 @@
         '<div class="admin-form-row" style="align-items:center;margin-bottom:16px">' +
           '<div id="profile-avatar-preview" style="font-size:3rem;line-height:1">' + avatarHTML(user) + '</div>' +
           '<div><button id="profile-avatar-btn" class="admin-btn admin-btn-outline admin-btn-sm">更换头像</button>' +
-          '<p style="font-size:0.72rem;color:var(--muted);margin-top:4px">支持 emoji 或图片链接</p></div>' +
+          '<input type="file" id="profile-avatar-file" accept="image/*" style="display:none">' +
+          '<p style="font-size:0.72rem;color:var(--muted);margin-top:4px">支持 emoji、图片链接或直接上传</p></div>' +
         '</div>' +
         '<div class="admin-form-group">' +
           '<label for="profile-username">用户名（英文）</label>' +
@@ -51,9 +52,31 @@
       document.getElementById('profile-avatar-preview').innerHTML = avatarHTML({ avatar: this.value });
     });
 
-    // 更换头像按钮 → 聚焦输入框
+    // 更换头像按钮 → 打开文件选择器
     document.getElementById('profile-avatar-btn').addEventListener('click', function() {
-      document.getElementById('profile-avatar').focus();
+      document.getElementById('profile-avatar-file').click();
+    });
+
+    // 文件选择后上传
+    document.getElementById('profile-avatar-file').addEventListener('change', async function() {
+      var file = this.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = async function() {
+        var b64 = reader.result.split(',')[1];
+        var res = await Admin.api('/api/admin/upload/avatar', {
+          method: 'POST',
+          body: { filename: file.name, content: b64 },
+        });
+        if (res.ok && res.data.url) {
+          document.getElementById('profile-avatar').value = res.data.url;
+          document.getElementById('profile-avatar-preview').innerHTML = avatarHTML({ avatar: res.data.url });
+          showMsg('success', '头像上传成功，请点击保存');
+        } else {
+          showMsg('error', res.data.error || '上传失败');
+        }
+      };
+      reader.readAsDataURL(file);
     });
 
     // save
