@@ -11,7 +11,6 @@
   var resultEl = document.getElementById('pick-result');
   var modal = document.getElementById('picker-modal');
   var listSelect = document.getElementById('picker-list-select');
-  var decorativeSelect = document.getElementById('picker-decorative');
   var showProcessCheck = document.getElementById('picker-show-process');
   var processModeGroup = document.getElementById('picker-process-mode-group');
   var btnStart = document.getElementById('picker-start');
@@ -38,23 +37,12 @@
       '</label>';
     }).join('');
 
-    // 修饰动画 select
-    decorativeSelect.innerHTML = (cfg.decorativeAnimations || []).map(function(a) {
-      var sel = a.id === cfg.defaultDecorative ? ' selected' : '';
-      return '<option value="' + escAttr(a.id) + '"' + sel + '>' + esc(a.name) + '</option>';
-    }).join('');
-
     // 过程动画模式 radio
-    var modeGroup = document.getElementById('picker-process-mode-group');
-    var radioHTML = (cfg.processModes || []).map(function(m) {
+    processModeGroup.innerHTML = (cfg.processModes || []).map(function(m) {
       var chk = m.id === cfg.processMode ? ' checked' : '';
-      return '<label>' +
-        '<input type="radio" name="picker-process-mode" value="' + escAttr(m.id) + '"' + chk + '>' +
-        '<span>' + esc(m.name) + '</span>' +
-      '</label>';
+      return '<label><input type="radio" name="picker-process-mode" value="' + escAttr(m.id) + '"' + chk + '><span>' + esc(m.name) + '</span></label>';
     }).join('');
-    modeGroup.innerHTML = '<label class="picker-section-label">过程动画显示模式</label>' +
-      '<div class="picker-radio-inline">' + radioHTML + '</div>';
+    processModeGroup.classList.add('collapsed');
 
     // 重新获取动态创建的 radio 引用
     methodRadios = document.getElementsByName('picker-method');
@@ -166,9 +154,9 @@
   /* ====== 过程动画开关联动 ====== */
   showProcessCheck.addEventListener('change', function() {
     if (showProcessCheck.checked) {
-      processModeGroup.classList.remove('hidden');
+      processModeGroup.classList.remove('collapsed');
     } else {
-      processModeGroup.classList.add('hidden');
+      processModeGroup.classList.add('collapsed');
     }
   });
 
@@ -182,7 +170,6 @@
 
     // 读取配置
     var method = getRadioValue(methodRadios, cfg.defaultMethod);
-    var decorativeType = decorativeSelect.value || cfg.defaultDecorative;
     var showProcess = showProcessCheck.checked;
     var processMode = getRadioValue(processModeRadios, cfg.processMode);
 
@@ -200,7 +187,6 @@
     var result = await PickerAnimation.run(_currentList, generator, {
       showProcess: showProcess,
       processMode: processMode,
-      decorativeType: decorativeType,
       timestamps: timestamps,
     });
 

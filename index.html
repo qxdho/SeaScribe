@@ -50,43 +50,32 @@
     <div class="picker-modal-title">🎯 随机点名</div>
 
     <div class="picker-section">
-      <label class="picker-section-label">班级名单</label>
+      <label class="picker-section-label">📋 班级名单</label>
       <select id="picker-list-select" class="picker-select"></select>
     </div>
 
     <div class="picker-section">
-      <label class="picker-section-label">随机方式</label>
+      <label class="picker-section-label">🎲 随机方式</label>
       <div id="picker-method-group" class="picker-radio-group">
         <!-- JS 动态渲染 -->
       </div>
     </div>
 
-    <div class="picker-section">
-      <label class="picker-section-label">修饰动画</label>
-      <select id="picker-decorative" class="picker-select">
-        <!-- JS 动态渲染 -->
-      </select>
-    </div>
-
-    <div class="picker-section">
-      <label id="picker-show-process-label" class="picker-checkbox">
+    <div class="picker-section picker-section-advanced">
+      <label class="picker-checkbox">
         <input type="checkbox" id="picker-show-process">
         <span>显示真实随机过程</span>
       </label>
+      <div id="picker-process-mode-group" class="picker-process-mode-row">
+        <!-- JS 动态渲染 -->
+      </div>
     </div>
 
     <div class="picker-section">
       <label class="picker-checkbox">
         <input type="checkbox" id="picker-timestamp" checked>
-        <span>记录点名时间（避免重复点名）</span>
+        <span>记录点名时间（避免重复）</span>
       </label>
-    </div>
-
-    <div id="picker-process-mode-group" class="picker-section hidden">
-      <label class="picker-section-label">过程动画显示模式</label>
-      <div class="picker-radio-inline">
-        <!-- JS 动态渲染 -->
-      </div>
     </div>
 
     <div class="picker-actions">
