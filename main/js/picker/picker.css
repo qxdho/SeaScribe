@@ -10,6 +10,19 @@
   gap: 8px;
 }
 
+/* 点名按钮 — 实心，主题色 */
+#btn-picker {
+  background: var(--text);
+  border-color: var(--text);
+  font-weight: 600;
+  color: var(--bg);
+}
+#btn-picker:hover {
+  background: var(--bg);
+  color: var(--text);
+  border-color: var(--text);
+}
+
 /* ====== Modal 弹窗 ====== */
 .picker-modal {
   position: fixed;
@@ -19,16 +32,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.2s;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.22s var(--ease);
 }
 
 [data-theme="light"] .picker-modal {
   background: rgba(0,0,0,0.2);
 }
 
-.picker-modal.hidden { display: none; }
+.picker-modal.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
 
 .picker-modal-card {
+  position: relative;
   background: var(--bg);
   border-radius: 16px;
   padding: 28px 32px;
@@ -41,6 +60,10 @@
   gap: 18px;
   max-height: 90vh;
   overflow-y: auto;
+}
+
+.picker-modal:not(.hidden) .picker-modal-card {
+  animation: pickerModalIn 0.28s var(--ease);
 }
 
 .picker-modal-title {
@@ -544,4 +567,14 @@
 @keyframes procStepIn {
   0%   { opacity: 0; transform: translateY(8px) scale(0.97); }
   100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pickerModalIn {
+  0%   { opacity: 0; transform: scale(0.92) translateY(10px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes pickerModalOut {
+  0%   { opacity: 1; transform: scale(1) translateY(0); }
+  100% { opacity: 0; transform: scale(0.94) translateY(6px); }
 }

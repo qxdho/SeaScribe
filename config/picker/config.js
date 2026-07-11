@@ -1,70 +1,78 @@
-/* ============================================================
-   SeaScribe — Picker Configuration
-   点名插件所有默认配置项，JS 中零硬编码兜底
-   ============================================================ */
+// ================================================================
+//  随机点名配置 — 修改后刷新页面生效
+// ================================================================
 
 window.__PICKER_CONFIG__ = {
-  /* 随机方式：'pure' | 'binary' | 'fair' */
+
+  // 【默认随机方式】弹窗打开时的预选值
+  //   'pure'   — 纯随机，Fisher-Yates 洗牌，每人概率均等
+  //   'binary' — 二分法，名单不断对半分淘汰直到剩一人
+  //   'fair'   — 时间加权随机法，优先选未被点过的人，否则选间隔最长者
   defaultMethod: 'pure',
 
-  /* 修饰动画：'scroll'（姓名滚动+彩带） */
+  // 【默认修饰动画】结果展示时的全屏效果
+  //   'scroll' — 姓名滚动 + confetti 彩带
   defaultDecorative: 'scroll',
 
-  /* "显示真实随机过程"开关，默认关闭 */
+  // 【显示过程】是否展示中间计算步骤
+  //   true  — 展示分组、淘汰等过程
+  //   false — 跳过过程，直接出结果
   showProcess: false,
 
-  /* 过程动画模式：'fullscreen' | 'windowed' */
+  // 【过程模式】showProcess=true 时的显示风格
+  //   'fullscreen' — 全屏铺满
+  //   'windowed'   — 居中卡片显示
   processMode: 'fullscreen',
 
-  /* 时间戳记录开关，默认开启 */
+  // 【记录时间戳】点名后保存时间，供 fair 方式使用
+  //   true  — 保存到 data/picker/ 下 JSON 文件
+  //   false — 不记录
   timestampEnabled: true,
 
-  /* 时间加权随机法 —— 子集比例（0~1） */
+  // 【子集比例】fair 方式先随机取多大比例的候选池，0.1 ~ 1.0
   fairSubsetRatio: 0.3,
 
-  /* 时间加权随机法 —— 每轮最少/最终目标人数 */
+  // 【目标人数】fair 方式子集至少保留几人，1 ~ 总人数
   fairTargetSize: 5,
 
-  /* ====== 动画时序 ====== */
-
-  /* 修饰动画最短滚动时长 (ms) */
+  // 【滚动时长】修饰动画滚名字总时长 (ms)，1000 ~ 8000
   decorMinMs: 2300,
 
-  /* 修饰动画滚名字间隔 (ms) */
+  // 【滚动间隔】两个名字切换间隔 (ms)，30 ~ 300
   decorIntervalMs: 80,
 
-  /* 过程动画结果展示时长 (ms) */
+  // 【结果定格】选定后定格时长 (ms)，300 ~ 3000
   processResultMs: 800,
 
-  /* 过程动画淡出时长 (ms) */
+  // 【过程淡出】过程窗口关闭渐变时长 (ms)，100 ~ 1000
   processFadeMs: 300,
 
-  /* 二分法每步间隔 (ms) */
+  // 【二分步间隔】二分法每轮停顿 (ms)，300 ~ 3000
   binaryStepDelay: 1000,
 
-  /* 时间加权随机法子集展示后等待 (ms) */
+  // 【fair 子集等待】fair 候选展示后停顿 (ms)，500 ~ 5000
   fairStepDelay: 1200,
 
-  /* 时间加权随机法结果选定后等待 (ms) */
+  // 【fair 结果等待】fair 选定后停顿 (ms)，500 ~ 3000
   fairResultDelay: 1000,
 
-  /* confetti 粒子数量 */
+  // 【彩带数量】confetti 粒子数，0=不放，0 ~ 500
   confettiCount: 200,
 
-  /* ====== 可用选项列表（供 Modal 渲染） ====== */
+  // ====== 弹窗选项列表（可增删调序，不改 id） ======
 
   methods: [
-    { id: 'pure',    name: '纯随机',      desc: '经典 Fisher-Yates 洗牌，完全随机抽取一人' },
-    { id: 'binary',  name: '二分法',      desc: '名单不断对半分组并淘汰，逐步缩小直到剩一人' },
-    { id: 'fair',    name: '时间加权随机法',    desc: '先随机子集，优先从未被点过的人中选，否则选间隔最长者' },
+    { id: 'pure',    name: '纯随机',            desc: 'Fisher-Yates 洗牌，完全随机' },
+    { id: 'binary',  name: '二分法',            desc: '对半分组逐步淘汰，有戏剧感' },
+    { id: 'fair',    name: '时间加权随机法',     desc: '优先未点过的，否则选间隔最长者' },
   ],
 
   decorativeAnimations: [
-    { id: 'scroll',  name: '姓名滚动',    desc: '全屏快速滚动姓名后定格（当前效果）' },
+    { id: 'scroll',  name: '姓名滚动',          desc: '全屏滚动姓名 + confetti 彩带' },
   ],
 
   processModes: [
-    { id: 'fullscreen', name: '全屏',     desc: '过程动画铺满整个屏幕' },
-    { id: 'windowed',   name: '窗口化',   desc: '过程动画显示在居中卡片内' },
+    { id: 'fullscreen', name: '全屏',           desc: '过程铺满屏幕' },
+    { id: 'windowed',   name: '窗口化',         desc: '居中卡片显示' },
   ],
 };

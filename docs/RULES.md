@@ -101,11 +101,11 @@
 ## 13. 启动日志系统
 
 - `window.__SEASCRIBE_LOG__` 全局数组，存储所有日志
-- splash.js 启动时执行 12 项检查，写入 LOG
+- splash.js 启动时执行 19 项检查，写入 LOG
 - console.log/error/warn 被拦截同步写入 LOG
 - 顶栏 📋「系统日志」按钮查看完整日志
 - 有错误时按钮右上角显示红色数字
-- 开屏日志逐行滚动（60ms 间隔），点击屏幕关闭
+- 开屏日志逐行滚动（60ms 间隔），点击或按键关闭
 
 ## 14. 点名系统（main/js/picker/）
 
@@ -124,7 +124,7 @@
 - 变量命名 camelCase，CSS 类名 kebab-case
 - 每个 JS 文件用 IIFE 包裹 `(function() { ... })()`
 - DOM 查询优先用 ID（`getElementById`），其次 class（`querySelector`）
-- 弹窗用 `.hidden` class 控制显隐（`display: none`）
+- 弹窗用 `.hidden` class 控制显隐（opacity + pointer-events 过渡）
 - 动画用 CSS `@keyframes`，不用 JS 动画
 
 ## 16. 网络与代理

@@ -134,18 +134,24 @@
   }
   setTimeout(runCheck, 500);
 
-  splash.addEventListener('click', function closeSplash() {
+  splash.addEventListener('click', closeSplashFn, { once: true });
+  document.addEventListener('keydown', closeSplashFn, { once: true });
+
+  function closeSplashFn() {
+    if (!splash || !splash.parentNode) return;
     splash.style.animation = 'splashOut 0.5s var(--ease) forwards';
     splash.addEventListener('animationend', function(e) {
       if (e.target === splash && e.animationName === 'splashOut') {
         splash.remove();
       }
     });
-  }, { once: true });
+  }
 
   // ---- 系统日志按钮 ----
   var syslogOverlay = document.getElementById('syslog-overlay');
   var syslogBody = document.getElementById('syslog-body');
+
+  window.SeaScribe.bindModal('syslog-overlay', 'btn-syslog-close-x');
 
   document.getElementById('btn-syslog').addEventListener('click', function() {
     syslogOverlay.classList.remove('hidden');
@@ -154,15 +160,6 @@
         (l.ok ? '✅ ' : '❌ ') + l.label +
         ' <span style="opacity:0.5">' + l.text + '</span></div>';
     }).join('');
-    // 自动滚动到底部
     setTimeout(function() { syslogBody.scrollTop = syslogBody.scrollHeight; }, 50);
-  });
-
-  document.getElementById('btn-syslog-close').addEventListener('click', function() {
-    syslogOverlay.classList.add('hidden');
-  });
-
-  syslogOverlay.addEventListener('click', function(e) {
-    if (e.target === syslogOverlay) syslogOverlay.classList.add('hidden');
   });
 })();

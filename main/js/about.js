@@ -7,6 +7,8 @@
   var overlay = document.getElementById('about-overlay');
   var body = document.getElementById('about-body');
 
+  window.SeaScribe.bindModal('about-overlay', 'btn-about-close-x');
+
   document.getElementById('btn-about').addEventListener('click', function() {
     overlay.classList.remove('hidden');
     fetch('README.md')
@@ -15,14 +17,6 @@
         body.innerHTML = renderMarkdown(md);
       })
       .catch(function() { body.innerHTML = '<p>无法加载关于页面</p>'; });
-  });
-
-  document.getElementById('btn-about-close').addEventListener('click', function() {
-    overlay.classList.add('hidden');
-  });
-
-  overlay.addEventListener('click', function(e) {
-    if (e.target === overlay) overlay.classList.add('hidden');
   });
 
   /** 简单的 Markdown → HTML 渲染 */

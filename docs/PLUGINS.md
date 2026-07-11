@@ -88,7 +88,7 @@ window.__MY_SUBJECT_CONFIG__ = {
 
 | 成员 | 必需 | 说明 |
 |---|---|---|
-| `meta` | ✅ | `{ id, name, description, icon }` |
+| `meta` | ✅ | `{ id, name, description, icon }`，icon 支持 emoji 或内联 SVG |
 | `defaultCount` | ✅ | 默认出题数 |
 | `defaultColumns` | ✅ | 默认列数（初始布局） |
 | `defaultFontSize` | ✅ | 默认字号 60-200 |

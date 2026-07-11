@@ -15,7 +15,6 @@
   var showProcessCheck = document.getElementById('picker-show-process');
   var processModeGroup = document.getElementById('picker-process-mode-group');
   var btnStart = document.getElementById('picker-start');
-  var btnClose = document.getElementById('picker-close');
   var timestampCheck = document.getElementById('picker-timestamp');
   var methodRadios, processModeRadios;
 
@@ -57,18 +56,12 @@
   })();
 
   /* ====== Modal 控制 ====== */
+  window.SeaScribe.bindModal('picker-modal', 'picker-close-x');
+
   btnPicker.addEventListener('click', function() {
     if (_animating) return;
     modal.classList.remove('hidden');
     scanFiles();
-  });
-
-  btnClose.addEventListener('click', function() {
-    modal.classList.add('hidden');
-  });
-
-  modal.addEventListener('click', function(e) {
-    if (e.target === modal) modal.classList.add('hidden');
   });
 
   /* ====== 扫描名单文件 ====== */

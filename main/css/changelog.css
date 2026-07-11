@@ -10,15 +10,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.22s var(--ease);
 }
 .changelog-overlay.hidden {
-  display: none;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .changelog-card {
+  position: relative;
   background: var(--surface);
   border-radius: 16px;
-  padding: 24px 32px 16px;
+  padding: 24px 32px 20px;
   max-width: 460px;
   width: auto;
   min-width: 340px;
@@ -26,7 +31,10 @@
   display: flex;
   flex-direction: column;
   color: var(--text);
-  animation: changelogIn 0.3s ease both;
+}
+
+.changelog-overlay:not(.hidden) .changelog-card {
+  animation: changelogIn 0.28s var(--ease);
 }
 #about-overlay .changelog-card {
   max-width: 600px;
@@ -34,7 +42,29 @@
 #syslog-overlay .changelog-card {
   max-width: 80vw;
 }
-.changelog-card h2 { margin-bottom: 12px; font-size: 1.4rem; flex-shrink: 0; }
+.changelog-card h2 { margin: 0 0 12px; font-size: 1.3rem; flex-shrink: 0; padding-right: 32px; }
+
+/* ---- 右上角关闭按钮 ---- */
+.modal-close-x {
+  position: absolute;
+  top: 12px; right: 14px;
+  width: 28px; height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--muted);
+  display: flex;
+  align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s;
+  z-index: 1;
+}
+.modal-close-x:hover {
+  background: var(--hover);
+  color: var(--text);
+}
+
 
 .changelog-body {
   overflow-y: auto;
@@ -85,15 +115,6 @@
 }
 .changelog-body h2 { font-size: 1.2rem; margin: 16px 0 8px; }
 .changelog-body h3 { margin: 16px 0 6px; font-size: 1rem; color: var(--text); }
-
-.changelog-actions {
-  flex-shrink: 0;
-  padding-top: 16px;
-  text-align: center;
-}
-.changelog-actions .btn { min-width: 100px; }
-
-.changelog-card h3 { margin: 16px 0 6px; font-size: 1rem; color: var(--text); }
 
 @keyframes changelogIn {
   from { opacity: 0; transform: translateY(20px) scale(0.96); }

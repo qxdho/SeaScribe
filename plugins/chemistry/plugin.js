@@ -4,7 +4,7 @@
    ============================================================ */
 
 const ChemistryPlugin = {
-  meta: { id:'chemistry', name:'化学', description:'价层电子式 & 价层轨道式', icon:'⚗️' },
+  meta: { id:'chemistry', name:'化学', description:'价层电子式 & 价层轨道式', icon:'<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><path d="M18 8 L18 32 Q18 40 24 40 Q30 40 30 32 L30 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 8 L33 8" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="M20 22 Q24 20 28 22 L28 32 Q30 40 24 40 Q18 40 20 32 Z" fill="#3b9e8c" opacity="0.35"/><circle cx="22" cy="16" r="2" fill="#3b9e8c" opacity="0.55"/><circle cx="26" cy="12" r="1.5" fill="#3b9e8c" opacity="0.4"/></svg>' },
 
   defaultCount: 12,
   defaultColumns: 4,

@@ -6,7 +6,7 @@
    ============================================================ */
 
 const EnglishPlugin = {
-  meta: { id:'english', name:'英语', description:'单词/词组听写 · 支持xlsx导入', icon:'📝' },
+  meta: { id:'english', name:'英语', description:'单词/词组听写 · 支持xlsx导入', icon:'<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" fill="#5b8cc9" opacity="0.15"/><text x="24" y="35" text-anchor="middle" font-size="32" font-weight="700" fill="currentColor" font-family="Georgia, \'Times New Roman\', serif">A</text></svg>' },
 
   defaultCount: 0,
   defaultColumns: 2,

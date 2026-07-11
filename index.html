@@ -47,6 +47,7 @@
 <!-- ========== 点名配置弹窗 ========== -->
 <div id="picker-modal" class="picker-modal hidden">
   <div class="picker-modal-card">
+    <button id="picker-close-x" class="modal-close-x" title="关闭">✕</button>
     <div class="picker-modal-title">🎲 随机点名</div>
 
     <div class="picker-section">
@@ -86,7 +87,6 @@
     </div>
 
     <div class="picker-actions">
-      <button id="picker-close" class="btn btn-ghost">取消</button>
       <button id="picker-start" class="btn btn-dark" disabled>开始点名</button>
     </div>
   </div>
@@ -98,25 +98,30 @@
     <img class="splash-logo" src="main/logo.png" alt="">
     <span class="splash-title">SeaScribe</span>
     <span class="splash-author">谦虚の海鸥</span>
-    <span class="splash-version">v3.4.0</span>
+    <span class="splash-version">v3.5.0</span>
     <span class="splash-vibecoding">本项目使用 vibecoding 开发</span>
     <div id="splash-log" class="splash-log"></div>
-    <span class="splash-hint">点击任意位置继续</span>
+    <span class="splash-hint">点击任意位置或按任意键继续</span>
   </div>
 </div>
 
 <!-- ========== 顶栏 ========== -->
 <header class="topbar">
-  <span class="topbar-brand" id="brand-logo" title="回到学科选择"><img class="topbar-logo" src="main/logo.png" alt="">SeaScribe</span><span class="topbar-version">v3.4.0</span>
+  <span class="topbar-brand" id="brand-logo" title="回到学科选择"><img class="topbar-logo" src="main/logo.png" alt="">SeaScribe</span><span class="topbar-version">v3.5.0</span>
   <span class="topbar-spacer"></span>
   <div class="topbar-picker" id="topbar-picker">
     <span id="pick-result" class="pick-result"></span>
-    <button id="btn-picker" class="btn btn-dark btn-sm">🎲 随机点名</button>
+    <button id="btn-picker" class="topbar-btn">🎲 随机点名</button>
   </div>
   <button class="tool-btn icon-btn" id="btn-theme" title="切换夜间模式">🌙</button>
-  <button class="topbar-btn" id="btn-changelog" title="更新日志">📜 更新日志</button>
-  <button class="topbar-btn" id="btn-syslog" title="系统日志">📋 系统日志</button>
-  <button class="topbar-btn" id="btn-about" title="关于">ℹ️ 关于</button>
+  <div class="topbar-more">
+    <button class="topbar-btn" id="btn-more">⋯ 更多</button>
+    <div class="more-menu hidden" id="more-menu">
+      <button class="more-item" id="btn-changelog">📜 更新日志</button>
+      <button class="more-item" id="btn-syslog">📋 系统日志</button>
+      <button class="more-item" id="btn-about"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" fill="none" style="vertical-align:-3px;margin-right:2px"><circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="3"/><path d="M24 14 L24 30" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><circle cx="24" cy="37" r="2.5" fill="currentColor"/></svg> 关于</button>
+    </div>
+  </div>
 </header>
 
 <!-- ========== 学科选择页 ========== -->
@@ -174,27 +179,27 @@
 <!-- ========== 更新日志弹窗 ========== -->
 <div id="changelog-overlay" class="changelog-overlay hidden">
   <div class="changelog-card">
+    <button class="modal-close-x" id="btn-changelog-close-x" title="关闭">✕</button>
     <h2>更新日志</h2>
     <div class="changelog-body" id="changelog-body"></div>
-    <div class="changelog-actions"><button class="btn btn-dark" id="btn-changelog-close">关闭</button></div>
   </div>
 </div>
 
 <!-- ========== 系统日志弹窗 ========== -->
 <div id="syslog-overlay" class="changelog-overlay hidden">
   <div class="changelog-card">
+    <button class="modal-close-x" id="btn-syslog-close-x" title="关闭">✕</button>
     <h2>系统日志</h2>
     <div id="syslog-body" class="changelog-body"></div>
-    <div class="changelog-actions"><button class="btn btn-dark" id="btn-syslog-close">关闭</button></div>
   </div>
 </div>
 
 <!-- ========== 关于弹窗 ========== -->
 <div id="about-overlay" class="changelog-overlay hidden">
   <div class="changelog-card">
+    <button class="modal-close-x" id="btn-about-close-x" title="关闭">✕</button>
     <h2>关于 SeaScribe</h2>
     <div id="about-body" class="changelog-body"></div>
-    <div class="changelog-actions"><button class="btn btn-dark" id="btn-about-close">关闭</button></div>
   </div>
 </div>
 
@@ -215,6 +220,7 @@
 <script src="plugins/chemistry/plugin.js"></script>
 
 <!-- App modules -->
+<script src="main/js/modal.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
 <script src="config/picker/config.js"></script>
 <script src="main/js/picker/random.js"></script>

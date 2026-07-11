@@ -4,7 +4,7 @@
 
 > 课堂听写投屏系统 — 教师大屏随机出题，学生纸笔作答，一键公布答案
 > 
-> by **谦虚の海鸥** · v3.4.0 · [GitHub](https://github.com/qxdho/SeaScribe)
+> by **谦虚の海鸥** · v3.5.0 · [GitHub](https://github.com/qxdho/SeaScribe)
 
 ---
 
@@ -70,12 +70,13 @@ python server.py 9360
 │   │   ├── splash.css      ← 开屏动画
 │   │   ├── changelog.css   ← 更新日志弹窗
 │   │   └── responsive.css  ← 响应式
-│   └── js/                 ← 脚本（9 个文件，按职责拆分）
+│   └── js/                 ← 脚本（10 个文件 + picker 子模块）
 │       ├── core.js         ← SubjectRegistry + DictationEngine
 │       ├── theme.js        ← 夜间模式切换
 │       ├── navigator.js    ← 页面切换 + hash 路由
 │       ├── controls.js     ← 字号/列数/布局/数量控件
 │       ├── cards.js        ← 卡片渲染 + 随机出题 + 公布答案
+│       ├── modal.js        ← 弹窗关闭公共模块
 │       ├── picker/          ← 随机点名（random/animation/display/timestamp/index）
 │       ├── changelog.js    ← 更新日志弹窗
 │       ├── splash.js       ← 开屏动画 + 启动自检
@@ -183,11 +184,12 @@ MIT
 
 | 版本 | 架构 | 亮点 |
 |------|------|------|
+| **v3.5** | 弹窗统一 + 顶栏精简 | 右上角 ✕ 关闭，更多下拉菜单，SVG 手绘图标，键盘关开屏 |
 | **v3.4** | 点名系统模块化重构 | 三种随机方式，双层动画，时间戳记录，签名展示，配置集中 |
 | **v3.3** | 化学数据 CSV 化 | 化学元素可编辑 CSV，文件扫描 + 本地导入 UI |
 | **v3.2** | 名单 CSV 化 + 系统日志 | 名单文件即拖即用，系统日志面板，启动自检 |
 | **v3.1** | 品牌 + Git 工程化 | Logo 设计，GitHub 托管，目录拍平 |
-| **v3.0** | 9 CSS + 9 JS 模块化 | SubjectRegistry + DictationEngine，配置分离，插件模板 |
+| **v3.0** | 9 CSS + 10 JS 模块化 | SubjectRegistry + DictationEngine，配置分离，插件模板 |
 | **v2.0** | CSS/JS 初步拆分 | 网格/列表双布局，config/ 目录，英语服务器扫描 |
 | **v1.0** | 单文件 style.css + core.js | 化学轨道式，英语 xlsx 导入，随机点名，插件化架构 |
 
