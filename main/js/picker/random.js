@@ -63,7 +63,7 @@
 
       // 短暂延迟让动画帧渲染
       if (group.length > 1) {
-        await delay(cfg.binaryStepDelay || 800);
+        await delay(cfg.binaryStepDelay || 1000);
       }
     }
 
@@ -97,7 +97,7 @@
       total: list.length,
     };
 
-    await delay(cfg.fairStepDelay || 600);
+    await delay(cfg.fairStepDelay || 1200);
 
     // 找从未被点过的人
     var neverPicked = [];
@@ -152,7 +152,7 @@
       };
     }
 
-    await delay(cfg.fairResultDelay || 400);
+    await delay(cfg.fairResultDelay || 1000);
 
     var lastTime = timestamps[person.name] || null;
     yield { type: 'result', person: person, lastPickedTime: lastTime };

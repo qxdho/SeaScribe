@@ -77,6 +77,9 @@
 
     await delay(300);
 
+    // 在 display 显示前隐藏修饰层文字，避免两个名字叠加错位
+    if (decorativeText) decorativeText.style.visibility = 'hidden';
+
     // 调用 display 模块
     if (window.PickerDisplay) {
       await PickerDisplay.show({
@@ -85,6 +88,9 @@
         lastPickedTime: lastPickedTime,
       });
     }
+
+    // 恢复修饰层文字
+    if (decorativeText) decorativeText.style.visibility = '';
 
     // 所有层消失
     hideAllLayers();
@@ -231,6 +237,7 @@
 
       // 短暂显示 overlay 用于飞入
       overlay.classList.remove('hidden');
+      textEl.style.visibility = '';
       textEl.textContent = name;
       textEl.classList.add('pop');
 
@@ -310,6 +317,7 @@
     if (decorativeText) {
       decorativeText.classList.remove('pop');
       decorativeText.textContent = '';
+      decorativeText.style.visibility = '';
     }
     if (processEl) {
       processEl.classList.add('hidden');
