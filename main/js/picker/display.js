@@ -29,9 +29,11 @@
     if (data.signature) {
       sigEl.textContent = data.signature;
       sigEl.classList.remove('empty');
+      console.log('[PickerDisplay] 签名:', data.signature);
     } else {
       sigEl.textContent = '';
       sigEl.classList.add('empty');
+      console.log('[PickerDisplay] 无签名');
     }
 
     // 填入上次点名时间
