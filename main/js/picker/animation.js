@@ -68,19 +68,21 @@
       if (processEl) processEl.classList.add('hidden');
     }
 
-    // 停止修饰动画
+    // 停止修饰动画（会等待最少 _decorMinMs 后真正停止）
     stopDecorative(finalPerson ? finalPerson.name : (list[0] ? list[0].name : ''));
 
-    // 从时间戳查询上次点名时间（覆盖算法返回值，保证所有方式一致）
+    // 从时间戳查询上次点名时间
     if (options.timestamps && finalPerson) {
       lastPickedTime = options.timestamps[finalPerson.name] || null;
     }
 
-    // 彩带（立即释放，不等定格）
+    // 等待滚动动画真正结束
+    await decorativeDone;
+
+    // 彩带
     fireConfetti();
 
-    // 等待修饰动画定格
-    await delay(500);
+    await delay(300);
 
     // 直接在修饰层上追加签名和时间（不再用独立 display 层）
     if (window.PickerDisplay && decorativeEl && decorativeText) {
@@ -108,7 +110,7 @@
   var _decorTarget = null;
   var _decorResolve = null;
   var _decorStartTime = 0;
-  var _decorMinMs = 500; // 最短滚动时长
+  var _decorMinMs = 3000; // 最短滚动时长
 
   function startDecorative(list) {
     _decorRunning = true;
