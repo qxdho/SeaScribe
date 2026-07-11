@@ -117,9 +117,14 @@
       return;
     }
     _currentFileName = opt.getAttribute('data-filename') || '';
-    fetch(opt.value)
+    fetch(opt.value, { cache: 'no-store' })
       .then(function(r) { return r.text(); })
       .then(function(text) {
+        // DEBUG
+        console.log('[Picker] fetch 原始文本前300字:', JSON.stringify(text.substring(0, 300)));
+        var linesArr = text.split(/\r?\n/);
+        var withComma = linesArr.filter(function(l) { return l.indexOf(',') >= 0 && l.split(',')[1] && l.split(',')[1].trim(); });
+        console.log('[Picker] 含非空第二列的样本行:', withComma.slice(0, 5).map(function(l) { return JSON.stringify(l); }));
         _currentList = parseCSV(text);
         btnStart.disabled = _currentList.length === 0;
       })
@@ -140,6 +145,10 @@
       var cols = line.split(',');
       var name = (cols[0] || '').trim();
       var signature = (cols[1] || '').trim();
+      // DEBUG
+      if (signature) {
+        console.log('[Picker] parseCSV 签名行' + i + ': cols=' + JSON.stringify(cols) + ' → sig="' + signature + '"');
+      }
       if (name) {
         items.push({ name: name, signature: signature || '' });
       }
