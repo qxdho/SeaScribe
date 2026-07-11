@@ -414,11 +414,12 @@
   font-size: 1.05rem;
   font-weight: 600;
   line-height: 1.6;
-  padding: 12px;
+  padding: 14px;
   border: 2px solid rgba(255,255,255,0.2);
   border-radius: 12px;
   max-width: 600px;
   text-align: center;
+  animation: procStepIn 0.35s var(--ease);
 }
 
 .proc-rest-label {
@@ -437,11 +438,13 @@
   font-size: 2.5rem;
   font-weight: 800;
   margin-top: 12px;
+  animation: procStepIn 0.4s var(--ease);
 }
 
 .proc-result-name {
   font-size: 2.5rem;
   font-weight: 800;
+  animation: procStepIn 0.4s var(--ease);
 }
 
 .proc-result-sub {
@@ -536,4 +539,9 @@
 @keyframes pickShrinkToCorner {
   0%   { transform: translate(0, 0) scale(1); }
   100% { transform: translate(var(--dx), var(--dy)) scale(var(--scale)); }
+}
+
+@keyframes procStepIn {
+  0%   { opacity: 0; transform: translateY(8px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
 }
