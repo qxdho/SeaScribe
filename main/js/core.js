@@ -43,40 +43,23 @@ const SubjectRegistry = {
   },
 };
 
+// Shared HTML escape utility
+window.SeaScribe.esc = function(s) {
+  var d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+};
 
-// ---------- Dictation Engine ----------
-class DictationEngine {
 
-  constructor() {
-    this.currentItems = null;
-    this.currentMode  = null;
-    this.state = 'idle'; // idle | questioning | answering
+// ---------- Dictation Utilities ----------
+window.SeaScribe.shuffleAndPick = function(items, count) {
+  const arr = [...items];
+  const n = arr.length;
+  const limit = Math.min(count, n);
+  for (let i = n - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
-
-  /**
-   * Fisher-Yates shuffle + pick `count` items.
-   * Returns a NEW array; does not mutate the original.
-   *
-   * @param {Array} items
-   * @param {number} count
-   * @returns {Array}
-   */
-  shuffleAndPick(items, count) {
-    const arr = [...items];
-    const n = arr.length;
-    const limit = Math.min(count, n);
-
-    // Fisher-Yates shuffle
-    for (let i = n - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [arr[i], arr[j]] = [arr[j], arr[i]];
-    }
-
-    return arr.slice(0, limit);
-  }
-
-  setState(state) {
-    this.state = state;
-  }
-}
+  return arr.slice(0, limit);
+};
 

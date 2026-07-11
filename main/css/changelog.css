@@ -57,7 +57,7 @@
   color: var(--muted);
   display: flex;
   align-items: center; justify-content: center;
-  transition: background 0.15s, color 0.15s;
+  transition: background-color 0.15s, color 0.15s;
   z-index: 1;
 }
 .modal-close-x:hover {

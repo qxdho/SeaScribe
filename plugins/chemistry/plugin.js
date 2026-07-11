@@ -85,13 +85,13 @@ const ChemistryPlugin = {
   getRange() { return [this._rangeStart, this._rangeEnd]; },
 
   renderPrompt(item) {
-    return `<span class="card-symbol">${esc(item.symbol)}</span>
-            <span class="card-cn">${esc(item.name)}</span>`;
+    return `<span class="card-symbol">${SeaScribe.esc(item.symbol)}</span>
+            <span class="card-cn">${SeaScribe.esc(item.name)}</span>`;
   },
 
   renderAnswer(item) {
     return `<div class="a-line"><span class="a-label">电子式</span><span class="a-val">${this._fmtElectron(item.electron)}</span></div>
-            <div class="a-line"><span class="a-label">轨道式</span><span class="a-val orbital">${esc(item.orbital)}</span></div>`;
+            <div class="a-line"><span class="a-label">轨道式</span><span class="a-val orbital">${SeaScribe.esc(item.orbital)}</span></div>`;
   },
 
   configUI(container) {
@@ -204,7 +204,7 @@ const ChemistryPlugin = {
           }
           if (!allFiles.length) throw new Error('未找到 .csv 文件');
           fileSel.innerHTML = '<option value="">— 选择文件 —</option>' +
-            allFiles.map(f => `<option value="${esc(f.url)}">${esc(f.name)}</option>`).join('');
+            allFiles.map(f => `<option value="${SeaScribe.esc(f.url)}">${SeaScribe.esc(f.name)}</option>`).join('');
           fileSel.classList.remove('hidden');
           // 自动选中 elements.csv
           const def = allFiles.find(f => f.name === 'elements.csv') || allFiles[0];
@@ -292,10 +292,9 @@ const ChemistryPlugin = {
   _fmtElectron(text) {
     const m = {'¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁰':'0'};
     let o='',s=false;
-    for(const c of text){if(m[c]!==undefined){if(!s){o+='<sup>';s=true;}o+=m[c];}else{if(s){o+='</sup>';s=false;}o+=esc(c);}}
+    for(const c of text){if(m[c]!==undefined){if(!s){o+='<sup>';s=true;}o+=m[c];}else{if(s){o+='</sup>';s=false;}o+=SeaScribe.esc(c);}}
     if(s)o+='</sup>';
     return o;
   },
 };
 
-function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}

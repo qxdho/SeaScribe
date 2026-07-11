@@ -1,0 +1,75 @@
+/* ============================================================
+   SeaScribe Admin — Login Page
+   ============================================================ */
+
+#admin-login, #admin-bind {
+  position: fixed; inset: 0;
+  display: flex; flex-direction: column;
+  background: var(--bg);
+}
+
+/* ---- Login Topbar ---- */
+.admin-login-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 28px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+.admin-login-topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1.3rem; font-weight: 700;
+  letter-spacing: -0.02em;
+  text-decoration: none; color: inherit;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity 0.15s;
+}
+.admin-login-topbar-brand:hover { opacity: 0.7; }
+.admin-login-topbar-spacer { flex: 1; }
+
+/* ---- Login Body (center the card) ---- */
+.admin-login-body {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.admin-login-card {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 40px 36px;
+  width: 360px; max-width: 90vw;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  border: 1px solid var(--border);
+}
+.admin-login-logo { font-size: 3rem; }
+.admin-login-card h1 { font-size: 1.4rem; font-weight: 700; }
+.admin-login-sub { color: var(--muted); font-size: 0.85rem; margin-top: -8px; }
+.admin-login-field { width: 100%; display: flex; flex-direction: column; gap: 4px; }
+.admin-login-field label { font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+.admin-login-field input {
+  padding: 10px 14px; border: 1px solid var(--border);
+  border-radius: var(--radius); font-size: 0.95rem;
+  background: var(--surface); color: var(--text);
+  outline: none; transition: border-color 0.2s;
+}
+.admin-login-field input:focus { border-color: var(--dark); }
+.admin-login-field select {
+  padding: 10px 14px; border: 1px solid var(--border);
+  border-radius: var(--radius); font-size: 0.95rem;
+  background: var(--surface); color: var(--text);
+  outline: none; transition: border-color 0.2s;
+  font-family: inherit; cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+.admin-login-field select:focus { border-color: var(--dark); }
+.admin-login-error { color: #d63031; font-size: 0.82rem; text-align: center; }

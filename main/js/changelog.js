@@ -10,15 +10,10 @@
 
   document.getElementById('btn-changelog').addEventListener('click', function() {
     overlay.classList.remove('hidden');
-    fetch('docs/update.md')
+    fetch('UPDATE.md')
       .then(function(r) { return r.text(); })
       .then(function(md) {
-        body.innerHTML = md
-          .replace(/^### (.+)/gm, '<h3>$1</h3>')
-          .replace(/^## (.+)/gm, '<h3>$1</h3>')
-          .replace(/^# (.+)/gm, '<h2>$1</h2>')
-          .replace(/^- (.+)/gm, '<li>$1</li>')
-          .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+        body.innerHTML = window.SeaScribe.renderMarkdown(md);
       })
       .catch(function() { body.innerHTML = '<p>无法加载更新日志</p>'; });
   });

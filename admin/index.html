@@ -4,14 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SeaScribe 管理后台</title>
-<link rel="stylesheet" href="css/admin.css">
+<!-- Anti-flash: set theme before render -->
+<script>
+(function(){
+  var t = localStorage.getItem('seascribe_admin_theme') || 'light';
+  document.documentElement.setAttribute('data-theme', t);
+})();
+</script>
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="../main/css/theme.css">
+<link rel="stylesheet" href="css/login.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/config.css">
+<link rel="stylesheet" href="css/responsive.css">
 </head>
 <body>
 
 <!-- ====== 登录页 ====== -->
-<div id="admin-login" class="admin-login">
+<div id="admin-login">
+  <div class="admin-login-topbar">
+    <a class="admin-login-topbar-brand" href="/" title="回到主站"><img src="../main/logo.png" alt="SeaScribe" style="width:1.1em;height:1.1em">SeaScribe</a>
+    <span class="admin-login-topbar-spacer"></span>
+    <button id="btn-theme-login" class="admin-btn admin-btn-ghost admin-btn-sm" title="切换夜间模式">🌙</button>
+  </div>
+  <div class="admin-login-body">
   <div class="admin-login-card">
-    <div class="admin-login-logo">⚓</div>
+    <div class="admin-login-logo"><img src="../main/logo.png" alt="SeaScribe" style="width:64px;height:64px"></div>
     <h1>SeaScribe</h1>
     <p class="admin-login-sub">管理后台</p>
     <div class="admin-login-field">
@@ -20,20 +39,57 @@
     </div>
     <div class="admin-login-field">
       <label for="login-password">密码</label>
-      <input type="password" id="login-password" placeholder="输入密码" autocomplete="current-password">
+      <div style="position:relative">
+        <input type="password" id="login-password" placeholder="输入密码" autocomplete="current-password" style="width:100%;padding-right:36px">
+        <button type="button" id="login-toggle-pw" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;padding:0;line-height:1;color:var(--muted)" title="显示密码">👁</button>
+      </div>
     </div>
     <p id="login-error" class="admin-login-error hidden"></p>
     <button id="login-submit" class="admin-btn admin-btn-primary">登 录</button>
   </div>
+  </div><!-- .admin-login-body -->
 </div>
+
+<!-- ====== 绑定姓名（首次登录，displayName 为空时显示） ====== -->
+<div id="admin-bind" class="hidden">
+  <div class="admin-login-topbar">
+    <a class="admin-login-topbar-brand" href="/" title="回到主站"><img src="../main/logo.png" alt="SeaScribe" style="width:1.1em;height:1.1em">SeaScribe</a>
+    <span class="admin-login-topbar-spacer"></span>
+    <button id="btn-theme-bind" class="admin-btn admin-btn-ghost admin-btn-sm" title="切换夜间模式">🌙</button>
+  </div>
+  <div class="admin-login-body">
+  <div class="admin-login-card">
+    <div class="admin-login-logo">👤</div>
+    <h1>绑定姓名</h1>
+    <p class="admin-login-sub">从名单中选择班级和姓名，用于点名系统匹配</p>
+    <div class="admin-login-field">
+      <label for="bind-class">班级</label>
+      <select id="bind-class">
+        <option value="">— 选择班级 —</option>
+      </select>
+    </div>
+    <div class="admin-login-field">
+      <label for="bind-displayname">姓名</label>
+      <select id="bind-displayname">
+        <option value="">— 先选择班级 —</option>
+      </select>
+    </div>
+    <p id="bind-error" class="admin-login-error hidden"></p>
+    <button id="bind-submit" class="admin-btn admin-btn-primary" disabled>确认绑定</button>
+  </div>
+  </div><!-- .admin-login-body -->
+</div>
+
+<div id="admin-toast-area"></div>
 
 <!-- ====== 管理面板 ====== -->
 <div id="admin-app" class="admin-app hidden">
   <header class="admin-topbar">
-    <span class="admin-topbar-brand">⚓ SeaScribe <small>管理后台</small></span>
+    <a class="admin-topbar-brand" href="/" title="回到主站"><img class="admin-topbar-logo" src="../main/logo.png" alt="">SeaScribe</a><span class="admin-topbar-version">管理后台</span>
     <nav id="admin-nav" class="admin-nav"></nav>
     <span class="admin-topbar-spacer"></span>
     <div class="admin-user-info" id="admin-user-info"></div>
+    <button id="btn-theme" class="admin-btn admin-btn-ghost admin-btn-sm" title="切换夜间模式">🌙</button>
     <button id="admin-logout-btn" class="admin-btn admin-btn-ghost admin-btn-sm">退出登录</button>
   </header>
   <main class="admin-main">
@@ -42,11 +98,14 @@
 </div>
 
 <script src="js/common.js"></script>
+<script src="js/router.js"></script>
+<script src="js/pages/profile.js"></script>
+<script src="js/pages/users.js"></script>
+<script src="js/pages/config.js"></script>
+<script src="js/pages/files.js"></script>
+<script src="js/pages/records.js"></script>
+<script src="js/pages/roster.js"></script>
 <script src="js/auth.js"></script>
-<script src="js/profile.js"></script>
-<script src="js/users.js"></script>
-<script src="js/config.js"></script>
-<script src="js/files.js"></script>
-<script src="js/dashboard.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>

@@ -1,0 +1,9 @@
+/* ============================================================
+   SeaScribe Admin — Responsive
+   ============================================================ */
+
+@media (max-width: 700px) {
+  .admin-topbar { flex-wrap: wrap; padding: 10px 16px; }
+  .admin-nav { order: 10; width: 100%; overflow-x: auto; }
+  .admin-content { padding: 16px; }
+}

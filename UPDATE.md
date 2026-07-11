@@ -1,5 +1,39 @@
 # SeaScribe 更新日志
 
+## v4.2.0
+
+### 代码优化
+- 统一 HTML 转义函数：`SeaScribe.esc()` 消除 4 处重复定义
+- 修复 `records.js` 重复加载
+- 简化 `DictationEngine` 类为 `SeaScribe.shuffleAndPick()` 普通函数
+- 抽取统一 Markdown 渲染器 `main/js/markdown.js`，`about.js` 和 `changelog.js` 共用
+- 管理后台复用主站主题 CSS 变量，消除重复定义
+- `picker.css` 从 `main/js/picker/` 移至 `main/css/`
+- 主题切换逻辑提取为 `Admin.toggleTheme()`，与主站 `SeaScribe.applyTheme()` 对齐
+- CSS `transition` 属性统一使用 `background-color` 替代缩写 `background`
+- 删除点名系统 `parseCSV()` 死代码（已迁移至 JSON 名册 API）
+- 删除 `.topbar-author` 死 CSS 规则
+
+### Bug 修复
+- 修复 `server.py` logout 接口引用未定义变量导致 500 错误
+- 修复 `server.py` `list_directory` 方法复制粘贴残留死代码
+- 修复 `cards.js` `configUI` 调用传入多余参数
+- 修复 `timestamp.js` JSDoc 注释过时（`.csv` 后缀）
+
+### 文档更新
+- 移除 `docs/` 目录，文档移至根目录（`UPDATE.md`、`PLUGINS.md`、`RULES.md`）
+- README 修正离线限制说明（学科数据需 HTTP 服务器）
+- PLUGINS.md 更新 `_scanDir` 说明（需自行实现）
+- RULES.md 更新名单规范（CSV → JSON roster）、目录结构、文件计数
+
+### 界面增强
+- 学生资料页新增班级显示
+- 用户管理页新增用户ID、班级列和筛选功能
+- 登录页和绑定页新增顶栏（logo + 主题切换）
+- 深色模式下禁用输入框不再白底突兀
+- 主题切换添加平滑过渡动画
+
+---
 ## 近期更新
 
 ### 界面优化

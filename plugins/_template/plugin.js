@@ -44,16 +44,16 @@ const MyPlugin = {
   getRange() { return [this._rangeStart, this._rangeEnd]; },
 
   renderPrompt(item) {
-    return `<strong>${esc(item.prompt)}</strong>`;
+    return `<strong>${SeaScribe.esc(item.prompt)}</strong>`;
   },
 
   renderAnswer(item) {
-    return `<div class="a-line"><span class="a-label">答案</span><span class="a-val">${esc(item.answer)}</span></div>`;
+    return `<div class="a-line"><span class="a-label">答案</span><span class="a-val">${SeaScribe.esc(item.answer)}</span></div>`;
   },
 
   configUI(container) {
     const opts = this._data.map((el,i) =>
-      `<option value="${i}">${esc(el.prompt)}</option>`).join('');
+      `<option value="${i}">${SeaScribe.esc(el.prompt)}</option>`).join('');
     container.innerHTML = `
       <span class="ctrl-label">范围</span>
       <select class="range-select" id="range-start">${opts}</select>
@@ -75,4 +75,4 @@ const MyPlugin = {
   },
 };
 
-function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+

@@ -1,0 +1,248 @@
+/* ============================================================
+   SeaScribe Admin — Users Management Page (admin only)
+   ============================================================ */
+
+(function() {
+
+var _allUsers = [];
+var _classMap = {};   // displayName -> className
+
+function render() {
+  var content = document.getElementById('admin-content');
+  content.innerHTML =
+    '<div class="admin-card">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">' +
+        '<h3 style="margin:0">👥 用户管理</h3>' +
+        '<button id="users-add-btn" class="admin-btn admin-btn-primary admin-btn-sm">+ 新建用户</button>' +
+      '</div>' +
+      '<div id="users-filter-bar" style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center">' +
+        '<input type="text" id="users-filter-search" placeholder="🔍 搜索用户名/姓名/昵称…" style="flex:1;min-width:160px;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:0.85rem;background:var(--surface);color:var(--text)">' +
+        '<select id="users-filter-role" style="padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:0.85rem;background:var(--surface);color:var(--text)">' +
+          '<option value="">全部角色</option>' +
+          '<option value="admin">管理员</option>' +
+          '<option value="teacher">教师</option>' +
+          '<option value="student">学生</option>' +
+        '</select>' +
+        '<select id="users-filter-class" style="padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:0.85rem;background:var(--surface);color:var(--text)">' +
+          '<option value="">全部班级</option>' +
+        '</select>' +
+      '</div>' +
+      '<div id="users-table-wrap"></div>' +
+    '</div>' +
+    '<div id="users-form-card" class="admin-card hidden"></div>';
+
+  document.getElementById('users-add-btn').addEventListener('click', function() {
+    renderForm(null);
+  });
+
+  // Filter listeners
+  document.getElementById('users-filter-search').addEventListener('input', applyFilter);
+  document.getElementById('users-filter-role').addEventListener('change', applyFilter);
+  document.getElementById('users-filter-class').addEventListener('change', applyFilter);
+
+  loadData();
+}
+
+async function loadData() {
+  // Load roster for class mapping, then load users
+  var rosterRes = await Admin.api('/api/admin/roster');
+  _classMap = {};
+  if (rosterRes.ok) {
+    var roster = rosterRes.data;
+    for (var cls in roster) {
+      var students = roster[cls];
+      students.forEach(function(s) {
+        _classMap[s.name] = cls;
+      });
+    }
+    // Populate class filter
+    var classSelect = document.getElementById('users-filter-class');
+    if (classSelect) {
+      var classes = Object.keys(roster).sort();
+      classSelect.innerHTML = '<option value="">全部班级</option>';
+      classes.forEach(function(c) {
+        classSelect.appendChild(new Option(c, c));
+      });
+    }
+  }
+
+  var res = await Admin.api('/api/admin/users');
+  if (!res.ok) return;
+  _allUsers = res.data;
+  applyFilter();
+}
+
+function applyFilter() {
+  var searchEl = document.getElementById('users-filter-search');
+  var roleEl = document.getElementById('users-filter-role');
+  var classEl = document.getElementById('users-filter-class');
+  var search = (searchEl ? searchEl.value.trim().toLowerCase() : '');
+  var role = roleEl ? roleEl.value : '';
+  var cls = classEl ? classEl.value : '';
+
+  var filtered = _allUsers.filter(function(u) {
+    if (role && u.role !== role) return false;
+    if (cls) {
+      var uc = _classMap[u.displayName] || '';
+      if (uc !== cls) return false;
+    }
+    if (search) {
+      var hay = (u.username + ' ' + (u.displayName || '') + ' ' + (u.nickname || '')).toLowerCase();
+      if (hay.indexOf(search) === -1) return false;
+    }
+    return true;
+  });
+
+  renderTable(filtered);
+}
+
+function renderTable(users) {
+  var html = '<table class="admin-table"><thead><tr><th>头像</th><th>用户ID</th><th>用户名</th><th>姓名</th><th>昵称</th><th>班级</th><th>签名</th><th>角色</th><th>操作</th></tr></thead><tbody>';
+  if (!users.length) {
+    html += '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:24px">无匹配用户</td></tr>';
+  } else {
+    users.forEach(function(u) {
+      html += '<tr>' +
+        '<td>' + avatarCell(u) + '</td>' +
+        '<td style="font-size:0.75rem;color:var(--muted)"><code>' + Admin.esc(u.uid || '—') + '</code></td>' +
+        '<td><code>' + Admin.esc(u.username) + '</code></td>' +
+        '<td>' + Admin.esc(u.displayName || '—') + '</td>' +
+        '<td>' + Admin.esc(u.nickname || '—') + '</td>' +
+        '<td>' + Admin.esc(_classMap[u.displayName] || '—') + '</td>' +
+        '<td>' + Admin.esc(u.signature || '—') + '</td>' +
+        '<td>' + roleBadge(u.role) + '</td>' +
+        '<td>' +
+          '<button class="admin-btn admin-btn-outline admin-btn-sm" data-edit="' + u.username + '">编辑</button> ' +
+          '<button class="admin-btn admin-btn-danger admin-btn-sm" data-del="' + u.username + '">删除</button>' +
+        '</td>' +
+      '</tr>';
+    });
+  }
+  html += '</tbody></table>';
+  document.getElementById('users-table-wrap').innerHTML = html;
+
+  document.querySelectorAll('[data-edit]').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      renderForm(this.dataset.edit);
+    });
+  });
+  document.querySelectorAll('[data-del]').forEach(function(btn) {
+    btn.addEventListener('click', async function() {
+      var name = this.dataset.del;
+      if (!confirm('确定删除用户「' + name + '」吗？此操作不可撤销。')) return;
+      var res = await Admin.api('/api/admin/users/' + name + '/delete', { method: 'POST' });
+      if (res.ok) loadData();
+      else Admin.toast(res.data.error || '删除失败');
+    });
+  });
+}
+
+function avatarCell(u) {
+  var a = u.avatar || '';
+  if (!a) return '<span style="opacity:0.3">—</span>';
+  if (/^https?:\/\//.test(a)) return '<img src="' + Admin.esc(a) + '" class="admin-avatar">';
+  if (/^\/admin\/_store\/avatars\//.test(a)) return '<img src="' + Admin.esc(a) + '" class="admin-avatar">';
+  return '<span style="font-size:1.3rem">' + Admin.esc(a) + '</span>';
+}
+
+function roleBadge(role) {
+  var labels = { admin: '管理员', teacher: '教师', student: '学生' };
+  return '<span style="font-size:0.78rem;font-weight:600;color:var(--text)">' + (labels[role] || role) + '</span>';
+}
+
+function renderForm(username) {
+  var isEdit = !!username;
+  var card = document.getElementById('users-form-card');
+  card.classList.remove('hidden');
+  card.innerHTML =
+    '<h3>' + (isEdit ? '编辑用户 ' + Admin.esc(username) : '新建用户') + '</h3>' +
+    '<div class="admin-form-group">' +
+      '<label for="uform-username">用户名（英文）</label>' +
+      '<input type="text" id="uform-username" name="username" autocomplete="username" ' + (isEdit ? 'disabled' : '') + ' placeholder="用户名">' +
+    '</div>' +
+    '<div class="admin-form-group" id="uform-dn-group">' +
+      '<label for="uform-displayname">姓名（绑定点名名单，不可重复）</label>' +
+      '<input type="text" id="uform-displayname" name="displayname" placeholder="名单中的姓名">' +
+    '</div>' +
+    '<div class="admin-form-group">' +
+      '<label for="uform-nickname">昵称</label>' +
+      '<input type="text" id="uform-nickname" name="nickname" placeholder="给自己起个名字">' +
+    '</div>' +
+    '<div class="admin-form-row">' +
+      '<div class="admin-form-group">' +
+        '<label for="uform-role">角色</label>' +
+        '<select id="uform-role" name="role"' + (isEdit && username === Admin.getSession().user.username ? ' disabled' : '') + '>' +
+          '<option value="student">学生</option>' +
+          '<option value="teacher">教师</option>' +
+          '<option value="admin">管理员</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="admin-form-group">' +
+        '<label for="uform-password">密码' + (isEdit ? '（留空不修改）' : '') + '</label>' +
+        '<input type="password" id="uform-password" name="password" placeholder="' + (isEdit ? '留空不修改' : '默认 123456') + '" autocomplete="new-password">' +
+      '</div>' +
+    '</div>' +
+    '<div style="display:flex;gap:8px;margin-top:12px">' +
+      '<button id="uform-save" class="admin-btn admin-btn-primary admin-btn-sm">保存</button>' +
+      '<button id="uform-cancel" class="admin-btn admin-btn-ghost admin-btn-sm">取消</button>' +
+    '</div>';
+
+  document.getElementById('uform-cancel').addEventListener('click', function() {
+    card.classList.add('hidden');
+  });
+
+  var roleSel = document.getElementById('uform-role');
+  function toggleDN() {
+    document.getElementById('uform-dn-group').style.display = roleSel.value === 'student' ? '' : 'none';
+  }
+  roleSel.addEventListener('change', toggleDN);
+  toggleDN();
+
+  if (isEdit) {
+    Admin.api('/api/admin/users/' + username).then(function(res) {
+      if (res.ok) {
+        document.getElementById('uform-username').value = res.data.username;
+        document.getElementById('uform-displayname').value = res.data.displayName || '';
+        document.getElementById('uform-nickname').value = res.data.nickname || '';
+        document.getElementById('uform-role').value = res.data.role || 'student';
+        toggleDN();
+      }
+    });
+    document.getElementById('uform-save').addEventListener('click', async function() {
+      var body = {
+        displayName: document.getElementById('uform-displayname').value.trim(),
+        nickname: document.getElementById('uform-nickname').value.trim(),
+        role: document.getElementById('uform-role').value,
+      };
+      var pw = document.getElementById('uform-password').value.trim();
+      if (pw) body.password = [redacted];
+      var res = await Admin.api('/api/admin/users/' + username, { method: 'POST', body: body });
+      if (res.ok) { card.classList.add('hidden'); loadData(); }
+      else Admin.toast(res.data.error || '保存失败');
+    });
+  } else {
+    document.getElementById('uform-save').addEventListener('click', async function() {
+      var body = {
+        username: document.getElementById('uform-username').value.trim(),
+        displayName: document.getElementById('uform-displayname').value.trim(),
+        nickname: document.getElementById('uform-nickname').value.trim(),
+        role: document.getElementById('uform-role').value,
+      };
+      var pw = document.getElementById('uform-password').value.trim();
+      if (pw) body.password = [redacted];
+      var res = await Admin.api('/api/admin/users', { method: 'POST', body: body });
+      if (res.ok) { card.classList.add('hidden'); loadData(); }
+      else Admin.toast(res.data.error || '保存失败');
+    });
+  }
+}
+
+PageRegistry.register({
+  id: 'users',
+  label: '用户管理',
+  icon: '👥',
+  roles: ['admin'],
+  render: render,
+});
+
+})();

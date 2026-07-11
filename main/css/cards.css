@@ -54,7 +54,7 @@
   padding: 18px 16px;
   display: flex; flex-direction: column; gap: 8px;
   animation: fadeUp 0.4s var(--ease) both;
-  transition: background 0.3s, border-color 0.3s;
+  transition: background-color 0.3s, border-color 0.3s;
   min-width: 0;
 }
 

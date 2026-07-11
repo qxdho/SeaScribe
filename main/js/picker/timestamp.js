@@ -8,7 +8,7 @@
 
   /**
    * 从服务端读取班级时间戳
-   * @param {string} listName — 如 "11班.csv"
+   * @param {string} listName — 如 "11班"
    * @returns {Promise<Object>} — { "张三": "2024-06-15T10:30:00", ... }
    */
   async function load(listName) {
@@ -24,7 +24,7 @@
 
   /**
    * 保存时间戳到服务端（仅记录当前这个人）
-   * @param {string} listName — 如 "11班.csv"
+   * @param {string} listName — 如 "11班"
    * @param {Object} person — { name, signature }
    */
   async function save(listName, person) {
@@ -47,7 +47,7 @@
 
   /**
    * 清空某个班级的全部时间戳
-   * @param {string} listName — 如 "11班.csv"
+   * @param {string} listName — 如 "11班"
    */
   async function clear(listName) {
     try {

@@ -17,7 +17,6 @@
   var btnStart = document.getElementById('picker-start');
   var timestampCheck = document.getElementById('picker-timestamp');
   var btnTsView = document.getElementById('picker-ts-view');
-  var btnTsClear = document.getElementById('picker-ts-clear');
   var tsPanel = document.getElementById('picker-ts-panel');
   var tsBody = document.getElementById('picker-ts-body');
   var methodRadios, processModeRadios;
@@ -35,8 +34,8 @@
       return '<label class="picker-radio-item">' +
         '<input type="radio" name="picker-method" value="' + escAttr(m.id) + '"' + checked + '>' +
         '<span class="picker-radio-item-label">' +
-          '<span class="title">' + esc(m.name) + '</span>' +
-          '<span class="desc">' + esc(m.desc) + '</span>' +
+          '<span class="title">' + SeaScribe.esc(m.name) + '</span>' +
+          '<span class="desc">' + SeaScribe.esc(m.desc) + '</span>' +
         '</span>' +
       '</label>';
     }).join('');
@@ -44,13 +43,13 @@
     // 修饰动画 select
     decorativeSelect.innerHTML = (cfg.decorativeAnimations || []).map(function(a) {
       var sel = a.id === cfg.defaultDecorative ? ' selected' : '';
-      return '<option value="' + escAttr(a.id) + '"' + sel + '>' + esc(a.name) + '</option>';
+      return '<option value="' + escAttr(a.id) + '"' + sel + '>' + SeaScribe.esc(a.name) + '</option>';
     }).join('');
 
     // 过程动画模式 radio
     processModeGroup.innerHTML = (cfg.processModes || []).map(function(m) {
       var chk = m.id === cfg.processMode ? ' checked' : '';
-      return '<label><input type="radio" name="picker-process-mode" value="' + escAttr(m.id) + '"' + chk + '><span>' + esc(m.name) + '</span></label>';
+      return '<label><input type="radio" name="picker-process-mode" value="' + escAttr(m.id) + '"' + chk + '><span>' + SeaScribe.esc(m.name) + '</span></label>';
     }).join('');
     processModeGroup.classList.add('collapsed');
 
@@ -71,22 +70,19 @@
   /* ====== 扫描名单文件 ====== */
   function scanFiles() {
     listSelect.innerHTML = '<option value="">扫描中…</option>';
-    fetch('/api/stdlist-files')
+    fetch('/api/roster/classes')
       .then(function(r) { return r.json(); })
-      .then(function(files) {
-        var csvFiles = files.filter(function(f) { return /\.csv$/i.test(f.name); });
-        if (!csvFiles.length) {
-          listSelect.innerHTML = '<option value="">无名单文件</option>';
+      .then(function(classes) {
+        if (!classes.length) {
+          listSelect.innerHTML = '<option value="">无班级数据</option>';
           btnStart.disabled = true;
           return;
         }
         listSelect.innerHTML = '<option value="">— 选择班级 —</option>' +
-          csvFiles.map(function(f) {
-            var label = f.name.replace(/\.csv$/i, '');
-            return '<option value="' + escAttr(f.url) + '" data-filename="' + escAttr(f.name) + '">' + esc(label) + '</option>';
+          classes.map(function(c) {
+            return '<option value="' + escAttr(c) + '">' + SeaScribe.esc(c) + '</option>';
           }).join('');
         btnStart.disabled = true;
-        // 自动选择最后一个
         var opts = listSelect.options;
         if (opts.length > 1) {
           listSelect.selectedIndex = opts.length - 1;
@@ -94,7 +90,7 @@
         }
       })
       .catch(function() {
-        listSelect.innerHTML = '<option value="">扫描失败</option>';
+        listSelect.innerHTML = '<option value="">加载失败</option>';
         btnStart.disabled = true;
       });
   }
@@ -108,19 +104,15 @@
       btnStart.disabled = true;
       return;
     }
-    _currentFileName = opt.getAttribute('data-filename') || '';
-    fetch(opt.value + '?t=' + Date.now(), { cache: 'no-store' })
-      .then(function(r) { return r.text(); })
-      .then(function(text) {
-        // DEBUG
-        console.log('[Picker] fetch 原始文本前300字:', JSON.stringify(text.substring(0, 300)));
-        var linesArr = text.split(/\r?\n/);
-        var withComma = linesArr.filter(function(l) { return l.indexOf(',') >= 0 && l.split(',')[1] && l.split(',')[1].trim(); });
-        console.log('[Picker] 含非空第二列的样本行:', withComma.slice(0, 5).map(function(l) { return JSON.stringify(l); }));
-        _currentList = parseCSV(text);
+    _currentFileName = opt.value;
+    fetch('/api/roster/' + encodeURIComponent(opt.value))
+      .then(function(r) { return r.json(); })
+      .then(function(students) {
+        _currentList = students.map(function(s) {
+          return { name: s.name, signature: s.signature || '' };
+        });
         btnStart.disabled = _currentList.length === 0;
         btnTsView.disabled = _currentList.length === 0;
-        btnTsClear.disabled = _currentList.length === 0;
         tsPanel.classList.add('hidden');
       })
       .catch(function(err) {
@@ -128,7 +120,6 @@
         _currentList = [];
         btnStart.disabled = true;
         btnTsView.disabled = true;
-        btnTsClear.disabled = true;
       });
   });
 
@@ -143,51 +134,15 @@
       names.sort(function(a, b) { return (ts[b] || '').localeCompare(ts[a] || ''); });
       tsBody.innerHTML = names.map(function(n) {
         var t = PickerTimestamp.format(ts[n]) || '—';
-        return '<div class="picker-ts-row"><span class="picker-ts-name">' + esc(n) + '</span><span class="picker-ts-time">' + t + '</span></div>';
+        return '<div class="picker-ts-row"><span class="picker-ts-name">' + SeaScribe.esc(n) + '</span><span class="picker-ts-time">' + t + '</span></div>';
       }).join('');
     }
     tsPanel.classList.remove('hidden');
   });
 
-  btnTsClear.addEventListener('click', async function() {
-    if (!_currentFileName) return;
-    if (!confirm('确定要清空「' + _currentFileName.replace(/\.csv$/i, '') + '」的全部点名记录吗？')) return;
-    await PickerTimestamp.clear(_currentFileName);
-    tsPanel.classList.add('hidden');
-    alert('已清空');
-  });
-
   document.getElementById('picker-ts-panel-close').addEventListener('click', function() {
     tsPanel.classList.add('hidden');
   });
-
-  /* ====== 解析 CSV：第1列=姓名，第2列=个性签名 ====== */
-  function parseCSV(text) {
-    var items = [];
-    var lines = text.split(/\r?\n/);
-    for (var i = 0; i < lines.length; i++) {
-      var line = lines[i].trim();
-      if (!line) continue;
-      var cols = line.split(',');
-      var name = (cols[0] || '').trim();
-      var signature = (cols[1] || '').trim();
-      // DEBUG
-      if (signature) {
-        console.log('[Picker] parseCSV 签名行' + i + ': cols=' + JSON.stringify(cols) + ' → sig="' + signature + '"');
-      }
-      if (name) {
-        items.push({ name: name, signature: signature || '' });
-      }
-    }
-    var withSig = items.filter(function(p) { return p.signature; });
-    console.log('[Picker] 解析完成: ' + items.length + ' 人, 有签名: ' + withSig.length + ' 人');
-    if (withSig.length > 0) {
-      console.log('[Picker] 签名样本:', withSig.slice(0, 3).map(function(p) {
-        return p.name + ' → "' + p.signature + '"';
-      }));
-    }
-    return items;
-  }
 
   /* ====== 过程动画开关联动 ====== */
   showProcessCheck.addEventListener('change', function() {
@@ -244,12 +199,6 @@
       if (radios[i].checked) return radios[i].value;
     }
     return defaultVal;
-  }
-
-  function esc(s) {
-    var d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
   }
 
   function escAttr(s) {

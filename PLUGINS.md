@@ -169,10 +169,10 @@ const MyPlugin = {
   async loadData() { return this._data; },
 
   renderPrompt(item) {
-    return `<span>${esc(item.prompt)}</span>`;
+    return `<span>${SeaScribe.esc(item.prompt)}</span>`;
   },
   renderAnswer(item) {
-    return `<div class="a-line"><span class="a-label">答案</span><span class="a-val">${esc(item.answer)}</span></div>`;
+    return `<div class="a-line"><span class="a-label">答案</span><span class="a-val">${SeaScribe.esc(item.answer)}</span></div>`;
   },
 };
 ```
@@ -205,7 +205,7 @@ const MyPlugin = {
 ]
 ```
 
-插件在 `config.js` 中配置 `scanURLs` 即可使用。插件内通过 `_scanDir(url)` 获取文件列表，通过 `_fetchFile(url)` 下载文件。
+插件在 `config.js` 中配置 `scanURLs` 即可使用。插件内需自行实现 `_scanDir(url)` 和文件下载逻辑（参考 `chemistry/plugin.js` 和 `english/plugin.js`）。
 
 ---
 
@@ -238,7 +238,7 @@ const MyPlugin = {
 1. 网页版听写，多学科，随机出题，显示答案 ✅
 2. 全班默写用，不计分；英语 Excel 导入 ✅；化学合并 ✅
 3. 命名 SeaScribe，署名 谦虚の海鸥 ✅
-4. 双击即用（数据内联）✅
+4. 双击即用（数据内联 + 网络加载）✅
 5. 简约单页，答案同卡展开 ✅
 6. 范围选择 ✅、字号无极 ✅、夜间模式 ✅
 7. 步进器+键盘输入 ✅、字号滑块+按钮 ✅
@@ -259,6 +259,6 @@ const MyPlugin = {
 22. 卡片序号跟随字号缩放 ✅
 23. URL hash 路由 ✅
 24. 开屏启动检查 ✅
-25. 更新日志读取 update.md ✅
+25. 更新日志读取 UPDATE.md ✅
 26. 代码模块化拆分，CSS/JS 按职责分文件 ✅
 27. 化学数据 CSV 化，可编辑可导入 ✅

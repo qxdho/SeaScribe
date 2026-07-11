@@ -10,7 +10,7 @@
   border-bottom: 1px solid var(--border);
   background: var(--surface);
   flex-wrap: wrap;
-  transition: background 0.3s, border-color 0.3s;
+  transition: background-color 0.3s, border-color 0.3s;
 }
 
 .topbar-brand {
@@ -44,7 +44,6 @@
   user-select: none;
 }
 
-.topbar-author { font-size: 0.8rem; color: var(--muted); font-style: italic; }
 .topbar-spacer { flex: 1; }
 
 .topbar-btn {
@@ -55,7 +54,7 @@
   cursor: pointer;
   font-size: 0.9rem;
   color: var(--text);
-  transition: background 0.2s;
+  transition: background-color 0.2s;
 }
 .topbar-btn:hover { background: var(--hover); }
 
@@ -69,7 +68,7 @@
   color: var(--text);
   display: flex;
   align-items: center; justify-content: center;
-  transition: background 0.15s, border-color 0.15s;
+  transition: background-color 0.15s, border-color 0.15s;
 }
 .tool-btn:hover { background: var(--hover); }
 
@@ -109,7 +108,7 @@
   color: var(--text);
   text-align: left;
   white-space: nowrap;
-  transition: background 0.12s;
+  transition: background-color 0.12s;
 }
 .more-item:hover { background: var(--hover); }
 

@@ -1,17 +1,18 @@
 """
-SeaScribe 静态服务器 + 插件文件列表 API + 管理后台 API
-用法: python server.py 9360
+SeaScribe 闈欐�佹湇鍔″櫒 + 鎻掍欢鏂囦欢鍒楄〃 API + 绠＄悊鍚庡彴 API
+鐢ㄦ硶: python server.py 9360
 """
 import base64
 import hashlib
 import http.server
 import json
 import os
+from socketserver import ThreadingMixIn
 import re
 import secrets
 import sys
 import time
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, unquote
 
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 9360
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -22,8 +23,13 @@ ENGLISH_DIR = os.path.join(DATA, 'english')
 AVATAR_DIR = os.path.join(STORE_DIR, 'avatars')
 USERS_PATH = os.path.join(STORE_DIR, 'users.json')
 SESSIONS_PATH = os.path.join(STORE_DIR, 'sessions.json')
+ROSTER_DIR = os.path.join(STORE_DIR, 'roster')
 MAX_BODY = 60 * 1024 * 1024
 MAX_BODY_API = 1 * 1024 * 1024
+
+class ThreadedHTTPServer(ThreadingMixIn, http.server.HTTPServer):
+    """多线程 HTTP 服务器，支持并发请求"""
+    daemon_threads = True
 
 _TEXT_EXTS = {
     '.html': 'text/html', '.css': 'text/css', '.js': 'application/javascript',
@@ -57,6 +63,15 @@ def _find_user_by_name(username):
     uid = users.get('by_name', {}).get(username)
     if uid:
         return uid, users['by_id'].get(uid)
+    return None, None
+
+def _find_user_by_displayname(displayName):
+    if not displayName:
+        return None, None
+    users = _load_users()
+    for uid, u in users.get('by_id', {}).items():
+        if u.get('displayName', '') == displayName:
+            return uid, u
     return None, None
 
 def _new_uid():
@@ -94,10 +109,11 @@ def _clean_expired_sessions():
     if changed:
         _write_json(SESSIONS_PATH, sessions)
 
-def _make_session(username, uid, nickname, displayName, avatar, role):
+def _make_session(username, uid, nickname, displayName, avatar, role, signature):
     return {
         'username': username, 'uid': uid, 'nickname': nickname,
         'displayName': displayName, 'avatar': avatar, 'role': role,
+        'signature': signature,
         'expires_at': int(time.time()) + 4 * 3600,
     }
 
@@ -187,7 +203,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.send_error(403, 'Forbidden')
             return
 
-        # /favicon.ico → /main/logo.png
+        # /favicon.ico 鈫?/main/logo.png
         if path == '/favicon.ico':
             self.send_response(301)
             self.send_header('Location', '/main/logo.png')
@@ -206,6 +222,94 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.send_json(200, files)
             return
 
+        # ====== Roster (names pool) ======
+        if path == '/api/roster/classes':
+            classes = []
+            if os.path.isdir(ROSTER_DIR):
+                for f in os.listdir(ROSTER_DIR):
+                    if f.endswith('.json'):
+                        classes.append(f[:-5])
+            self.send_json(200, sorted(classes))
+            return
+
+        m = re.match(r'^/api/roster/(.+)$', path)
+        if m:
+            cls = unquote(m.group(1))
+            fname = os.path.join(ROSTER_DIR, _safe_filename(cls) + '.json')
+            self.send_json(200, _read_json(fname))
+            return
+
+        if path == '/api/user/last-pick':
+            user = _require_auth(self)
+            if not user: return
+            dn = user.get('displayName', '')
+            if not dn:
+                self.send_json(200, {'time': None})
+                return
+            # Search all picker timestamp files
+            latest = None
+            if os.path.isdir(PICKER_DIR):
+                for f in os.listdir(PICKER_DIR):
+                    if f.endswith('.json'):
+                        ts = _read_json(os.path.join(PICKER_DIR, f))
+                        if dn in ts:
+                            t = ts[dn]
+                            if not latest or t > latest:
+                                latest = t
+            self.send_json(200, {'time': latest})
+            return
+
+        if path == '/api/user/class':
+            user = _require_auth(self)
+            if not user: return
+            dn = user.get('displayName', '')
+            if not dn:
+                self.send_json(200, {'className': None})
+                return
+            className = None
+            if os.path.isdir(ROSTER_DIR):
+                for f in os.listdir(ROSTER_DIR):
+                    if f.endswith('.json'):
+                        rd = _read_json(os.path.join(ROSTER_DIR, f))
+                        for s in rd:
+                            if s.get('name', '') == dn:
+                                className = f[:-5]
+                                break
+                    if className:
+                        break
+            self.send_json(200, {'className': className})
+            return
+
+        if path == '/api/admin/roster':
+            user = _require_role(self, 'admin')
+            if not user: return
+            # Read all class files, return as {className: [...]}
+            result = {}
+            if os.path.isdir(ROSTER_DIR):
+                for f in os.listdir(ROSTER_DIR):
+                    if f.endswith('.json'):
+                        result[f[:-5]] = _read_json(os.path.join(ROSTER_DIR, f))
+            self.send_json(200, result)
+            return
+
+        if path == '/api/user-signatures':
+            names_str = params.get('names', [''])[0]
+            if not names_str:
+                self.send_json(200, {})
+                return
+            names = [n.strip() for n in names_str.split(',') if n.strip()]
+            users = _load_users()
+            result = {}
+            for u in users.get('by_id', {}).values():
+                dn = u.get('displayName', '')
+                if dn and dn in names:
+                    result[dn] = u.get('signature', '')
+            for n in names:
+                if n not in result:
+                    result[n] = ''
+            self.send_json(200, result)
+            return
+
         if path == '/api/picker-timestamps':
             list_name = params.get('list', [None])[0]
             if not list_name:
@@ -221,6 +325,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.send_json(200, {
                 'username': user['username'], 'uid': user.get('uid', ''),
                 'nickname': user.get('nickname', ''), 'displayName': user.get('displayName', ''),
+                'signature': user.get('signature', ''),
                 'avatar': user.get('avatar', ''), 'role': user.get('role', 'student'),
             })
             return
@@ -234,6 +339,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 result.append({
                     'uid': uid, 'username': u.get('username', ''),
                     'nickname': u.get('nickname', ''), 'displayName': u.get('displayName', ''),
+                    'signature': u.get('signature', ''),
                     'avatar': u.get('avatar', ''), 'role': u.get('role', 'student'),
                 })
             self.send_json(200, result)
@@ -250,7 +356,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             self.send_json(200, {
                 'uid': uid, 'username': u.get('username', ''),
                 'nickname': u.get('nickname', ''), 'displayName': u.get('displayName', ''),
-                'avatar': u.get('avatar', ''), 'role': u.get('role', 'student'),
+                'signature': u.get('signature', ''),
+                    'avatar': u.get('avatar', ''), 'role': u.get('role', 'student'),
             })
             return
 
@@ -304,10 +411,47 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             try: return json.loads(body.decode('utf-8'))
             except: return {}
 
+        if path == '/api/admin/picker-timestamps/clear':
+            user = _require_role(self, 'admin')
+            if not user: return
+            p = parse_body()
+            safe = _safe_filename(p.get('list', '').replace('.csv', '') + '.json')
+            _write_json(os.path.join(PICKER_DIR, safe), {})
+            self.send_json(200, {'ok': True})
+            return
+
         if path == '/api/picker-timestamps':
             p = parse_body()
             safe = _safe_filename(p.get('list', '').replace('.csv', '') + '.json')
             _write_json(os.path.join(PICKER_DIR, safe), p.get('data', {}))
+            self.send_json(200, {'ok': True})
+            return
+
+        if path == '/api/admin/roster':
+            user = _require_role(self, 'admin')
+            if not user: return
+            p = parse_body()
+            os.makedirs(ROSTER_DIR, exist_ok=True)
+            # Remove old files not in new data
+            if os.path.isdir(ROSTER_DIR):
+                for f in os.listdir(ROSTER_DIR):
+                    if f.endswith('.json') and f[:-5] not in p:
+                        os.remove(os.path.join(ROSTER_DIR, f))
+            # Write each class to its own file
+            for cls, students in p.items():
+                fname = os.path.join(ROSTER_DIR, _safe_filename(cls) + '.json')
+                _write_json(fname, students)
+            # Sync signatures to matching user profiles
+            users = _load_users()
+            for cls, students in p.items():
+                for s in students:
+                    dn = (s.get('name', '') or '').strip()
+                    sig = (s.get('signature', '') or '')[:200]
+                    if dn:
+                        for uid, u in users.get('by_id', {}).items():
+                            if u.get('displayName', '') == dn and u.get('role') == 'student':
+                                u['signature'] = sig
+            _save_users(users)
             self.send_json(200, {'ok': True})
             return
 
@@ -335,7 +479,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             sessions = {k: v for k, v in sessions.items() if v.get('uid') != uid}
             sessions[token] = _make_session(
                 u['username'], uid, u.get('nickname', ''), u.get('displayName', ''),
-                u.get('avatar', ''), u.get('role', 'student'))
+                u.get('avatar', ''), u.get('role', 'student'), u.get('signature', ''))
             _write_json(SESSIONS_PATH, sessions)
             self.send_response(200)
             self.send_header('Content-Type', 'application/json; charset=utf-8')
@@ -387,7 +531,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             if 'nickname' in p:
                 u['nickname'] = (p['nickname'] or '')[:100]
             if 'displayName' in p:
-                u['displayName'] = (p['displayName'] or '')[:100]
+                dn = (p['displayName'] or '')[:100]
+                if dn:
+                    duid, _ = _find_user_by_displayname(dn)
+                    if duid and duid != old_uid:
+                        self.send_json(400, {'error': '该姓名已被其他用户绑定'})
+                        return
+                u['displayName'] = dn
+            if 'signature' in p:
+                u['signature'] = (p['signature'] or '')[:200]
             if 'avatar' in p:
                 u['avatar'] = (p['avatar'] or '')[:2000]
             if p.get('oldPassword') and p.get('newPassword'):
@@ -402,12 +554,29 @@ class Handler(http.server.SimpleHTTPRequestHandler):
                 if s.get('uid') == old_uid:
                     s['username'] = old_username
                     s['nickname'] = u.get('nickname', '')
+                    s['displayName'] = u.get('displayName', '')
+                    s['signature'] = u.get('signature', '')
                     s['avatar'] = u.get('avatar', '')
             _write_json(SESSIONS_PATH, sessions)
+            # Sync signature to roster
+            dn = u.get('displayName', '')
+            if dn and 'signature' in p:
+                sig = (p['signature'] or '')[:200]
+                if os.path.isdir(ROSTER_DIR):
+                    for f in os.listdir(ROSTER_DIR):
+                        if f.endswith('.json'):
+                            fp = os.path.join(ROSTER_DIR, f)
+                            rd = _read_json(fp)
+                            up = False
+                            for s in rd:
+                                if s.get('name', '') == dn:
+                                    s['signature'] = sig; up = True
+                            if up: _write_json(fp, rd)
             self.send_json(200, {
                 'ok': True, 'uid': old_uid, 'username': old_username,
                 'nickname': u.get('nickname', ''), 'displayName': u.get('displayName', ''),
-                'avatar': u.get('avatar', ''), 'role': u.get('role', 'student'),
+                'signature': u.get('signature', ''),
+                    'avatar': u.get('avatar', ''), 'role': u.get('role', 'student'),
             })
             return
 
@@ -428,12 +597,17 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             uid = _new_uid()
             salt = _new_salt()
             users = _load_users()
+            dn = (p.get('displayName', '') or '')[:100]
+            if dn and _find_user_by_displayname(dn)[1]:
+                self.send_json(400, {'error': '该姓名已被其他用户绑定'})
+                return
             users['by_id'][uid] = {
                 'username': nu,
                 'passwordHash': _hash_password(p.get('password', '123456'), salt),
                 'salt': salt,
                 'nickname': (p.get('nickname', '') or '')[:100],
-                'displayName': (p.get('displayName', '') or '')[:100],
+                'displayName': dn,
+                'signature': (p.get('signature', '') or '')[:200],
                 'avatar': (p.get('avatar', '') or '')[:2000],
                 'role': p.get('role', 'student'),
             }
@@ -463,9 +637,22 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             else:
                 p = parse_body()
                 if 'nickname' in p: u['nickname'] = (p['nickname'] or '')[:100]
-                if 'displayName' in p: u['displayName'] = (p['displayName'] or '')[:100]
+                if 'displayName' in p:
+                    dn = (p['displayName'] or '')[:100]
+                    if dn:
+                        duid, _ = _find_user_by_displayname(dn)
+                        if duid and duid != uid:
+                            self.send_json(400, {'error': '该姓名已被其他用户绑定'})
+                            return
+                    u['displayName'] = dn
+                if 'signature' in p:
+                    u['signature'] = (p['signature'] or '')[:200]
                 if 'avatar' in p: u['avatar'] = (p['avatar'] or '')[:2000]
-                if 'role' in p: u['role'] = p['role']
+                if 'role' in p:
+                    if uid == user.get('uid') and p['role'] != user.get('role'):
+                        self.send_json(400, {'error': '\u4e0d\u80fd\u4fee\u6539\u81ea\u5df1\u7684\u89d2\u8272'})
+                        return
+                    u['role'] = p['role']
                 if 'password' in p and p['password']:
                     u['salt'] = _new_salt()
                     u['passwordHash'] = _hash_password(p['password'], u['salt'])
@@ -550,30 +737,8 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         self.send_error(404, 'Not Found')
 
     def list_directory(self, path):
-        # /api/admin/upload/avatar
-        if path == '/api/admin/upload/avatar':
-            user = _require_auth(self)
-            if not user: return
-            try: p = json.loads(body.decode('utf-8'))
-            except: self.send_json(400, {'error': 'JSON parse failed'}); return
-            content_b64 = p.get('content', '')
-            filename = p.get('filename', 'avatar.png')
-            if not content_b64:
-                self.send_json(400, {'error': 'missing content'})
-                return
-            ext = os.path.splitext(_safe_filename(filename))[1].lower()
-            if ext not in ('.png', '.jpg', '.jpeg', '.gif', '.webp'):
-                ext = '.png'
-            safe_name = user.get('uid', 'anon') + '_' + secrets.token_hex(4) + ext
-            os.makedirs(AVATAR_DIR, exist_ok=True)
-            filepath = os.path.join(AVATAR_DIR, safe_name)
-            with open(filepath, 'wb') as f:
-                f.write(base64.b64decode(content_b64))
-            self.send_json(200, {'ok': True, 'url': '/admin/_store/avatars/' + safe_name})
-            return
-
         self.send_error(404, 'Not Found')
 
 print(f'SeaScribe \u2192 http://localhost:{PORT}')
 print(f'  \u7ba1\u7406\u540e\u53f0: http://localhost:{PORT}/admin/')
-http.server.HTTPServer(('0.0.0.0', PORT), Handler).serve_forever()
+ThreadedHTTPServer(('0.0.0.0', PORT), Handler).serve_forever()

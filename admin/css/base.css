@@ -1,0 +1,25 @@
+/* ============================================================
+   SeaScribe Admin — Base (variables + reset)
+   Theme colors loaded from ../main/css/theme.css
+   ============================================================ */
+
+:root {
+  --radius: 12px;
+  --ease:   cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 17px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+               "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+/* Smooth theme transition */
+body, #admin-login, #admin-bind, .admin-card, .admin-topbar, .admin-login-topbar, .admin-login-card,
+input, select, textarea, button, .admin-table th, .admin-table td,
+.admin-nav a, .admin-btn {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+.hidden { display: none !important; }

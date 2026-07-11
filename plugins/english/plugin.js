@@ -51,11 +51,11 @@ const EnglishPlugin = {
   async loadData() { return this._data; },
 
   renderPrompt(item) {
-    return `<span class="card-word">${esc(item.prompt)}</span>`;
+    return `<span class="card-word">${SeaScribe.esc(item.prompt)}</span>`;
   },
 
   renderAnswer(item) {
-    return `<div class="a-line"><span class="a-label">答案</span><span class="a-val">${esc(item.answer)}</span></div>`;
+    return `<div class="a-line"><span class="a-label">答案</span><span class="a-val">${SeaScribe.esc(item.answer)}</span></div>`;
   },
 
   configUI(container) {
@@ -180,7 +180,7 @@ const EnglishPlugin = {
           if (!allFiles.length) throw new Error('未找到 .xlsx / .csv 文件');
 
           fileSel.innerHTML = '<option value="">— 选择文件 —</option>' +
-            allFiles.map(f => `<option value="${esc(f.url)}">${esc(f.name)}</option>`).join('');
+            allFiles.map(f => `<option value="${SeaScribe.esc(f.url)}">${SeaScribe.esc(f.name)}</option>`).join('');
           fileSel.classList.remove('hidden');
 
           msgEl.textContent = `✅ 找到 ${allFiles.length} 个文件`;
@@ -364,8 +364,3 @@ const EnglishPlugin = {
   },
 };
 
-function esc(s) {
-  const d = document.createElement('div');
-  d.textContent = s;
-  return d.innerHTML;
-}

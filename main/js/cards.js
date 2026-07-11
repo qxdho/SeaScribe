@@ -39,7 +39,7 @@
     dictationTitle.textContent = plugin.meta.name + '听写';
     pluginConfig.innerHTML = '';
     cardGrid.innerHTML = '';
-    if (typeof plugin.configUI === 'function') plugin.configUI(pluginConfig, plugin);
+    if (typeof plugin.configUI === 'function') plugin.configUI(pluginConfig);
 
     var max = window.SeaScribe.getMaxCount();
     countInput.value = Math.min(plugin.defaultCount, max);
@@ -72,7 +72,7 @@
     pool = pool.filter(function(item) { return item && (item.prompt || item.symbol); });
     var count = Math.min(parseInt(countInput.value) || plugin.defaultCount, pool.length);
     countInput.value = count; countInput.max = pool.length;
-    window.SeaScribe.currentItems = new DictationEngine().shuffleAndPick(pool, count);
+    window.SeaScribe.currentItems = window.SeaScribe.shuffleAndPick(pool, count);
     window.SeaScribe.answersVisible = false;
     btnReveal.disabled = false; btnReveal.textContent = '公布答案';
     window.SeaScribe.renderCards(window.SeaScribe.currentItems, false);
