@@ -117,7 +117,7 @@
       return;
     }
     _currentFileName = opt.getAttribute('data-filename') || '';
-    fetch(opt.value, { cache: 'no-store' })
+    fetch(opt.value + '?t=' + Date.now(), { cache: 'no-store' })
       .then(function(r) { return r.text(); })
       .then(function(text) {
         // DEBUG
