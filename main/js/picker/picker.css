@@ -216,10 +216,10 @@
 /* 签名 —— 始终占位，min-height 防止名字跳动 */
 .pick-decorative-sig {
   display: inline-block;
-  font-size: 3vw;
+  font-size: 2vw;
   color: var(--text);
   opacity: 0.55;
-  margin-top: 10px;
+  margin-top: 16px;
   height: 1.4em;
   line-height: 1.4em;
   transition: opacity 0.3s;
@@ -229,13 +229,13 @@
   opacity: 0;
 }
 
-/* 上次时间 —— 固定高度，始终占位 */
+/* 上次时间 —— 名字上方，固定高度 */
 .pick-decorative-time {
   display: inline-block;
   font-size: 1.8vw;
   color: var(--text);
   opacity: 0.35;
-  margin-top: 6px;
+  margin-bottom: 8px;
   height: 1.4em;
   line-height: 1.4em;
 }

@@ -150,7 +150,7 @@
   document.getElementById('btn-syslog').addEventListener('click', function() {
     syslogOverlay.classList.remove('hidden');
     syslogBody.innerHTML = window.__SEASCRIBE_LOG__.map(function(l) {
-      return '<div style="padding:3px 0;font-size:0.9rem;white-space:nowrap">' +
+      return '<div style="padding:3px 0;font-size:0.9rem">' +
         (l.ok ? '✅ ' : '❌ ') + l.label +
         ' <span style="opacity:0.5">' + l.text + '</span></div>';
     }).join('');

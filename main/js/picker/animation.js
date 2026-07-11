@@ -76,13 +76,11 @@
       lastPickedTime = options.timestamps[finalPerson.name] || null;
     }
 
-    // 等待修饰动画定格
-    await delay(400);
-
-    // 彩带
+    // 彩带（立即释放，不等定格）
     fireConfetti();
 
-    await delay(300);
+    // 等待修饰动画定格
+    await delay(500);
 
     // 直接在修饰层上追加签名和时间（不再用独立 display 层）
     if (window.PickerDisplay && decorativeEl && decorativeText) {
