@@ -69,6 +69,7 @@
     var a = u.avatar || '';
     if (!a) return '<span style="opacity:0.3">—</span>';
     if (/^https?:\/\//.test(a)) return '<img src="' + Admin.esc(a) + '" class="admin-avatar">';
+    if (/^\/admin\/_store\/avatars\//.test(a)) return '<img src="' + Admin.esc(a) + '" class="admin-avatar">';
     return '<span style="font-size:1.3rem">' + Admin.esc(a) + '</span>';
   }
 
