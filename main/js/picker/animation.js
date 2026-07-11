@@ -288,38 +288,32 @@
       var textEl = decorativeText;
       var target = resultTarget;
 
-      // 清空结果位，避免飞入时重影
       target.textContent = '';
-
       textEl.textContent = name;
 
-      setTimeout(function() {
-        var targetRect = target.getBoundingClientRect();
-        var overlayRect = textEl.getBoundingClientRect();
-        var dx = targetRect.left + targetRect.width / 2 - (overlayRect.left + overlayRect.width / 2);
-        var dy = targetRect.top + targetRect.height / 2 - (overlayRect.top + overlayRect.height / 2);
-        var targetFontSize = parseFloat(getComputedStyle(target).fontSize);
-        var overlayFontSize = parseFloat(getComputedStyle(textEl).fontSize);
-        var scale = targetFontSize / overlayFontSize;
+      var targetRect = target.getBoundingClientRect();
+      var overlayRect = textEl.getBoundingClientRect();
+      var dx = targetRect.left + targetRect.width / 2 - (overlayRect.left + overlayRect.width / 2);
+      var dy = targetRect.top + targetRect.height / 2 - (overlayRect.top + overlayRect.height / 2);
+      var targetFontSize = parseFloat(getComputedStyle(target).fontSize);
+      var overlayFontSize = parseFloat(getComputedStyle(textEl).fontSize);
+      var scale = targetFontSize / overlayFontSize;
 
-        overlay.style.setProperty('--dx', dx + 'px');
-        overlay.style.setProperty('--dy', dy + 'px');
-        overlay.style.setProperty('--scale', scale);
-        overlay.style.setProperty('--shrink-dur', '0.35s');
-        overlay.classList.add('shrink');
+      overlay.style.setProperty('--dx', dx + 'px');
+      overlay.style.setProperty('--dy', dy + 'px');
+      overlay.style.setProperty('--scale', scale);
+      overlay.classList.add('shrink');
 
-        textEl.addEventListener('animationend', function handler() {
-          textEl.removeEventListener('animationend', handler);
-          target.textContent = name;
-          overlay.classList.add('hidden');
-          overlay.classList.remove('shrink');
-          overlay.style.removeProperty('--dx');
-          overlay.style.removeProperty('--dy');
-          overlay.style.removeProperty('--scale');
-          overlay.style.removeProperty('--shrink-dur');
-          resolve();
-        });
-      }, 200);
+      textEl.addEventListener('animationend', function handler() {
+        textEl.removeEventListener('animationend', handler);
+        target.textContent = name;
+        overlay.classList.add('hidden');
+        overlay.classList.remove('shrink');
+        overlay.style.removeProperty('--dx');
+        overlay.style.removeProperty('--dy');
+        overlay.style.removeProperty('--scale');
+        resolve();
+      });
     });
   }
 
