@@ -78,32 +78,44 @@
   async function* fairPick(list, timestamps, options) {
     var skip = options && options.skipDelays;
     var ratio = cfg.fairSubsetRatio != null ? cfg.fairSubsetRatio : 0.3;
-    var minSize = cfg.fairSubsetMin != null ? cfg.fairSubsetMin : 3;
-    var subsetSize = Math.max(minSize, Math.floor(list.length * ratio));
-    subsetSize = Math.min(subsetSize, list.length);
+    var targetSize = cfg.fairTargetSize != null ? cfg.fairTargetSize : 5;
+    var total = list.length;
+    var pool = list.slice();
+    var round = 0;
 
-    // Fisher-Yates 洗牌取子集
-    var shuffled = list.slice();
-    var n = shuffled.length;
-    for (var i = n - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var tmp = shuffled[i]; shuffled[i] = shuffled[j]; shuffled[j] = tmp;
+    // 多轮缩小子集，直到 ≤ targetSize
+    while (pool.length > targetSize) {
+      round++;
+      var subsetSize = Math.max(targetSize, Math.floor(pool.length * ratio));
+      subsetSize = Math.min(subsetSize, pool.length);
+
+      // Fisher-Yates 洗牌
+      var shuffled = pool.slice();
+      var n = shuffled.length;
+      for (var i = n - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = shuffled[i]; shuffled[i] = shuffled[j]; shuffled[j] = tmp;
+      }
+      var subset = shuffled.slice(0, subsetSize);
+      var rest = shuffled.slice(subsetSize);
+
+      yield {
+        type: 'step',
+        phase: 'subset',
+        subset: subset,
+        rest: rest,
+        total: total,
+        round: round,
+        poolSize: pool.length,
+      };
+
+      if (!skip) await delay(cfg.fairStepDelay || 1200);
+      pool = subset;
     }
-    var subset = shuffled.slice(0, subsetSize);
-    var rest = shuffled.slice(subsetSize);
 
-    // yield 子集筛选过程
-    yield {
-      type: 'step',
-      phase: 'subset',
-      subset: subset,
-      rest: rest,
-      total: list.length,
-    };
+    // 最终子集 ≤ targetSize，从中选人
+    var subset = pool;
 
-    if (!skip) await delay(cfg.fairStepDelay || 1200);
-
-    // 找从未被点过的人
     var neverPicked = [];
     for (var k = 0; k < subset.length; k++) {
       if (!timestamps[subset[k].name]) {
@@ -114,7 +126,6 @@
     var person;
 
     if (neverPicked.length > 0) {
-      // 优先选从未被点过的人，多个则随机
       var pickIdx = Math.floor(Math.random() * neverPicked.length);
       person = neverPicked[pickIdx];
 
@@ -125,10 +136,9 @@
         neverPicked: neverPicked,
         chosen: person,
         reason: 'never',
-        total: list.length,
+        total: total,
       };
     } else {
-      // 都点过，选间隔最长者
       var now = Date.now();
       var best = subset[0];
       var bestInterval = -1;
@@ -152,7 +162,7 @@
         chosen: person,
         reason: 'interval',
         bestInterval: bestInterval,
-        total: list.length,
+        total: total,
       };
     }
 

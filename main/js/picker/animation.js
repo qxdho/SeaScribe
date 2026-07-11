@@ -200,10 +200,11 @@
       // 时间加权随机法 —— 显示子集筛选
       var subsetNames = data.subset.map(function(p) { return p.name; }).join('、');
       var restCount = (data.rest || []).length;
-      el.innerHTML = '<div class="proc-phase">时间加权随机法 · 随机筛选</div>' +
-        '<div class="proc-step-title">从 ' + data.total + ' 人中随机选出 <strong>' + data.subset.length + '</strong> 人作为候选子集</div>' +
+      var roundInfo = data.round ? ' · 第 ' + data.round + ' 轮（剩 ' + data.poolSize + ' → ' + data.subset.length + ' 人）' : '';
+      el.innerHTML = '<div class="proc-phase">时间加权随机法' + roundInfo + '</div>' +
+        '<div class="proc-step-title">随机选出 <strong>' + data.subset.length + '</strong> 人进入下一轮</div>' +
         '<div class="proc-subset">' + esc(subsetNames) + '</div>' +
-        '<div class="proc-rest-label">其余 ' + restCount + ' 人暂不参与</div>';
+        '<div class="proc-rest-label">淘汰 ' + restCount + ' 人</div>';
     } else if (data.phase === 'select') {
       // 时间加权随机法 —— 显示选中逻辑
       var neverCount = (data.neverPicked || []).length;

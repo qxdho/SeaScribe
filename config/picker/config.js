@@ -22,8 +22,8 @@ window.__PICKER_CONFIG__ = {
   /* 时间加权随机法 —— 子集比例（0~1） */
   fairSubsetRatio: 0.3,
 
-  /* 时间加权随机法 —— 最小子集人数 */
-  fairSubsetMin: 3,
+  /* 时间加权随机法 —— 每轮最少/最终目标人数 */
+  fairTargetSize: 5,
 
   /* ====== 动画时序 ====== */
 
