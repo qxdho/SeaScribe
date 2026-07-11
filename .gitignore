@@ -16,9 +16,6 @@ Thumbs.db
 # 打包产物
 *.zip
 
-# 内部规范（不公开）
-docs/RULES.md
-
 # CodeBuddy
 .reasonix/
 reasonix.toml
