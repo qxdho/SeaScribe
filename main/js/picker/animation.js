@@ -336,34 +336,21 @@
     fire(0.1,  { spread: 180, startVelocity: 45 });
   }
 
-  function hideAllLayers() {
-    if (decorativeEl) {
-      decorativeEl.classList.add('hidden');
-      decorativeEl.classList.remove('shrink');
-      decorativeEl.style.removeProperty('--dx');
-      decorativeEl.style.removeProperty('--dy');
-      decorativeEl.style.removeProperty('--scale');
-      decorativeEl.style.removeProperty('--shrink-dur');
-    }
-    if (processEl) processEl.classList.add('hidden');
-  }
-
   /* 全部层初始化到干净状态 */
   function resetAll() {
     _decorRunning = false;
     _decorTarget = null;
+    _decorStartTime = 0;
     if (decorativeEl) {
       decorativeEl.classList.add('hidden');
       decorativeEl.classList.remove('shrink', 'pop');
       decorativeEl.style.removeProperty('--dx');
       decorativeEl.style.removeProperty('--dy');
       decorativeEl.style.removeProperty('--scale');
-      decorativeEl.style.removeProperty('--shrink-dur');
     }
     if (decorativeText) {
       decorativeText.classList.remove('pop');
       decorativeText.textContent = '';
-      decorativeText.style.visibility = '';
     }
     if (processEl) {
       processEl.classList.add('hidden');
