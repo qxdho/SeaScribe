@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    SeaScribe Admin — English Files Manager
    ============================================================ */
 
@@ -29,7 +29,7 @@
     input.addEventListener('change', function() {
       if (input.files.length) handleUpload(input.files[0]);
     });
-    zone.addEventListener('dragover', function(e) { e.preventDefault(); zone.style.borderColor = 'var(--admin-accent)'; });
+    zone.addEventListener('dragover', function(e) { e.preventDefault(); zone.style.borderColor = 'var(--text)'; });
     zone.addEventListener('dragleave', function() { zone.style.borderColor = ''; });
     zone.addEventListener('drop', function(e) {
       e.preventDefault();
@@ -70,7 +70,7 @@
     if (!res.ok) return;
     var files = res.data;
     if (!files.length) {
-      document.getElementById('files-table-wrap').innerHTML = '<p style="color:var(--admin-muted)">暂无文件</p>';
+      document.getElementById('files-table-wrap').innerHTML = '<p style="color:var(--muted)">暂无文件</p>';
       return;
     }
     var html = '<table class="admin-table"><thead><tr><th>文件名</th><th>操作</th></tr></thead><tbody>';

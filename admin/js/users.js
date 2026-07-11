@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    SeaScribe Admin — Users Management (admin only)
    ============================================================ */
 
@@ -73,7 +73,7 @@
 
   function roleBadge(role) {
     var labels = { admin: '管理员', teacher: '教师', student: '学生' };
-    return '<span style="font-size:0.78rem;font-weight:600;color:var(--admin-accent)">' + (labels[role] || role) + '</span>';
+    return '<span style="font-size:0.78rem;font-weight:600;color:var(--text)">' + (labels[role] || role) + '</span>';
   }
 
   function renderForm(username) {

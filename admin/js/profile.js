@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    SeaScribe Admin — Profile (My Profile)
    ============================================================ */
 
@@ -18,7 +18,7 @@
         '<div class="admin-form-row" style="align-items:center;margin-bottom:16px">' +
           '<div id="profile-avatar-preview" style="font-size:3rem;line-height:1">' + avatarHTML(user) + '</div>' +
           '<div><button id="profile-avatar-btn" class="admin-btn admin-btn-outline admin-btn-sm">更换头像</button>' +
-          '<p style="font-size:0.72rem;color:var(--admin-muted);margin-top:4px">支持 emoji 或图片链接</p></div>' +
+          '<p style="font-size:0.72rem;color:var(--muted);margin-top:4px">支持 emoji 或图片链接</p></div>' +
         '</div>' +
         '<div class="admin-form-group">' +
           '<label>用户名（英文）</label>' +
@@ -32,7 +32,7 @@
           '<label>头像（emoji 或图片 URL）</label>' +
           '<input type="text" id="profile-avatar" value="' + Admin.esc(user.avatar || '') + '" placeholder="输入 emoji 或图片地址">' +
         '</div>' +
-        '<hr style="border:none;border-top:1px solid var(--admin-border);margin:16px 0">' +
+        '<hr style="border:none;border-top:1px solid var(--border);margin:16px 0">' +
         '<h4 style="margin-bottom:12px">修改密码（留空则不修改）</h4>' +
         '<div class="admin-form-group">' +
           '<label>旧密码</label>' +

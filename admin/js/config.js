@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    SeaScribe Admin — Config Editor
    ============================================================ */
 
@@ -17,7 +17,7 @@
 
   function render() {
     var content = document.getElementById('admin-content');
-    content.innerHTML = '<div class="admin-card"><h3>⚙️ 配置管理</h3><p style="color:var(--admin-muted);margin-bottom:12px">选择一个配置文件进行编辑，修改后点击保存即可生效（刷新页面后应用）。</p>' +
+    content.innerHTML = '<div class="admin-card"><h3>⚙️ 配置管理</h3><p style="color:var(--muted);margin-bottom:12px">选择一个配置文件进行编辑，修改后点击保存即可生效（刷新页面后应用）。</p>' +
       '<div id="config-list">' +
         CONFIG_LIST.map(function(c) {
           return '<button class="admin-btn admin-btn-outline admin-btn-sm" style="margin:0 6px 6px 0" data-cfg="' + c.name + '">' + Admin.esc(c.label) + '</button>';
