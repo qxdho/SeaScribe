@@ -21,25 +21,25 @@
           '<p style="font-size:0.72rem;color:var(--muted);margin-top:4px">支持 emoji 或图片链接</p></div>' +
         '</div>' +
         '<div class="admin-form-group">' +
-          '<label>用户名（英文）</label>' +
+          '<label for="profile-username">用户名（英文）</label>' +
           '<input type="text" id="profile-username" value="' + Admin.esc(user.username) + '">' +
         '</div>' +
         '<div class="admin-form-group">' +
-          '<label>昵称（中文/日文）</label>' +
+          '<label for="profile-nickname">昵称（中文/日文）</label>' +
           '<input type="text" id="profile-nickname" value="' + Admin.esc(user.nickname || '') + '" placeholder="给自己起个名字">' +
         '</div>' +
         '<div class="admin-form-group">' +
-          '<label>头像（emoji 或图片 URL）</label>' +
+          '<label for="profile-avatar">头像（emoji 或图片 URL）</label>' +
           '<input type="text" id="profile-avatar" value="' + Admin.esc(user.avatar || '') + '" placeholder="输入 emoji 或图片地址">' +
         '</div>' +
         '<hr style="border:none;border-top:1px solid var(--border);margin:16px 0">' +
         '<h4 style="margin-bottom:12px">修改密码（留空则不修改）</h4>' +
         '<div class="admin-form-group">' +
-          '<label>旧密码</label>' +
+          '<label for="profile-oldpw">旧密码</label>' +
           '<input type="password" id="profile-oldpw" placeholder="输入旧密码">' +
         '</div>' +
         '<div class="admin-form-group">' +
-          '<label>新密码</label>' +
+          '<label for="profile-newpw">新密码</label>' +
           '<input type="password" id="profile-newpw" placeholder="输入新密码">' +
         '</div>' +
         '<p id="profile-msg" class="admin-msg hidden"></p>' +

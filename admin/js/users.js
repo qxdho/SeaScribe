@@ -83,20 +83,20 @@
     card.innerHTML =
       '<h3>' + (isEdit ? '编辑用户 ' + Admin.esc(username) : '新建用户') + '</h3>' +
       '<div class="admin-form-group">' +
-        '<label>用户名（英文）</label>' +
+        '<label for="uform-username">用户名（英文）</label>' +
         '<input type="text" id="uform-username" ' + (isEdit ? 'disabled' : '') + ' placeholder="用户名">' +
       '</div>' +
       '<div class="admin-form-group">' +
-        '<label>昵称（中文/日文）</label>' +
+        '<label for="uform-nickname">昵称（中文/日文）</label>' +
         '<input type="text" id="uform-nickname" placeholder="显示名称">' +
       '</div>' +
       '<div class="admin-form-group">' +
-        '<label>头像（emoji 或图片 URL）</label>' +
+        '<label for="uform-avatar">头像（emoji 或图片 URL）</label>' +
         '<input type="text" id="uform-avatar" placeholder="emoji 或图片地址">' +
       '</div>' +
       '<div class="admin-form-row">' +
         '<div class="admin-form-group">' +
-          '<label>角色</label>' +
+          '<label for="uform-role">角色</label>' +
           '<select id="uform-role">' +
             '<option value="student">学生</option>' +
             '<option value="teacher">教师</option>' +
@@ -104,7 +104,7 @@
           '</select>' +
         '</div>' +
         '<div class="admin-form-group">' +
-          '<label>密码' + (isEdit ? '（留空不修改）' : '') + '</label>' +
+          '<label for="uform-password">密码' + (isEdit ? '（留空不修改）' : '') + '</label>' +
           '<input type="text" id="uform-password" placeholder="' + (isEdit ? '留空不修改' : '默认 123456') + '">' +
         '</div>' +
       '</div>' +
