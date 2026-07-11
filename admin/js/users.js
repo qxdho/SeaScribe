@@ -87,7 +87,7 @@
         '<input type="text" id="uform-username" ' + (isEdit ? 'disabled' : '') + ' placeholder="用户名">' +
       '</div>' +
       '<div class="admin-form-group">' +
-        '<label for="uform-nickname">昵称（中文/日文）</label>' +
+        '<label for="uform-nickname">昵称（课堂显示名称）</label>' +
         '<input type="text" id="uform-nickname" placeholder="显示名称">' +
       '</div>' +
       '<div class="admin-form-group">' +

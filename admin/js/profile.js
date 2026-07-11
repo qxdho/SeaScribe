@@ -29,7 +29,7 @@
           '<input type="text" id="profile-username" value="' + Admin.esc(user.username) + '">' +
         '</div>' +
         '<div class="admin-form-group">' +
-          '<label for="profile-nickname">昵称（中文/日文）</label>' +
+          '<label for="profile-nickname">昵称（课堂显示名称）</label>' +
           '<input type="text" id="profile-nickname" value="' + Admin.esc(user.nickname || '') + '" placeholder="给自己起个名字">' +
         '</div>' +
         '<p id="profile-msg" class="admin-msg hidden"></p>' +
