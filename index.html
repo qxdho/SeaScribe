@@ -52,19 +52,19 @@
     <div class="picker-modal-title">🎲 随机点名</div>
 
     <div class="picker-section">
-      <label class="picker-section-label">📋 班级名单</label>
+      <span class="picker-section-label">📋 班级名单</span>
       <select id="picker-list-select" class="picker-select"></select>
     </div>
 
     <div class="picker-section">
-      <label class="picker-section-label">🎲 随机方式</label>
+      <span class="picker-section-label">🎲 随机方式</span>
       <div id="picker-method-group" class="picker-radio-group">
         <!-- JS 动态渲染 -->
       </div>
     </div>
 
     <div class="picker-section">
-      <label class="picker-section-label">✨ 修饰动画</label>
+      <span class="picker-section-label">✨ 修饰动画</span>
       <select id="picker-decorative" class="picker-select">
         <!-- JS 动态渲染 -->
       </select>
@@ -158,7 +158,7 @@
 
     <div class="control-row">
       <div class="control-item">
-        <label class="ctrl-label">数量</label>
+        <label class="ctrl-label" for="count-input">数量</label>
         <div class="stepper">
           <button class="stepper-btn" id="count-minus">-</button>
           <input type="number" class="stepper-input" id="count-input" value="12" min="1" max="36" step="1">
@@ -166,7 +166,7 @@
         </div>
       </div>
       <div class="control-item">
-        <label class="ctrl-label">列数</label>
+        <span class="ctrl-label">列数</span>
         <div class="stepper">
           <button class="stepper-btn" id="col-minus">-</button>
           <span class="stepper-val" id="col-display">3</span>
@@ -175,7 +175,7 @@
       </div>
       <button class="tool-btn layout-btn" id="btn-layout" title="切换列表/网格">☰</button>
       <div class="control-item">
-        <label class="ctrl-label">字号</label>
+        <label class="ctrl-label" for="font-slider">字号</label>
         <button class="tool-btn fs-btn" id="fs-minus" title="缩小">A-</button>
         <input type="range" class="font-slider" id="font-slider" min="60" max="200" value="100" step="5">
         <button class="tool-btn fs-btn" id="fs-plus" title="放大">A+</button>
