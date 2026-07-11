@@ -16,6 +16,7 @@
   var processModeGroup = document.getElementById('picker-process-mode-group');
   var btnStart = document.getElementById('picker-start');
   var btnClose = document.getElementById('picker-close');
+  var timestampCheck = document.getElementById('picker-timestamp');
   var methodRadios, processModeRadios;
 
   var _currentList = [];   // [{name, signature}, ...]
@@ -171,7 +172,8 @@
 
     // 读取时间戳
     var timestamps = {};
-    if (window.PickerTimestamp && PickerTimestamp.isEnabled()) {
+    var doTimestamp = timestampCheck && timestampCheck.checked;
+    if (window.PickerTimestamp && doTimestamp) {
       timestamps = await PickerTimestamp.load(_currentFileName);
     }
 
@@ -186,7 +188,7 @@
     });
 
     // 保存时间戳
-    if (window.PickerTimestamp && PickerTimestamp.isEnabled()) {
+    if (window.PickerTimestamp && doTimestamp) {
       await PickerTimestamp.save(_currentFileName, result);
     }
 
