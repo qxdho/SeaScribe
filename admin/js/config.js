@@ -46,20 +46,20 @@
 
   /* ====== Parse JS config → object ====== */
   function parseConfig(raw) {
-    // Extract the object literal after the assignment
-    var idx = raw.indexOf('=');
-    if (idx < 0) return {};
-    var after = raw.substring(idx + 1).trim();
+    // Find the actual assignment (not comment lines with ====)
+    var m = raw.match(/window\.__\w+_CONFIG__\s*=\s*/);
+    if (!m) return {};
+    var after = raw.substring(raw.indexOf(m[0]) + m[0].length).trim();
     // Remove trailing semicolon
     after = after.replace(/;\s*$/, '');
-    // Remove // comments (single line only, simple)
+    // Remove // comments (single line only)
     after = after.replace(/\/\/.*$/gm, '');
     // Remove /* */ comments
     after = after.replace(/\/\*[\s\S]*?\*\//g, '');
     try {
       return (new Function('return (' + after + ')'))();
     } catch(e) {
-      console.warn('Config parse fallback for', raw.substring(0, 50), e);
+      console.warn('Config parse error:', e);
       return {};
     }
   }
