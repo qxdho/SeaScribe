@@ -9,6 +9,9 @@ __pycache__/
 .DS_Store
 Thumbs.db
 
+# 管理后台用户数据
+admin/_store/
+
 # IDE
 .vscode/
 .idea/

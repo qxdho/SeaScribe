@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SeaScribe 管理后台</title>
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+<!-- ====== 登录页 ====== -->
+<div id="admin-login" class="admin-login">
+  <div class="admin-login-card">
+    <div class="admin-login-logo">⚓</div>
+    <h1>SeaScribe</h1>
+    <p class="admin-login-sub">管理后台</p>
+    <div class="admin-login-field">
+      <label>用户名</label>
+      <input type="text" id="login-username" placeholder="英文用户名" autocomplete="username">
+    </div>
+    <div class="admin-login-field">
+      <label>密码</label>
+      <input type="password" id="login-password" placeholder="输入密码" autocomplete="current-password">
+    </div>
+    <p id="login-error" class="admin-login-error hidden"></p>
+    <button id="login-submit" class="admin-btn admin-btn-primary">登 录</button>
+  </div>
+</div>
+
+<!-- ====== 管理面板 ====== -->
+<div id="admin-app" class="admin-app hidden">
+  <aside class="admin-sidebar">
+    <div class="admin-sidebar-brand">
+      <span>⚓ SeaScribe</span>
+      <small>管理后台</small>
+    </div>
+    <nav id="admin-nav" class="admin-nav"></nav>
+    <div class="admin-sidebar-footer">
+      <div class="admin-user-info" id="admin-user-info"></div>
+      <button id="admin-logout-btn" class="admin-btn admin-btn-ghost">退出登录</button>
+    </div>
+  </aside>
+  <main class="admin-main">
+    <header class="admin-header">
+      <h2 id="admin-page-title"></h2>
+    </header>
+    <div id="admin-content" class="admin-content"></div>
+  </main>
+</div>
+
+<script src="js/common.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/profile.js"></script>
+<script src="js/users.js"></script>
+<script src="js/config.js"></script>
+<script src="js/files.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

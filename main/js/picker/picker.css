@@ -351,6 +351,17 @@
   opacity: 0;
 }
 
+/* 头像 —— 名字上方 */
+.pick-decorative-avatar {
+  width: 10vw; height: 10vw;
+  max-width: 120px; max-height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 12px;
+  transition: opacity 0.3s;
+}
+.pick-decorative-avatar.hidden { display: none; }
+
 /* 上次时间 —— 名字上方，固定高度 */
 .pick-decorative-time {
   display: inline-block;

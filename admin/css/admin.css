@@ -1,0 +1,212 @@
+/* ============================================================
+   SeaScribe — Admin Panel Styles
+   ============================================================ */
+
+:root {
+  --admin-bg:      #f5f6fa;
+  --admin-surface: #ffffff;
+  --admin-text:    #2d3436;
+  --admin-muted:   #636e72;
+  --admin-border:  #dfe6e9;
+  --admin-accent:  #0984e3;
+  --admin-hover:   #f0f3f5;
+  --admin-sidebar: #2d3436;
+  --admin-sidebar-text: #b2bec3;
+  --admin-radius:  10px;
+  --admin-ease:    cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+               "Microsoft YaHei", sans-serif;
+  background: var(--admin-bg);
+  color: var(--admin-text);
+}
+.hidden { display: none !important; }
+
+/* ---- Login ---- */
+.admin-login {
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--admin-bg);
+}
+.admin-login-card {
+  background: var(--admin-surface);
+  border-radius: 16px;
+  padding: 40px 36px;
+  width: 360px; max-width: 90vw;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+}
+.admin-login-logo { font-size: 3rem; }
+.admin-login-card h1 { font-size: 1.4rem; font-weight: 700; }
+.admin-login-sub { color: var(--admin-muted); font-size: 0.85rem; margin-top: -8px; }
+.admin-login-field { width: 100%; display: flex; flex-direction: column; gap: 4px; }
+.admin-login-field label { font-size: 0.8rem; font-weight: 600; color: var(--admin-muted); }
+.admin-login-field input {
+  padding: 10px 14px; border: 1.5px solid var(--admin-border);
+  border-radius: var(--admin-radius); font-size: 0.95rem;
+  outline: none; transition: border-color 0.2s;
+}
+.admin-login-field input:focus { border-color: var(--admin-accent); }
+.admin-login-error { color: #d63031; font-size: 0.82rem; text-align: center; }
+
+/* ---- App Shell ---- */
+.admin-app {
+  display: flex; height: 100vh; overflow: hidden;
+}
+
+/* ---- Sidebar ---- */
+.admin-sidebar {
+  width: 220px; min-width: 220px;
+  background: var(--admin-sidebar);
+  color: var(--admin-sidebar-text);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+.admin-sidebar-brand {
+  padding: 20px 18px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.admin-sidebar-brand span { font-size: 1.1rem; font-weight: 700; color: #fff; display: block; }
+.admin-sidebar-brand small { font-size: 0.7rem; opacity: 0.5; }
+
+.admin-nav { flex: 1; padding: 8px 0; }
+.admin-nav a {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 18px;
+  color: var(--admin-sidebar-text);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+.admin-nav a:hover { background: rgba(255,255,255,0.06); color: #fff; }
+.admin-nav a.active { background: rgba(255,255,255,0.1); color: #fff; font-weight: 600; }
+
+.admin-sidebar-footer {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 14px 18px;
+}
+.admin-user-info {
+  font-size: 0.85rem; margin-bottom: 8px;
+}
+.admin-user-info .nickname { color: #fff; font-weight: 600; }
+.admin-user-info .role { font-size: 0.7rem; opacity: 0.5; display: block; }
+
+/* ---- Main ---- */
+.admin-main {
+  flex: 1; overflow-y: auto; display: flex; flex-direction: column;
+}
+.admin-header {
+  padding: 20px 28px 0;
+}
+.admin-header h2 { font-size: 1.2rem; font-weight: 700; }
+.admin-content {
+  flex: 1; padding: 20px 28px 40px;
+}
+
+/* ---- Buttons ---- */
+.admin-btn {
+  padding: 8px 16px; border: none; border-radius: 8px;
+  font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; transition: all 0.15s;
+  width: 100%;
+}
+.admin-btn-primary { background: var(--admin-accent); color: #fff; }
+.admin-btn-primary:hover { opacity: 0.85; }
+.admin-btn-ghost {
+  background: transparent; color: var(--admin-sidebar-text);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.admin-btn-ghost:hover { background: rgba(255,255,255,0.08); color: #fff; }
+.admin-btn-sm { padding: 5px 12px; font-size: 0.78rem; width: auto; }
+.admin-btn-danger { background: #d63031; color: #fff; }
+.admin-btn-danger:hover { opacity: 0.85; }
+.admin-btn-outline {
+  background: transparent; color: var(--admin-accent);
+  border: 1.5px solid var(--admin-accent);
+}
+.admin-btn-outline:hover { background: var(--admin-accent); color: #fff; }
+
+/* ---- Cards ---- */
+.admin-card {
+  background: var(--admin-surface);
+  border-radius: var(--admin-radius);
+  padding: 20px 24px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  margin-bottom: 16px;
+}
+.admin-card h3 { font-size: 1rem; margin-bottom: 12px; }
+
+/* ---- Forms ---- */
+.admin-form-group { margin-bottom: 14px; }
+.admin-form-group label {
+  display: block; font-size: 0.8rem; font-weight: 600;
+  color: var(--admin-muted); margin-bottom: 4px;
+}
+.admin-form-group input,
+.admin-form-group select,
+.admin-form-group textarea {
+  width: 100%; padding: 9px 12px;
+  border: 1.5px solid var(--admin-border);
+  border-radius: 8px; font-size: 0.9rem;
+  outline: none; transition: border-color 0.2s;
+  font-family: inherit;
+}
+.admin-form-group input:focus,
+.admin-form-group select:focus,
+.admin-form-group textarea:focus { border-color: var(--admin-accent); }
+.admin-form-row { display: flex; gap: 12px; }
+.admin-form-row .admin-form-group { flex: 1; }
+
+/* ---- Table ---- */
+.admin-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+.admin-table th, .admin-table td {
+  padding: 8px 12px; text-align: left;
+  border-bottom: 1px solid var(--admin-border);
+}
+.admin-table th { font-weight: 600; color: var(--admin-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; }
+.admin-table tr:hover td { background: var(--admin-hover); }
+
+/* ---- Messages ---- */
+.admin-msg { padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 12px; }
+.admin-msg-success { background: #d4edda; color: #155724; }
+.admin-msg-error { background: #f8d7da; color: #721c24; }
+
+/* ---- File upload ---- */
+.admin-upload-zone {
+  border: 2px dashed var(--admin-border);
+  border-radius: var(--admin-radius);
+  padding: 32px; text-align: center;
+  color: var(--admin-muted); cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 16px;
+}
+.admin-upload-zone:hover { border-color: var(--admin-accent); color: var(--admin-accent); }
+.admin-upload-zone input[type=file] { display: none; }
+
+/* ---- Avatar ---- */
+.admin-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: var(--admin-border); }
+.admin-avatar-lg { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; background: var(--admin-border); }
+
+/* ---- Config ---- */
+.admin-config-field {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0; border-bottom: 1px solid var(--admin-border);
+}
+.admin-config-field:last-child { border-bottom: none; }
+.admin-config-label { flex: 1; font-size: 0.88rem; font-weight: 500; }
+.admin-config-label small { display: block; color: var(--admin-muted); font-weight: 400; font-size: 0.75rem; margin-top: 2px; }
+.admin-config-control { display: flex; align-items: center; gap: 6px; }
+.admin-config-control input[type=text],
+.admin-config-control input[type=number] { width: 120px; padding: 5px 8px; border: 1.5px solid var(--admin-border); border-radius: 6px; font-size: 0.85rem; }
+.admin-config-control select { padding: 5px 8px; border: 1.5px solid var(--admin-border); border-radius: 6px; font-size: 0.85rem; }
+
+/* ---- Responsive ---- */
+@media (max-width: 700px) {
+  .admin-sidebar { width: 180px; min-width: 180px; }
+  .admin-content { padding: 16px; }
+}

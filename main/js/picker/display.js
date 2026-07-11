@@ -5,15 +5,14 @@
 
 (function() {
 
-  var sigEl, timeEl, hintEl, overlay;
+  var sigEl, timeEl, avatarEl, hintEl, overlay;
 
   function initRefs() {
     overlay = document.getElementById('pick-decorative');
     sigEl = document.getElementById('pick-decorative-sig');
     timeEl = document.getElementById('pick-decorative-time');
+    avatarEl = document.getElementById('pick-decorative-avatar');
     hintEl = overlay ? overlay.querySelector('.pick-decorative-hint') : null;
-    console.log('[PickerDisplay] DOM检查: overlay=' + !!overlay +
-      ' sigEl=' + !!sigEl + ' timeEl=' + !!timeEl + ' hintEl=' + !!hintEl);
   }
 
   /**
@@ -21,19 +20,14 @@
    */
   function showOnDecorative(_overlay, _nameEl, data) {
     initRefs();
-    if (!overlay) { console.error('[PickerDisplay] overlay 不存在!'); return Promise.resolve(); }
-
-    console.log('[PickerDisplay] 收到数据:', JSON.stringify(data));
 
     // 填入签名
     if (data.signature) {
       sigEl.textContent = data.signature;
       sigEl.classList.remove('empty');
-      console.log('[PickerDisplay] 签名已设置: "' + data.signature + '" empty类=' + sigEl.classList.contains('empty'));
     } else {
       sigEl.textContent = '';
       sigEl.classList.add('empty');
-      console.log('[PickerDisplay] 无签名, empty类已添加');
     }
 
     // 填入上次点名时间
@@ -48,6 +42,21 @@
       timeEl.classList.add('never');
     }
 
+    // 加载头像
+    if (avatarEl && data.name) {
+      avatarEl.classList.add('hidden');
+      avatarEl.src = '';
+      fetch('/api/admin/user-avatar?name=' + encodeURIComponent(data.name))
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+          if (d.avatar) {
+            avatarEl.src = d.avatar;
+            avatarEl.classList.remove('hidden');
+          }
+        })
+        .catch(function() {});
+    }
+
     // 显示提示
     if (hintEl) hintEl.style.display = '';
 
@@ -60,6 +69,7 @@
         sigEl.textContent = '';
         sigEl.classList.add('empty');
         timeEl.textContent = '';
+        if (avatarEl) { avatarEl.src = ''; avatarEl.classList.add('hidden'); }
         if (hintEl) hintEl.style.display = 'none';
         resolve();
       }

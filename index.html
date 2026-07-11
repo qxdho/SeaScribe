@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
@@ -36,6 +36,7 @@
 <!-- ========== 点名：动画层 + 结果展示层 ========== -->
 <div id="pick-decorative" class="pick-decorative hidden">
   <div class="pick-decorative-inner">
+    <img id="pick-decorative-avatar" class="pick-decorative-avatar hidden" src="" alt="">
     <span id="pick-decorative-time" class="pick-decorative-time"></span>
     <span id="pick-decorative-text" class="pick-decorative-text"></span>
     <span id="pick-decorative-sig" class="pick-decorative-sig"></span>
@@ -109,7 +110,7 @@
     <img class="splash-logo" src="main/logo.png" alt="">
     <span class="splash-title">SeaScribe</span>
     <span class="splash-author">谦虚の海鸥</span>
-    <span class="splash-version">v3.5.0</span>
+    <span class="splash-version">v4.0.0</span>
     <span class="splash-vibecoding">本项目使用 vibecoding 开发</span>
     <div id="splash-log" class="splash-log"></div>
     <span class="splash-hint">点击任意位置或按任意键继续</span>
@@ -118,7 +119,7 @@
 
 <!-- ========== 顶栏 ========== -->
 <header class="topbar">
-  <span class="topbar-brand" id="brand-logo" title="回到学科选择"><img class="topbar-logo" src="main/logo.png" alt="">SeaScribe</span><span class="topbar-version">v3.5.0</span>
+  <span class="topbar-brand" id="brand-logo" title="回到学科选择"><img class="topbar-logo" src="main/logo.png" alt="">SeaScribe</span><span class="topbar-version">v4.0.0</span>
   <span class="topbar-spacer"></span>
   <div class="topbar-picker" id="topbar-picker">
     <span id="pick-result" class="pick-result"></span>
@@ -131,6 +132,7 @@
       <button class="more-item" id="btn-changelog">📜 更新日志</button>
       <button class="more-item" id="btn-syslog">📋 系统日志</button>
       <button class="more-item" id="btn-about"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48" fill="none" style="vertical-align:-3px;margin-right:2px"><circle cx="24" cy="24" r="20" stroke="currentColor" stroke-width="3"/><path d="M24 14 L24 30" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/><circle cx="24" cy="37" r="2.5" fill="currentColor"/></svg> 关于</button>
+      <a class="more-item" href="/admin/" style="display:block;text-decoration:none">🔧 管理后台</a>
     </div>
   </div>
 </header>
