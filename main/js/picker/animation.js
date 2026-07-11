@@ -108,7 +108,7 @@
   var _decorTarget = null;
   var _decorResolve = null;
   var _decorStartTime = 0;
-  var _decorMinMs = 800; // 最短滚动时长
+  var _decorMinMs = 500; // 最短滚动时长
 
   function startDecorative(list) {
     _decorRunning = true;
