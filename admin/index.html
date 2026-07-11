@@ -29,21 +29,14 @@
 
 <!-- ====== 管理面板 ====== -->
 <div id="admin-app" class="admin-app hidden">
-  <aside class="admin-sidebar">
-    <div class="admin-sidebar-brand">
-      <span>⚓ SeaScribe</span>
-      <small>管理后台</small>
-    </div>
+  <header class="admin-topbar">
+    <span class="admin-topbar-brand">⚓ SeaScribe <small>管理后台</small></span>
     <nav id="admin-nav" class="admin-nav"></nav>
-    <div class="admin-sidebar-footer">
-      <div class="admin-user-info" id="admin-user-info"></div>
-      <button id="admin-logout-btn" class="admin-btn admin-btn-ghost">退出登录</button>
-    </div>
-  </aside>
+    <span class="admin-topbar-spacer"></span>
+    <div class="admin-user-info" id="admin-user-info"></div>
+    <button id="admin-logout-btn" class="admin-btn admin-btn-ghost admin-btn-sm">退出登录</button>
+  </header>
   <main class="admin-main">
-    <header class="admin-header">
-      <h2 id="admin-page-title"></h2>
-    </header>
     <div id="admin-content" class="admin-content"></div>
   </main>
 </div>

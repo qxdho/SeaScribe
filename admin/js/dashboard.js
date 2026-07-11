@@ -4,7 +4,6 @@
 
 (function() {
   var nav      = document.getElementById('admin-nav');
-  var titleEl  = document.getElementById('admin-page-title');
   var content  = document.getElementById('admin-content');
   var userInfo = document.getElementById('admin-user-info');
 
@@ -24,34 +23,27 @@
 
   function init() {
     var user = Admin.getSession().user;
-    renderSidebar(user);
+    renderNav(user);
     renderUserInfo(user);
-    // 默认打开第一个可见页面
     var first = PAGES.filter(function(p) { return !p.roles || p.roles.indexOf(user.role) >= 0; })[0];
     if (first) navigate(first.id);
   }
 
-  /* ====== Sidebar ====== */
-  function renderSidebar(user) {
+  /* ====== Topbar Nav ====== */
+  function renderNav(user) {
     nav.innerHTML = PAGES.filter(function(p) {
       return !p.roles || p.roles.indexOf(user.role) >= 0;
     }).map(function(p) {
       return '<a data-page="' + p.id + '">' + p.icon + ' ' + Admin.esc(p.label) + '</a>';
     }).join('');
 
-    // 绑定点击
     nav.querySelectorAll('a').forEach(function(a) {
       a.addEventListener('click', function() { navigate(this.dataset.page); });
     });
   }
 
   function renderUserInfo(user) {
-    userInfo.innerHTML = '<span class="nickname">' + Admin.esc(user.nickname || user.username) + '</span>' +
-      '<span class="role">' + roleLabel(user.role) + '</span>';
-  }
-
-  function roleLabel(role) {
-    return { admin: '管理员', teacher: '教师', student: '学生' }[role] || role;
+    userInfo.innerHTML = '<span class="nickname">' + Admin.esc(user.nickname || user.username) + '</span>';
   }
 
   /* ====== Navigation ====== */
@@ -61,9 +53,6 @@
     nav.querySelectorAll('a').forEach(function(a) {
       a.classList.toggle('active', a.dataset.page === pageId);
     });
-
-    var page = PAGES.find(function(p) { return p.id === pageId; });
-    titleEl.textContent = page ? page.label : '';
 
     // 路由到对应模块
     switch (pageId) {
