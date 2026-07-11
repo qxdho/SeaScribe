@@ -28,7 +28,10 @@
     initRefs();
     options = options || {};
 
-    // 确保元素可见
+    // 全部初始化到干净状态
+    resetAll();
+
+    // 确保修饰层可见
     decorativeEl.classList.remove('hidden');
     if (processEl) processEl.classList.add('hidden');
 
@@ -252,6 +255,11 @@
           textEl.removeEventListener('animationend', handler);
           target.textContent = name;
           overlay.classList.add('hidden');
+          overlay.classList.remove('shrink');
+          overlay.style.removeProperty('--dx');
+          overlay.style.removeProperty('--dy');
+          overlay.style.removeProperty('--scale');
+          overlay.style.removeProperty('--shrink-dur');
           resolve();
         });
       }, 500);
@@ -276,8 +284,38 @@
   }
 
   function hideAllLayers() {
-    if (decorativeEl) decorativeEl.classList.add('hidden');
+    if (decorativeEl) {
+      decorativeEl.classList.add('hidden');
+      decorativeEl.classList.remove('shrink');
+      decorativeEl.style.removeProperty('--dx');
+      decorativeEl.style.removeProperty('--dy');
+      decorativeEl.style.removeProperty('--scale');
+      decorativeEl.style.removeProperty('--shrink-dur');
+    }
     if (processEl) processEl.classList.add('hidden');
+  }
+
+  /* 全部层初始化到干净状态 */
+  function resetAll() {
+    _decorRunning = false;
+    _decorTarget = null;
+    if (decorativeEl) {
+      decorativeEl.classList.add('hidden');
+      decorativeEl.classList.remove('shrink', 'pop');
+      decorativeEl.style.removeProperty('--dx');
+      decorativeEl.style.removeProperty('--dy');
+      decorativeEl.style.removeProperty('--scale');
+      decorativeEl.style.removeProperty('--shrink-dur');
+    }
+    if (decorativeText) {
+      decorativeText.classList.remove('pop');
+      decorativeText.textContent = '';
+    }
+    if (processEl) {
+      processEl.classList.add('hidden');
+      processEl.classList.remove('windowed');
+      processEl.innerHTML = '';
+    }
   }
 
   function delay(ms) {
