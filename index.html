@@ -29,14 +29,64 @@
 <link rel="stylesheet" href="main/css/splash.css">
 <link rel="stylesheet" href="main/css/changelog.css">
 <link rel="stylesheet" href="main/css/responsive.css">
+<link rel="stylesheet" href="main/js/picker/picker.css">
 </head>
 <body>
 
-<!-- ========== 全屏点名覆盖层 ========== -->
-<div id="pick-overlay" class="pick-overlay hidden">
-  <div class="pick-overlay-inner">
-    <span id="pick-overlay-text" class="pick-overlay-text"></span>
-    <span id="pick-overlay-title" class="pick-overlay-title"></span>
+<!-- ========== 点名：动画层 + 结果展示层 ========== -->
+<div id="pick-decorative" class="pick-decorative hidden">
+  <span id="pick-decorative-text" class="pick-decorative-text"></span>
+</div>
+<div id="pick-process" class="pick-process hidden"></div>
+<div id="pick-display" class="pick-display hidden">
+  <span id="pick-display-name" class="pick-display-name"></span>
+  <span id="pick-display-sig" class="pick-display-sig"></span>
+  <span id="pick-display-time" class="pick-display-time"></span>
+  <span class="pick-display-hint">点击屏幕继续</span>
+</div>
+
+<!-- ========== 点名配置弹窗 ========== -->
+<div id="picker-modal" class="picker-modal hidden">
+  <div class="picker-modal-card">
+    <div class="picker-modal-title">🎯 随机点名</div>
+
+    <div class="picker-section">
+      <label class="picker-section-label">班级名单</label>
+      <select id="picker-list-select" class="picker-select"></select>
+    </div>
+
+    <div class="picker-section">
+      <label class="picker-section-label">随机方式</label>
+      <div id="picker-method-group" class="picker-radio-group">
+        <!-- JS 动态渲染 -->
+      </div>
+    </div>
+
+    <div class="picker-section">
+      <label class="picker-section-label">修饰动画</label>
+      <select id="picker-decorative" class="picker-select">
+        <!-- JS 动态渲染 -->
+      </select>
+    </div>
+
+    <div class="picker-section">
+      <label id="picker-show-process-label" class="picker-checkbox">
+        <input type="checkbox" id="picker-show-process">
+        <span>显示真实随机过程</span>
+      </label>
+    </div>
+
+    <div id="picker-process-mode-group" class="picker-section hidden">
+      <label class="picker-section-label">过程动画显示模式</label>
+      <div class="picker-radio-inline">
+        <!-- JS 动态渲染 -->
+      </div>
+    </div>
+
+    <div class="picker-actions">
+      <button id="picker-close" class="btn btn-ghost">取消</button>
+      <button id="picker-start" class="btn btn-dark" disabled>开始点名</button>
+    </div>
   </div>
 </div>
 
@@ -46,7 +96,7 @@
     <img class="splash-logo" src="main/logo.png" alt="">
     <span class="splash-title">SeaScribe</span>
     <span class="splash-author">谦虚の海鸥</span>
-    <span class="splash-version">v3.3.0</span>
+    <span class="splash-version">v3.4.0</span>
     <span class="splash-vibecoding">本项目使用 vibecoding 开发</span>
     <div id="splash-log" class="splash-log"></div>
     <span class="splash-hint">点击任意位置继续</span>
@@ -55,11 +105,10 @@
 
 <!-- ========== 顶栏 ========== -->
 <header class="topbar">
-  <span class="topbar-brand" id="brand-logo" title="回到学科选择"><img class="topbar-logo" src="main/logo.png" alt="">SeaScribe</span><span class="topbar-version">v3.3.0</span>
+  <span class="topbar-brand" id="brand-logo" title="回到学科选择"><img class="topbar-logo" src="main/logo.png" alt="">SeaScribe</span><span class="topbar-version">v3.4.0</span>
   <span class="topbar-spacer"></span>
   <div class="topbar-picker" id="topbar-picker">
-    <select class="range-select topbar-select" id="stdlist-select"></select>
-    <button id="btn-pick" class="btn btn-dark btn-sm">点名</button>
+    <button id="btn-picker" class="btn btn-dark btn-sm">🎯 随机点名</button>
     <span id="pick-result" class="pick-result"></span>
   </div>
   <button class="tool-btn icon-btn" id="btn-theme" title="切换夜间模式">🌙</button>
@@ -165,7 +214,12 @@
 
 <!-- App modules -->
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
-<script src="main/js/picker.js"></script>
+<script src="config/picker/config.js"></script>
+<script src="main/js/picker/random.js"></script>
+<script src="main/js/picker/timestamp.js"></script>
+<script src="main/js/picker/animation.js"></script>
+<script src="main/js/picker/display.js"></script>
+<script src="main/js/picker/index.js"></script>
 <script src="main/js/changelog.js"></script>
 <script src="main/js/splash.js"></script>
 <script src="main/js/about.js"></script>

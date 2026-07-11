@@ -1,0 +1,436 @@
+/* ============================================================
+   SeaScribe — Picker Styles
+   点名弹窗 + 动画层 + 过程窗口 + 展示层 + 缩小飞入
+   ============================================================ */
+
+/* ====== 顶栏点名区域 ====== */
+.topbar-picker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ====== Modal 弹窗 ====== */
+.picker-modal {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 10000;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+[data-theme="light"] .picker-modal {
+  background: rgba(0,0,0,0.2);
+}
+
+.picker-modal.hidden { display: none; }
+
+.picker-modal-card {
+  background: var(--bg);
+  border-radius: 16px;
+  padding: 28px 32px;
+  min-width: 380px;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.picker-modal-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text);
+}
+
+.picker-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.picker-section-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.picker-section-desc {
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-top: -2px;
+  margin-bottom: 4px;
+  opacity: 0.7;
+}
+
+/* 单选组 */
+.picker-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.picker-radio-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  font-size: 0.9rem;
+}
+
+.picker-radio-item:hover {
+  border-color: var(--muted);
+  background: var(--hover);
+}
+
+.picker-radio-item input[type=radio] {
+  accent-color: var(--dark);
+  width: 16px; height: 16px;
+  flex-shrink: 0;
+}
+
+.picker-radio-item-label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.picker-radio-item-label .title {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.picker-radio-item-label .desc {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+/* 行内 radio */
+.picker-radio-inline {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.picker-radio-inline label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+/* 下拉选择 */
+.picker-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding: 9px 32px 9px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  background-image: var(--select-arrow);
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px 12px;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+
+.picker-select:hover { border-color: var(--muted); }
+.picker-select:focus { outline: none; border-color: var(--dark); }
+
+/* checkbox */
+.picker-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.picker-checkbox input[type=checkbox] {
+  accent-color: var(--dark);
+  width: 17px; height: 17px;
+  flex-shrink: 0;
+}
+
+/* 按钮区 */
+.picker-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 4px;
+}
+
+/* ====== 修饰动画层（全屏） ====== */
+.pick-decorative {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 10001;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s;
+}
+
+.pick-decorative.hidden { display: none; }
+
+.pick-decorative-text {
+  font-size: 12vw;
+  font-weight: 800;
+  color: var(--text);
+  transition: color 0.3s;
+}
+
+.pick-decorative-text.pop {
+  animation: pickPop 0.35s var(--ease);
+}
+
+.pick-decorative.shrink {
+  animation: pickOverlayFade var(--shrink-dur, 1s) var(--ease) forwards;
+}
+
+.pick-decorative.shrink .pick-decorative-text {
+  animation: pickShrinkToCorner var(--shrink-dur, 1s) var(--ease) forwards;
+}
+
+/* ====== 过程动画层 ====== */
+.pick-process {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 10002;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: #fff;
+  font-size: 1.1rem;
+  overflow: auto;
+  padding: 20px;
+  transition: opacity 0.3s;
+}
+
+.pick-process.hidden { display: none; }
+
+/* 窗口化模式 */
+.pick-process.windowed {
+  top: 50%;
+  right: auto;
+  bottom: auto;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 560px;
+  max-width: 90vw;
+  max-height: 70vh;
+  border-radius: 16px;
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  padding: 32px;
+}
+
+.pick-process.windowed .proc-phase,
+.pick-process.windowed .proc-step-title,
+.pick-process.windowed .proc-elim-msg {
+  color: var(--text);
+}
+
+.pick-process.windowed .proc-group {
+  border-color: var(--border);
+}
+
+/* 过程动画内部元素 */
+.proc-phase {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  opacity: 0.5;
+  margin-bottom: 8px;
+}
+
+.proc-step-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.proc-split {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 700px;
+  justify-content: center;
+}
+
+.proc-group {
+  flex: 1;
+  padding: 16px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  font-size: 1rem;
+  line-height: 1.6;
+  min-height: 80px;
+  transition: all 0.4s var(--ease);
+}
+
+.proc-group.proc-keep {
+  border-color: rgba(76,175,80,0.6);
+  background: rgba(76,175,80,0.08);
+}
+
+.proc-group.proc-left {
+  opacity: 0.25;
+  text-decoration: line-through;
+  border-color: rgba(244,67,54,0.3);
+}
+
+.proc-group.proc-right {
+  opacity: 0.25;
+  text-decoration: line-through;
+  border-color: rgba(244,67,54,0.3);
+}
+
+.proc-elim-msg {
+  margin-top: 14px;
+  font-size: 0.95rem;
+  opacity: 0.7;
+  color: #ccc;
+}
+
+.proc-subset {
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.6;
+  padding: 12px;
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  max-width: 600px;
+  text-align: center;
+}
+
+.proc-rest-label {
+  font-size: 0.8rem;
+  opacity: 0.5;
+  margin-top: 12px;
+}
+
+.proc-rest {
+  font-size: 0.85rem;
+  opacity: 0.4;
+  line-height: 1.5;
+}
+
+.proc-chosen-name {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-top: 12px;
+}
+
+.proc-result-name {
+  font-size: 2.5rem;
+  font-weight: 800;
+}
+
+/* ====== 展示层（全屏等待点击） ====== */
+.pick-display {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 10003;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s;
+  gap: 16px;
+}
+
+.pick-display.hidden { display: none; }
+
+.pick-display-name {
+  font-size: 14vw;
+  font-weight: 800;
+  color: var(--text);
+  transition: color 0.3s;
+  animation: pickPop 0.35s var(--ease);
+}
+
+.pick-display-sig {
+  font-size: 3vw;
+  color: var(--text);
+  opacity: 0.55;
+  transition: color 0.3s, opacity 0.3s;
+}
+
+.pick-display-sig.empty {
+  opacity: 0;
+}
+
+.pick-display-time {
+  font-size: 1.8vw;
+  color: var(--text);
+  opacity: 0.35;
+  transition: color 0.3s;
+}
+
+.pick-display-time.never {
+  opacity: 0.5;
+  color: #4caf50;
+}
+
+.pick-display-hint {
+  position: absolute;
+  bottom: 8vh;
+  font-size: 1.2vw;
+  color: var(--text);
+  opacity: 0.2;
+  transition: color 0.3s;
+}
+
+/* ====== 结果展示位（顶栏） ====== */
+.pick-result {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+  min-width: 5em;
+  text-align: center;
+  display: inline-block;
+  white-space: nowrap;
+  transition: color 0.3s;
+}
+
+/* ====== Keyframes ====== */
+@keyframes pickPop {
+  0%   { transform: scale(1.4); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pickOverlayFade {
+  0%   { background: var(--bg); }
+  100% { background: transparent; }
+}
+
+@keyframes pickShrinkToCorner {
+  0%   { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(var(--dx), var(--dy)) scale(var(--scale)); }
+}

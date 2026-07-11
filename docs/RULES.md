@@ -107,12 +107,15 @@
 - 有错误时按钮右上角显示红色数字
 - 开屏日志逐行滚动（60ms 间隔），点击屏幕关闭
 
-## 14. 点名系统（picker.js）
+## 14. 点名系统（main/js/picker/）
 
-- 纯 JS 解析 CSV（不用 SheetJS），`fetch().text()` 后 `split` 解析
-- 启动时自动扫描 `/api/stdlist-files`，选择最后一个班级
-- 点名动画：滚动仅姓名 → 定格姓名+头衔 → 缩小仅姓名
-- 头衔用独立 DOM 元素 `#pick-overlay-title`，淡入淡出
+- 模块化架构：random.js（算法）、timestamp.js（时间戳）、animation.js（动画编排）、display.js（展示）、index.js（入口）
+- 配置集中管理：`config/picker/config.js`，所有默认值零硬编码兜底
+- 三种随机方式：纯随机（Fisher-Yates）、二分法（逐步淘汰）、公平随机（优先未点名者 + 最长间隔）
+- 双层动画：修饰动画（始终运行）+ 过程动画（可选，展示算法真实过程）
+- CSV 第 1 列姓名、第 2 列个性签名
+- 时间戳存储：服务端 `data/picker/` JSON 文件，通过 `/api/picker-timestamps` 读写
+- 缩小飞入结果位为固定动画，始终执行
 
 ## 15. 通用编码约定
 

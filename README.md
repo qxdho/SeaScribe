@@ -76,12 +76,13 @@ python server.py 9360
 │       ├── navigator.js    ← 页面切换 + hash 路由
 │       ├── controls.js     ← 字号/列数/布局/数量控件
 │       ├── cards.js        ← 卡片渲染 + 随机出题 + 公布答案
-│       ├── picker.js       ← 随机点名全屏动画
+│       ├── picker/          ← 随机点名（模块化：随机/动画/显示/时间戳）
 │       ├── changelog.js    ← 更新日志弹窗
 │       ├── splash.js       ← 开屏动画 + 启动自检
 │       └── app.js          ← 入口：注册插件 + 渲染学科页
 ├── config/
 │   ├── config.js           ← 主配置（主题）
+│   ├── picker/             ← 点名配置
 │   ├── chemistry/          ← 化学配置
 │   └── english/            ← 英语配置
 ├── plugins/

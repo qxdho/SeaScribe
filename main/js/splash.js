@@ -71,8 +71,12 @@
       logLine('英语插件', ok, '已注册', 'english/plugin.js 未注册');
     },
     function() {
-      var ok = !!document.getElementById('stdlist-select');
-      logLine('点名系统', ok, 'DOM已就绪', '下拉框未渲染');
+      var ok = !!document.getElementById('btn-picker');
+      logLine('点名系统', ok, 'DOM已就绪', '按钮未渲染');
+    },
+    function() {
+      var ok = !!window.__PICKER_CONFIG__;
+      logLine('点名配置', ok, '已加载', 'config/picker/config.js 缺失');
     },
     function() {
       var ok = !!document.getElementById('subject-page');
@@ -103,8 +107,8 @@
       logLine('系统日志', ok, 'DOM已就绪', '未找到#btn-syslog');
     },
     function() {
-      var ok = !!document.getElementById('pick-overlay');
-      logLine('点名覆盖层', ok, 'DOM已就绪', '未找到#pick-overlay');
+      var ok = !!document.getElementById('pick-decorative');
+      logLine('点名动画层', ok, 'DOM已就绪', '未找到#pick-decorative');
     },
     function() {
       // confetti CDN 延迟检测
