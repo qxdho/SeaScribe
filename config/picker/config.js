@@ -8,7 +8,7 @@ window.__PICKER_CONFIG__ = {
   //   'pure'   — 纯随机，Fisher-Yates 洗牌，每人概率均等
   //   'binary' — 二分法，名单不断对半分淘汰直到剩一人
   //   'fair'   — 时间加权随机法，优先选未被点过的人，否则选间隔最长者
-  defaultMethod: 'pure',
+  defaultMethod: 'fair',
 
   // 【默认修饰动画】结果展示时的全屏效果
   //   'scroll' — 姓名滚动 + confetti 彩带

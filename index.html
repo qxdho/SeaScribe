@@ -84,6 +84,17 @@
         <input type="checkbox" id="picker-timestamp" checked>
         <span>记录点名时间（避免重复）</span>
       </label>
+      <div class="picker-ts-actions">
+        <button id="picker-ts-view" class="btn btn-ghost btn-sm-picker" disabled>📋 查看记录</button>
+        <button id="picker-ts-clear" class="btn btn-ghost btn-sm-picker" disabled>🗑 清空记录</button>
+      </div>
+      <div id="picker-ts-panel" class="picker-ts-panel hidden">
+        <div class="picker-ts-panel-header">
+          <span class="picker-ts-panel-title">📋 点名记录</span>
+          <button id="picker-ts-panel-close" class="modal-close-x" title="关闭" style="position:static;width:24px;height:24px;font-size:0.85rem">✕</button>
+        </div>
+        <div id="picker-ts-body" class="picker-ts-body"></div>
+      </div>
     </div>
 
     <div class="picker-actions">

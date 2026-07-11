@@ -16,6 +16,10 @@
   var processModeGroup = document.getElementById('picker-process-mode-group');
   var btnStart = document.getElementById('picker-start');
   var timestampCheck = document.getElementById('picker-timestamp');
+  var btnTsView = document.getElementById('picker-ts-view');
+  var btnTsClear = document.getElementById('picker-ts-clear');
+  var tsPanel = document.getElementById('picker-ts-panel');
+  var tsBody = document.getElementById('picker-ts-body');
   var methodRadios, processModeRadios;
 
   var _currentList = [];   // [{name, signature}, ...]
@@ -115,12 +119,46 @@
         console.log('[Picker] 含非空第二列的样本行:', withComma.slice(0, 5).map(function(l) { return JSON.stringify(l); }));
         _currentList = parseCSV(text);
         btnStart.disabled = _currentList.length === 0;
+        btnTsView.disabled = _currentList.length === 0;
+        btnTsClear.disabled = _currentList.length === 0;
+        tsPanel.classList.add('hidden');
       })
       .catch(function(err) {
         console.error('[Picker] 名单加载失败:', err);
         _currentList = [];
         btnStart.disabled = true;
+        btnTsView.disabled = true;
+        btnTsClear.disabled = true;
       });
+  });
+
+  /* ====== 时间戳管理 ====== */
+  btnTsView.addEventListener('click', async function() {
+    if (!_currentFileName) return;
+    var ts = await PickerTimestamp.load(_currentFileName);
+    var names = Object.keys(ts);
+    if (!names.length) {
+      tsBody.innerHTML = '<div style="color:var(--muted);padding:8px 0">暂无记录</div>';
+    } else {
+      names.sort(function(a, b) { return (ts[b] || '').localeCompare(ts[a] || ''); });
+      tsBody.innerHTML = names.map(function(n) {
+        var t = PickerTimestamp.format(ts[n]) || '—';
+        return '<div class="picker-ts-row"><span class="picker-ts-name">' + esc(n) + '</span><span class="picker-ts-time">' + t + '</span></div>';
+      }).join('');
+    }
+    tsPanel.classList.remove('hidden');
+  });
+
+  btnTsClear.addEventListener('click', async function() {
+    if (!_currentFileName) return;
+    if (!confirm('确定要清空「' + _currentFileName.replace(/\.csv$/i, '') + '」的全部点名记录吗？')) return;
+    await PickerTimestamp.clear(_currentFileName);
+    tsPanel.classList.add('hidden');
+    alert('已清空');
+  });
+
+  document.getElementById('picker-ts-panel-close').addEventListener('click', function() {
+    tsPanel.classList.add('hidden');
   });
 
   /* ====== 解析 CSV：第1列=姓名，第2列=个性签名 ====== */

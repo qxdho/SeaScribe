@@ -45,6 +45,22 @@
     }
   }
 
+  /**
+   * 清空某个班级的全部时间戳
+   * @param {string} listName — 如 "11班.csv"
+   */
+  async function clear(listName) {
+    try {
+      await fetch('/api/picker-timestamps', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ list: listName, data: {} }),
+      });
+    } catch (e) {
+      console.warn('[PickerTimestamp] 清空时间戳失败:', e);
+    }
+  }
+
   /** 时间戳记录是否开启 */
   function isEnabled() {
     return cfg.timestampEnabled !== false;
@@ -71,6 +87,7 @@
   window.PickerTimestamp = {
     load: load,
     save: save,
+    clear: clear,
     isEnabled: isEnabled,
     format: format,
   };
