@@ -64,6 +64,8 @@
       var pResult = await processPromise;
       finalPerson = pResult.person;
       lastPickedTime = pResult.lastPickedTime;
+      // 过程动画结束后自动消失
+      if (processEl) processEl.classList.add('hidden');
     }
 
     // 停止修饰动画
@@ -152,6 +154,12 @@
     var result = null;
     var lastTime = null;
 
+    // 初始淡入
+    el.style.opacity = '0';
+    el.style.transition = 'opacity 0.25s var(--ease)';
+    await delay(50);
+    el.style.opacity = '1';
+
     while (true) {
       var step = await generator.next();
       if (step.done) break;
@@ -160,16 +168,29 @@
       if (data.type === 'result') {
         result = data.person;
         lastTime = data.lastPickedTime;
-        // 渲染最终结果在过程层
+        // 淡出 → 更新内容 → 淡入
+        el.style.opacity = '0';
+        await delay(250);
         renderProcessResult(el, data.person);
+        el.style.opacity = '1';
         await delay(800);
         break;
       } else if (data.type === 'step') {
         stepIdx++;
+        // 淡出 → 更新内容 → 淡入
+        el.style.opacity = '0';
+        await delay(250);
         renderProcessStep(el, data, stepIdx);
+        el.style.opacity = '1';
         // 每步之间已有 generator 内部的 delay
       }
     }
+
+    // 淡出消失
+    el.style.opacity = '0';
+    await delay(250);
+    el.style.opacity = '';
+    el.style.transition = '';
 
     return { person: result, lastPickedTime: lastTime };
   }
