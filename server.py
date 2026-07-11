@@ -159,10 +159,13 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     }
 
     def send_json(self, status, data):
-        self.send_response(status)
-        self.send_header('Content-Type', 'application/json; charset=utf-8')
-        self.end_headers()
-        self.wfile.write(json.dumps(data, ensure_ascii=False).encode())
+        try:
+            self.send_response(status)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.end_headers()
+            self.wfile.write(json.dumps(data, ensure_ascii=False).encode())
+        except (ConnectionAbortedError, BrokenPipeError, ConnectionResetError):
+            pass
 
     def read_body(self, max_size=MAX_BODY_API):
         cl = int(self.headers.get('Content-Length', 0))
@@ -290,7 +293,9 @@ class Handler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         parsed = urlparse(self.path)
         path = parsed.path
-        body = self.read_body(MAX_BODY_API)
+        is_upload = path in ('/api/admin/upload/english', '/api/admin/upload/avatar')
+        max_size = MAX_BODY if is_upload else MAX_BODY_API
+        body = self.read_body(max_size)
         if body is None and int(self.headers.get('Content-Length', 0)) > 0:
             return
         body = body or b''
@@ -485,9 +490,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if path == '/api/admin/upload/english':
             user = _require_role(self, 'admin', 'teacher')
             if not user: return
-            body2 = self.read_body(MAX_BODY)
-            if body2 is None: return
-            try: p = json.loads(body2.decode('utf-8'))
+            try: p = json.loads(body.decode('utf-8'))
             except: self.send_json(400, {'error': 'JSON \u89e3\u6790\u5931\u8d25'}); return
             filename = _safe_filename(p.get('filename', '').strip())
             content_b64 = p.get('content', '')
@@ -522,9 +525,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if path == '/api/admin/upload/avatar':
             user = _require_auth(self)
             if not user: return
-            body2 = self.read_body(MAX_BODY)
-            if body2 is None: return
-            try: p = json.loads(body2.decode('utf-8'))
+            try: p = json.loads(body.decode('utf-8'))
             except: self.send_json(400, {'error': 'JSON parse failed'}); return
             content_b64 = p.get('content', '')
             filename = p.get('filename', 'avatar.png')
@@ -549,9 +550,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         if path == '/api/admin/upload/avatar':
             user = _require_auth(self)
             if not user: return
-            body2 = self.read_body(MAX_BODY)
-            if body2 is None: return
-            try: p = json.loads(body2.decode('utf-8'))
+            try: p = json.loads(body.decode('utf-8'))
             except: self.send_json(400, {'error': 'JSON parse failed'}); return
             content_b64 = p.get('content', '')
             filename = p.get('filename', 'avatar.png')

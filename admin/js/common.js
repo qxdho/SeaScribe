@@ -40,7 +40,7 @@
       return r.json().then(function(data) {
         if (r.status === 401) {
           clearSession();
-          location.reload();
+          location.href = '/admin/';
         }
         return { ok: r.ok, status: r.status, data: data };
       });
