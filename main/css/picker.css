@@ -87,14 +87,6 @@
   letter-spacing: 0.04em;
 }
 
-.picker-section-desc {
-  font-size: 0.75rem;
-  color: var(--muted);
-  margin-top: -2px;
-  margin-bottom: 4px;
-  opacity: 0.7;
-}
-
 /* 单选组 */
 .picker-radio-group {
   display: flex;
@@ -487,18 +479,6 @@
   background: rgba(76,175,80,0.08);
 }
 
-.proc-group.proc-left {
-  opacity: 0.25;
-  text-decoration: line-through;
-  border-color: rgba(244,67,54,0.3);
-}
-
-.proc-group.proc-right {
-  opacity: 0.25;
-  text-decoration: line-through;
-  border-color: rgba(244,67,54,0.3);
-}
-
 .proc-elim-msg {
   margin-top: 14px;
   font-size: 0.95rem;
@@ -646,9 +626,4 @@
 @keyframes pickerModalIn {
   0%   { opacity: 0; transform: scale(0.9) translateY(16px); }
   100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-@keyframes pickerModalOut {
-  0%   { opacity: 1; transform: scale(1) translateY(0); }
-  100% { opacity: 0; transform: scale(0.92) translateY(8px); }
 }

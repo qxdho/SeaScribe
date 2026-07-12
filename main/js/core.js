@@ -21,7 +21,6 @@ const SubjectRegistry = {
    *
    * Optional:
    *   - configUI(containerElement): void   — render custom config controls
-   *   - getMode(): string                  — return current sub-mode
    */
   register(plugin) {
     if (!plugin || !plugin.meta || !plugin.meta.id) {

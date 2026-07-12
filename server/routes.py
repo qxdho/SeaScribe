@@ -337,8 +337,8 @@ def handle_admin_register(path, body, handler):
     save_users(users)
     token = generate_token()
     sessions = {token: make_session(username, uid, nickname, '', '', 'student', '')}
-    from .config import SESSIONS_PATH as sp
-    _write_json(sp, sessions)
+
+    _write_json(SESSIONS_PATH, sessions)
     handler.send_response(200)
     handler.send_header('Content-Type', 'application/json; charset=utf-8')
     handler.set_session_cookie(token)
@@ -608,11 +608,6 @@ def handle_roster_save(path, body, handler):
     if not user: return True
     p = _parse_json_body(handler, body)
     if p is None: return True
-    existing = set()
-    if os.path.isdir(ROSTER_DIR):
-        for f in os.listdir(ROSTER_DIR):
-            if f.endswith('.json'):
-                existing.add(f[:-5])
     for f in os.listdir(ROSTER_DIR):
         if f.endswith('.json') and f[:-5] not in p:
             os.remove(os.path.join(ROSTER_DIR, f))

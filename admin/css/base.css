@@ -25,10 +25,6 @@ input, select, textarea, button, .admin-table th, .admin-table td,
   from { opacity: 0; transform: translateY(12px) scale(0.98); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-@keyframes adminFadeOut {
-  from { opacity: 1; transform: translateY(0) scale(1); }
-  to   { opacity: 0; transform: translateY(-10px) scale(0.97); }
-}
 .admin-content > .admin-card {
   animation: adminFadeIn 0.35s var(--spring) both;
 }
