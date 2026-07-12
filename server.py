@@ -411,12 +411,77 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             try: return json.loads(body.decode('utf-8'))
             except: return {}
 
+        if path == '/api/admin/register':
+            client_ip = self.client_address[0]
+            if not _check_ratelimit(client_ip):
+                self.send_json(429, {'error': '尝试次数过多，请 60 秒后再试'})
+                return
+            p = parse_body()
+            username = p.get('username', '').strip()
+            pw = p.get('password', '')
+            if not username or not pw:
+                _record_fail(client_ip)
+                self.send_json(400, {'error': '请输入用户名和密码'})
+                return
+            if not re.match(r'^[a-zA-Z][a-zA-Z0-9_]{2,19}$', username):
+                _record_fail(client_ip)
+                self.send_json(400, {'error': '用户名必须为 3-20 位英文字母开头，只含字母数字和下划线'})
+                return
+            if len(pw) < 6:
+                _record_fail(client_ip)
+                self.send_json(400, {'error': '密码至少 6 位'})
+                return
+            uid2, u2 = _find_user_by_name(username)
+            if u2:
+                _record_fail(client_ip)
+                self.send_json(400, {'error': '用户名已存在'})
+                return
+            users = _load_users()
+            uid = _new_uid()
+            salt = _new_salt()
+            users.setdefault('by_id', {})[uid] = {
+                'uid': uid, 'username': username,
+                'nickname': p.get('nickname','')[:100], 'displayName': '', 'signature': '',
+                'avatar': '', 'role': 'student',
+                'passwordHash': _hash_password(pw, salt), 'salt': salt,
+            }
+            users.setdefault('by_name', {})[username] = uid
+            _save_users(users)
+            token = _generate_token()
+            _clean_expired_sessions()
+            sessions = _read_json(SESSIONS_PATH)
+            sessions[token] = {'uid': uid, 'username': username, 'nickname': p.get('nickname','')[:100], 'displayName': '', 'signature': '', 'avatar': '', 'role': 'student', 'created': time.time()}
+            _write_json(SESSIONS_PATH, sessions)
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json; charset=utf-8')
+            self.set_session_cookie(token)
+            self.end_headers()
+            resp = {'token': token, 'user': {k: v for k, v in sessions[token].items() if k != 'created'}}
+            self.wfile.write(json.dumps(resp, ensure_ascii=False).encode())
+            return
+
         if path == '/api/admin/picker-timestamps/clear':
             user = _require_role(self, 'admin')
             if not user: return
             p = parse_body()
             safe = _safe_filename(p.get('list', '').replace('.csv', '') + '.json')
             _write_json(os.path.join(PICKER_DIR, safe), {})
+            self.send_json(200, {'ok': True})
+            return
+
+        if path == '/api/admin/picker-timestamps/delete':
+            user = _require_role(self, 'admin')
+            if not user: return
+            p = parse_body()
+            safe = _safe_filename(p.get('list', '').replace('.csv', '') + '.json')
+            name = (p.get('name', '') or '').strip()
+            if not name:
+                self.send_json(400, {'error': '缺少姓名'})
+                return
+            data = _read_json(os.path.join(PICKER_DIR, safe))
+            if name in data:
+                del data[name]
+                _write_json(os.path.join(PICKER_DIR, safe), data)
             self.send_json(200, {'ok': True})
             return
 
@@ -470,7 +535,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             uid, u = _find_user_by_name(username)
             if not u or _hash_password(pw, u.get('salt', '')) != u.get('passwordHash', ''):
                 _record_fail(client_ip)
-                self.send_json(401, {'error': '\u7528\u6237\u540d\u6216\u5bc6\u7801\u9519\u8bef'})
+                self.send_json(400, {'error': '\u7528\u6237\u540d\u6216\u5bc6\u7801\u9519\u8bef'})
                 return
             _clear_fails(client_ip)
             token = _generate_token()

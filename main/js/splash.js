@@ -43,40 +43,80 @@
 
   var checks = [
     function() {
-      var ok = !!document.documentElement.getAttribute('data-theme');
-      logLine('主题系统', ok, '已加载', '未找到data-theme属性');
+      var theme = document.documentElement.getAttribute('data-theme');
+      var ok = !!theme;
+      logLine('主题系统', ok, theme === 'dark' ? '深色模式' : '浅色模式', '未找到data-theme属性');
     },
     function() {
-      var ok = !!window.__SEASCRIBE_CONFIG__;
-      logLine('主配置', ok, '已加载', 'config.js 未加载');
+      var cfg = window.__SEASCRIBE_CONFIG__;
+      var ok = !!cfg;
+      logLine('主配置', ok, ok ? ('默认' + (cfg.theme === 'dark' ? '深色' : '浅色')) : '', 'config.js 未加载');
     },
     function() {
       var ok = !!window.__CHEMISTRY_CONFIG__;
-      logLine('化学配置', ok, '已加载', 'config/chemistry/config.js 缺失');
+      var detail = '';
+      if (ok) {
+        var c = window.__CHEMISTRY_CONFIG__;
+        detail = 'H~Kr ' + (c.defaultRangeEnd || 36) + '元素';
+      }
+      logLine('化学配置', ok, detail, 'config/chemistry/config.js 缺失');
     },
     function() {
       var ok = !!window.__ENGLISH_CONFIG__;
-      logLine('英语配置', ok, '已加载', 'config/english/config.js 缺失');
+      var detail = '';
+      if (ok) {
+        var c = window.__ENGLISH_CONFIG__;
+        detail = '默认' + c.defaultCount + '题';
+      }
+      logLine('英语配置', ok, detail, 'config/english/config.js 缺失');
+    },
+    function() {
+      var ok = !!(window.__SEASCRIBE_CONFIG__ && window.__CHEMISTRY_CONFIG__ && window.__ENGLISH_CONFIG__ && window.__PICKER_CONFIG__);
+      var count = (!!window.__SEASCRIBE_CONFIG__) + (!!window.__CHEMISTRY_CONFIG__) + (!!window.__ENGLISH_CONFIG__) + (!!window.__PICKER_CONFIG__);
+      logLine('配置汇总', ok, count + '/4 已加载', '部分配置缺失');
     },
     function() {
       var ok = !!SubjectRegistry;
       logLine('插件注册表', ok, '已就绪', 'core.js 未加载');
     },
     function() {
-      var ok = !!SubjectRegistry.get('chemistry');
-      logLine('化学插件', ok, '已注册', 'chemistry/plugin.js 未注册');
+      var p = SubjectRegistry.get('chemistry');
+      var ok = !!p;
+      var detail = '';
+      if (ok) detail = '默认' + (p.defaultCount || '?') + '题';
+      logLine('化学插件', ok, detail, 'chemistry/plugin.js 未注册');
     },
     function() {
-      var ok = !!SubjectRegistry.get('english');
-      logLine('英语插件', ok, '已注册', 'english/plugin.js 未注册');
+      var p = SubjectRegistry.get('english');
+      var ok = !!p;
+      var detail = '';
+      if (ok) detail = '默认' + (p.defaultCount || '?') + '题';
+      logLine('英语插件', ok, detail, 'english/plugin.js 未注册');
+    },
+    function() {
+      var list = SubjectRegistry.list();
+      var ok = list.length >= 2;
+      logLine('插件总计', ok, list.length + ' 个已注册', '插件不足');
     },
     function() {
       var ok = !!document.getElementById('btn-picker');
-      logLine('点名系统', ok, 'DOM已就绪', '按钮未渲染');
+      var detail = '';
+      if (ok && window.__PICKER_CONFIG__) {
+        var m = window.__PICKER_CONFIG__.methods;
+        detail = (m ? m.length : 0) + '种随机方式';
+      }
+      logLine('点名系统', ok, detail, '按钮未渲染');
     },
     function() {
-      var ok = !!window.__PICKER_CONFIG__;
-      logLine('点名配置', ok, '已加载', 'config/picker/config.js 缺失');
+      var cfg = window.__PICKER_CONFIG__;
+      var ok = !!cfg;
+      var detail = '';
+      if (ok) {
+        var methods = cfg.methods || [];
+        var def = methods.find(function(m) { return m.id === cfg.defaultMethod; });
+        detail = '默认' + (def ? def.name : cfg.defaultMethod);
+      }
+      logLine('点名配置', ok, detail, 'config/picker/config.js 缺失');
     },
     function() {
       var ok = !!document.getElementById('subject-page');
@@ -95,6 +135,10 @@
       logLine('控制栏', ok, 'DOM已就绪', '未找到.controls');
     },
     function() {
+      var ok = !!document.getElementById('btn-admin');
+      logLine('管理入口', ok, 'DOM已就绪', '未找到#btn-admin');
+    },
+    function() {
       var ok = !!document.getElementById('btn-about');
       logLine('关于页面', ok, 'DOM已就绪', '未找到#btn-about');
     },
@@ -111,14 +155,43 @@
       logLine('点名动画层', ok, 'DOM已就绪', '未找到#pick-decorative');
     },
     function() {
-      // confetti CDN 延迟检测
-      var ok = typeof confetti !== 'undefined' || document.querySelector('script[src*=\"canvas-confetti\"]') !== null;
-      logLine('点名特效', ok, 'confetti已就绪', 'CDN未加载（离线模式正常）');
+      var ok = typeof confetti !== 'undefined' || document.querySelector('script[src*="canvas-confetti"]') !== null;
+      logLine('点名特效', ok, ok ? 'canvas-confetti' : '', 'CDN未加载（离线正常）');
+    },
+    function() {
+      var sheets = document.styleSheets;
+      var found = false;
+      for (var s = 0; s < sheets.length; s++) {
+        try { if (sheets[s].href && sheets[s].href.indexOf('theme.css') >= 0) { found = true; break; } } catch(e) {}
+      }
+      logLine('CSS主题文件', found, 'theme.css', '未加载');
+    },
+    function() {
+      var ok = true;
+      try { localStorage.setItem('_seascribe_test', '1'); localStorage.removeItem('_seascribe_test'); } catch(e) { ok = false; }
+      logLine('本地存储', ok, '可用', 'localStorage不可用');
+    },
+    function() {
+      var w = window.screen.width;
+      var h = window.screen.height;
+      var ratio = window.devicePixelRatio || 1;
+      logLine('屏幕分辨率', true, w + '×' + h + (ratio > 1 ? ' @' + ratio + 'x' : ''), '');
     },
     function() {
       var img = document.querySelector('.topbar-logo');
       var ok = img && img.src.indexOf('.png') !== -1;
       logLine('Logo PNG', ok, '已加载', 'Logo未切换PNG');
+    },
+    function() {
+      var sess = null;
+      try { sess = JSON.parse(localStorage.getItem('seascribe_admin') || 'null'); } catch(e) {}
+      var ok = !!(sess && sess.token);
+      var detail = '';
+      if (ok && sess.user) detail = sess.user.displayName || sess.user.nickname || sess.user.username;
+      logLine('管理员会话', ok, detail || '已登录', '未登录（正常）');
+    },
+    function() {
+      logLine('版本', true, 'v4.3.0', '');
     },
   ];
 
@@ -153,7 +226,9 @@
 
   window.SeaScribe.bindModal('syslog-overlay', 'btn-syslog-close-x');
 
-  document.getElementById('btn-syslog').addEventListener('click', function() {
+  var syslogBtn = document.getElementById('btn-syslog');
+  if (syslogBtn) {
+    syslogBtn.addEventListener('click', function() {
     syslogOverlay.classList.remove('hidden');
     syslogBody.innerHTML = window.__SEASCRIBE_LOG__.map(function(l) {
       return '<div style="padding:3px 0;font-size:0.9rem">' +
@@ -162,4 +237,5 @@
     }).join('');
     setTimeout(function() { syslogBody.scrollTop = syslogBody.scrollHeight; }, 50);
   });
+  }
 })();

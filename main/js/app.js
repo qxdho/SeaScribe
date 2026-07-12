@@ -44,4 +44,30 @@
       menu.classList.add('hidden');
     });
   })();
+
+  // ---- 管理后台登录状态 ----
+  (function() {
+    var statusEl = document.getElementById('admin-status');
+    if (!statusEl) return;
+
+    // 先检查 localStorage 是否有 admin session，避免未登录时 401
+    var sess = null;
+    try { sess = JSON.parse(localStorage.getItem('seascribe_admin') || 'null'); } catch(e) {}
+    if (!sess || !sess.token) return;
+
+    fetch('/api/admin/session', {
+      credentials: 'same-origin',
+      headers: { 'Authorization': 'Bearer ' + sess.token }
+    })
+      .then(function(r) { return r.json().then(function(data) { return { ok: r.ok, data: data }; }); })
+      .then(function(res) {
+        if (res.ok && res.data.username) {
+          var name = res.data.displayName || res.data.nickname || res.data.username;
+          statusEl.innerHTML = '<span class="status-dot"></span>' + name;
+          statusEl.title = '已登录: ' + res.data.username + ' (' + res.data.role + ')';
+          statusEl.classList.remove('hidden');
+        }
+      })
+      .catch(function() {});
+  })();
 })();

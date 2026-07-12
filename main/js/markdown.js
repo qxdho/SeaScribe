@@ -19,7 +19,7 @@
 
     function flushCode() {
       if (!codeBuf.length) return;
-      out.push('<pre><code>' + esc(codeBuf.join('\n')) + '</code></pre>');
+      out.push('<pre><code>' + SeaScribe.esc(codeBuf.join('\n')) + '</code></pre>');
       codeBuf = [];
     }
 
@@ -107,7 +107,7 @@
       return '\x00' + (tags.length - 1) + '\x00';
     });
     // 3. Escape remaining plain text
-    text = esc(text);
+    text = SeaScribe.esc(text);
     // 4. Restore HTML tags
     text = text.replace(/\x00(\d+)\x00/g, function(_, n) { return tags[+n]; });
     // 5. Markdown syntax
@@ -115,12 +115,6 @@
     text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
     text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
     return text;
-  }
-
-  function esc(s) {
-    var d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
   }
 
   window.SeaScribe.renderMarkdown = renderMarkdown;

@@ -1,15 +1,188 @@
 /* ============================================================
    SeaScribe — Responsive
+   适配手机 / 平板 / 桌面
    ============================================================ */
 
-@media (max-width: 640px) {
-  .card-grid { grid-template-columns: 1fr 1fr; }
-  .subject-grid { grid-template-columns: 1fr 1fr; }
-  .topbar { padding: 12px 14px; gap: 8px; }
-  .page { padding: 16px 10px 32px; }
-  .control-row { gap: 8px; }
+/* ====== 平板 (≤768px) ====== */
+@media (max-width: 768px) {
+  /* 顶栏 */
+  .topbar {
+    flex-wrap: nowrap;
+    padding: 10px 14px;
+    gap: 6px;
+  }
+  .topbar-version { display: none; }
+  .topbar-brand { font-size: 1.1rem; }
+  .topbar-logo { width: 0.9em; height: 0.9em; }
+  .topbar-btn { padding: 5px 8px; font-size: 0.82rem; }
+  .admin-status { font-size: 0.68rem; }
+  #btn-admin { padding: 5px 8px; font-size: 0.82rem; }
+
+  /* 点名顶栏区域 */
+  .topbar-picker { gap: 4px; }
+  #btn-picker { font-size: 0.82rem; }
+
+  /* 页面 */
+  .page { padding: 12px 10px 28px; }
+
+  /* 听写页头部 */
+  .dictation-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .dictation-header .page-title { font-size: 1.2rem; }
+
+  /* 控制栏 */
+  .control-row { gap: 6px; }
+  .control-item { gap: 2px; }
+  .ctrl-label { font-size: 0.7rem; }
+  .font-slider { width: 48px; }
+
+  /* 学科卡片 */
+  .subject-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .subject-card { padding: 18px 14px; }
+  .subject-icon { font-size: 2rem; }
+  .subject-name { font-size: 1rem; }
+  .subject-desc { font-size: 0.72rem; }
+
+  /* 听写卡片 */
+  .card-grid { gap: 10px; }
+  .card { padding: 14px 16px; }
+
+  /* 模态框 */
+  .picker-modal-card {
+    min-width: unset;
+    max-width: 92vw;
+    width: 92vw;
+    padding: 20px 18px;
+    gap: 14px;
+  }
+  .changelog-card {
+    min-width: unset;
+    max-width: 92vw;
+    width: 92vw;
+    padding: 20px 18px;
+  }
+
+  /* Splash */
+  .splash-logo { width: 70px; height: 70px; }
+  .splash-title { font-size: 2.2rem; }
+  .splash-author { font-size: 1rem; }
+  .splash-log { width: 260px; height: 280px; }
 }
 
+/* ====== 窄屏 (≤640px) — 隐藏点名结果 ====== */
+@media (max-width: 640px) {
+  .topbar { flex-wrap: nowrap; }
+  #pick-result { display: none; }
+}
+
+/* ====== 手机 (≤480px) ====== */
+@media (max-width: 480px) {
+  /* 顶栏 —— 只显示图标 */
+  .topbar {
+    flex-wrap: nowrap;
+    padding: 8px 10px;
+    gap: 3px;
+  }
+  .topbar-brand { font-size: 1rem; }
+  .topbar-btn { padding: 4px 6px; font-size: 0.82rem; border-radius: 6px; }
+  .topbar-btn .btn-label { display: none; }
+  #btn-admin { padding: 4px 6px; font-size: 0.82rem; }
+  .admin-status { font-size: 0.58rem; }
+  .topbar-picker { gap: 2px; }
+  #btn-picker { font-size: 0.82rem; padding: 4px 6px; }
+  #pick-result { display: none; }
+  .icon-btn { width: 24px; height: 24px; font-size: 0.85rem; }
+  .more-menu { min-width: 120px; }
+  .more-item { padding: 6px 10px; font-size: 0.8rem; }
+
+  /* 页面 */
+  .page { padding: 10px 6px 24px; }
+  .page-hero { margin-bottom: 18px; }
+  .page-title { font-size: 1.3rem; }
+
+  /* 听写页头部 */
+  .dictation-header .page-title { font-size: 1rem; }
+  .back-btn { padding: 5px 10px; font-size: 0.8rem; }
+
+  /* 控制栏 —— 更紧凑 */
+  .control-row { gap: 5px; }
+  .stepper-btn { width: 24px; height: 24px; font-size: 0.8rem; }
+  .stepper-input { width: 36px; height: 24px; font-size: 0.8rem; }
+  .stepper-val { width: 24px; font-size: 0.78rem; }
+  .ctrl-label { font-size: 0.65rem; display: none; }
+  .font-slider { width: 40px; }
+  .fs-btn { width: 24px; height: 24px; font-size: 0.7rem; }
+  .tool-val { font-size: 0.7rem; min-width: 2.8em; }
+  .layout-btn { width: 28px; height: 28px; font-size: 1rem; }
+  .btn { padding: 5px 10px; font-size: 0.78rem; }
+  .url-input { width: 160px; font-size: 0.78rem; padding: 6px 10px; }
+  .range-select { padding: 6px 28px 6px 10px; font-size: 0.78rem; max-width: 120px; }
+
+  /* 学科卡片 —— 单列 */
+  .subject-grid { grid-template-columns: 1fr; gap: 8px; }
+  .subject-card { padding: 14px 12px; }
+
+  /* 听写卡片 —— 单列 */
+  .card-grid { grid-template-columns: 1fr; gap: 8px; }
+  .card { padding: 10px 12px; }
+  .card-num { font-size: 1rem; }
+  .card-prompt { font-size: 0.9em; }
+
+  /* 模态框 */
+  .picker-modal-card {
+    width: 96vw;
+    max-width: 96vw;
+    padding: 16px 14px;
+    gap: 12px;
+    border-radius: 12px;
+  }
+  .picker-modal-title { font-size: 1.2rem; }
+  .picker-radio-item { padding: 8px 10px; }
+  .picker-radio-item-label .title { font-size: 0.88rem; }
+  .picker-radio-item-label .desc { font-size: 0.72rem; }
+  .picker-select { font-size: 0.82rem; padding: 7px 10px; }
+  .picker-section { gap: 6px; }
+
+  .changelog-card {
+    min-width: unset;
+    width: 96vw;
+    max-width: 96vw;
+    padding: 16px 14px;
+    border-radius: 12px;
+  }
+  .changelog-card h2 { font-size: 1.1rem; }
+  .changelog-body ul { font-size: 0.82rem; }
+  .changelog-body { max-height: 60vh; }
+
+  /* Splash */
+  .splash { padding: 16px; }
+  .splash-content { gap: 8px; }
+  .splash-logo { width: 56px; height: 56px; }
+  .splash-title { font-size: 1.8rem; }
+  .splash-author { font-size: 0.9rem; }
+  .splash-version { font-size: 0.78rem; }
+  .splash-vibecoding { font-size: 0.7rem; }
+  .splash-log {
+    width: 100%;
+    max-width: 300px;
+    height: 240px;
+    margin-top: 10px;
+  }
+  .splash-log-line { font-size: 0.72rem; }
+  .splash-hint { font-size: 0.68rem; margin-top: 8px; }
+
+  /* 点名动画 */
+  .pick-decorative-text { font-size: 2.6rem; }
+  .pick-decorative-sig { font-size: 0.9rem; }
+  .pick-decorative-hint { font-size: 0.72rem; }
+  .pick-process { padding: 20px 14px; }
+  .proc-phase { font-size: 1rem; }
+  .proc-group { font-size: 0.78rem; padding: 8px 10px; }
+}
+
+/* ====== 大屏 (≥1600px) ====== */
 @media (min-width: 1600px) {
   .page { padding: 32px 48px 60px; }
 }

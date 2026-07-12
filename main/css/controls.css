@@ -202,3 +202,63 @@
 }
 .btn-ghost:hover { border-color: var(--text); color: var(--text); }
 .btn-ghost:disabled { opacity: 0.35; cursor: default; }
+
+/* ---- Custom Select（与 admin 统一的下拉组件）---- */
+.cs-wrap { position: relative; display: inline-block; min-width: 100px; }
+.cs-trigger {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface); color: var(--text);
+  font-size: 0.85rem; font-family: inherit;
+  cursor: pointer; text-align: left;
+  transition: border-color 0.2s;
+  gap: 6px; outline: none; line-height: 1.4;
+}
+.cs-trigger:hover { border-color: var(--muted); }
+.cs-wrap.open .cs-trigger { border-color: var(--text); }
+.cs-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cs-arrow {
+  flex-shrink: 0;
+  width: 0; height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--muted);
+  transition: transform 0.2s;
+}
+.cs-wrap.open .cs-arrow { transform: rotate(180deg); }
+.cs-drop {
+  position: absolute; top: calc(100% + 4px); left: 0; z-index: 100;
+  min-width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  max-height: 0; overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.25s var(--ease), opacity 0.2s;
+}
+.cs-wrap.open .cs-drop {
+  max-height: 220px; overflow-y: auto;
+  opacity: 1;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted) transparent;
+}
+.cs-drop::-webkit-scrollbar { width: 6px; }
+.cs-drop::-webkit-scrollbar-track { background: transparent; }
+.cs-drop::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
+.cs-option {
+  padding: 8px 12px; font-size: 0.85rem; color: var(--text);
+  cursor: pointer; transition: background 0.1s;
+  white-space: nowrap;
+}
+.cs-option:hover, .cs-option.focused { background: var(--hover); }
+.cs-option.active { font-weight: 600; color: var(--dark); }
+.cs-option.stagger-in {
+  animation: csStaggerIn 0.25s var(--ease) backwards;
+}
+@keyframes csStaggerIn {
+  from { opacity: 0.7; }
+  to   { opacity: 1; }
+}

@@ -7,7 +7,7 @@
 <!-- Anti-flash: set theme before render -->
 <script>
 (function(){
-  var t = localStorage.getItem('seascribe_admin_theme') || 'light';
+  var t = localStorage.getItem('seascribe_theme') || 'light';
   document.documentElement.setAttribute('data-theme', t);
 })();
 </script>
@@ -40,12 +40,44 @@
     <div class="admin-login-field">
       <label for="login-password">密码</label>
       <div style="position:relative">
-        <input type="password" id="login-password" placeholder="输入密码" autocomplete="current-password" style="width:100%;padding-right:36px">
-        <button type="button" id="login-toggle-pw" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;padding:0;line-height:1;color:var(--muted)" title="显示密码">👁</button>
+        <input type="password" id="login-password" placeholder="输入密码" autocomplete="current-password" style="width:100%;padding-right:60px">
+        <button type="button" id="login-clear-pw" class="pw-action-btn" style="right:32px;display:none" title="清除"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        <button type="button" id="login-toggle-pw" class="pw-action-btn" style="right:6px" title="显示密码"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
       </div>
     </div>
     <p id="login-error" class="admin-login-error hidden"></p>
     <button id="login-submit" class="admin-btn admin-btn-primary">登 录</button>
+    <button id="login-to-register" class="admin-btn admin-btn-ghost admin-btn-sm" style="margin-top:-8px">注册新账号</button>
+  </div>
+
+  <!-- 注册表单 -->
+  <div class="admin-login-card hidden" id="register-card">
+    <div class="admin-login-logo">📝</div>
+    <h1>注册账号</h1>
+    <p class="admin-login-sub">注册后将自动进入绑定姓名流程</p>
+    <div class="admin-login-field">
+      <label for="register-username">用户名</label>
+      <input type="text" id="register-username" placeholder="字母开头，3-20位字母或数字" autocomplete="username">
+      <span class="reg-hint" id="reg-hint-username">字母开头，3-20位，可含数字和下划线</span>
+    </div>
+    <div class="admin-login-field">
+      <label for="register-nickname">昵称</label>
+      <input type="text" id="register-nickname" placeholder="给自己起个名字（可选）">
+      <span class="reg-hint" id="reg-hint-nickname">给自己起个好记的名字，最长20字</span>
+    </div>
+    <div class="admin-login-field">
+      <label for="register-password">密码</label>
+      <input type="password" id="register-password" placeholder="至少6位" autocomplete="new-password">
+      <span class="reg-hint" id="reg-hint-password">至少 6 位字符</span>
+    </div>
+    <div class="admin-login-field">
+      <label for="register-password2">确认密码</label>
+      <input type="password" id="register-password2" placeholder="再次输入密码" autocomplete="new-password">
+      <span class="reg-hint" id="reg-hint-password2">与上方密码一致</span>
+    </div>
+    <p id="register-error" class="admin-login-error hidden"></p>
+    <button id="register-submit" class="admin-btn admin-btn-primary" disabled>注 册</button>
+    <button id="register-to-login" class="admin-btn admin-btn-ghost admin-btn-sm" style="margin-top:-8px">返回登录</button>
   </div>
   </div><!-- .admin-login-body -->
 </div>
@@ -56,6 +88,7 @@
     <a class="admin-login-topbar-brand" href="/" title="回到主站"><img src="../main/logo.png" alt="SeaScribe" style="width:1.1em;height:1.1em">SeaScribe</a>
     <span class="admin-login-topbar-spacer"></span>
     <button id="btn-theme-bind" class="admin-btn admin-btn-ghost admin-btn-sm" title="切换夜间模式">🌙</button>
+    <button id="btn-bind-logout" class="admin-btn admin-btn-ghost admin-btn-sm" title="退出登录">退出</button>
   </div>
   <div class="admin-login-body">
   <div class="admin-login-card">
@@ -90,7 +123,7 @@
     <span class="admin-topbar-spacer"></span>
     <div class="admin-user-info" id="admin-user-info"></div>
     <button id="btn-theme" class="admin-btn admin-btn-ghost admin-btn-sm" title="切换夜间模式">🌙</button>
-    <button id="admin-logout-btn" class="admin-btn admin-btn-ghost admin-btn-sm">退出登录</button>
+    <button id="admin-logout-btn" class="admin-btn admin-btn-ghost admin-btn-sm" title="退出登录"><svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg> <span class="btn-label">退出</span></button>
   </header>
   <main class="admin-main">
     <div id="admin-content" class="admin-content"></div>
@@ -98,13 +131,14 @@
 </div>
 
 <script src="js/common.js"></script>
+<script src="js/custom-select.js"></script>
 <script src="js/router.js"></script>
 <script src="js/pages/profile.js"></script>
 <script src="js/pages/users.js"></script>
-<script src="js/pages/config.js"></script>
-<script src="js/pages/files.js"></script>
-<script src="js/pages/records.js"></script>
 <script src="js/pages/roster.js"></script>
+<script src="js/pages/records.js"></script>
+<script src="js/pages/files.js"></script>
+<script src="js/pages/config.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/app.js"></script>
 </body>

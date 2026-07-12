@@ -154,14 +154,29 @@
 - 所有 CSS 使用 CSS 变量，暗色主题通过 `[data-theme="dark"]` 覆盖
 - `admin/_store/` 不入库（`.gitignore`），HTTP 直接访问返回 403
 
-## 18. server.py 安全规范
+## 18. 主站模块架构
+
+- `core.js`：`SubjectRegistry` 插件注册表 + `SeaScribe.esc()` 全局转义（最先加载）
+- `engine.js`：`SeaScribe.shuffleAndPick()` 洗牌算法
+- `theme.js`：`SeaScribe.applyTheme()` 主题管理（localStorage key `seascribe_theme`）
+- `navigator.js`：页面切换动画 `switchToPage()`
+- `controls.js`：字号/列数/布局/数量控件 + `getMaxCount()`/`clampCount()`
+- `cards.js`：学科页渲染 `renderSubjectPage()`、听写页卡片渲染、`doShuffle()`、答案展开
+- `modal.js`：弹窗关闭绑定（✕ + 遮罩点击）
+- `markdown.js`：`SeaScribe.renderMarkdown()` 统一 Markdown→HTML 渲染
+- `plugin-utils.js`：`PluginUtils.loadConfig()`/`scanDir()`/`refreshCount()`/`parseCSV()` 插件工具
+- `changelog.js`/`splash.js`/`about.js`：更新日志弹窗 / 开屏动画 / 关于弹窗
+- `app.js`：入口，注册插件，绑定下拉菜单
+- `picker/` 子模块：`index.js`（入口）→ `random.js`（算法）→ `animation.js`（编排）→ `display.js`（展示）+ `timestamp.js`（时间戳）
+
+## 19. server.py 安全规范
 
 - 所有用户输入文件名先 `os.path.basename()` 防路径穿越
 - 请求体大小限制：普通 API 1MB，上传 60MB
 - 昵称 ≤ 100 字符，头像 URL ≤ 2000 字符
 - `send_json` 包裹 try/except 静默 ConnectionAbortedError
 
-## 19. 表单元素无障碍
+## 20. 表单元素无障碍
 
 - 每个 `<input>` / `<select>` / `<textarea>` 必须设置 `id` 或 `name` 属性（二者至少有一个）
 - 每个 `<label>` 必须通过 `for` 属性关联到对应表单元素的 `id`

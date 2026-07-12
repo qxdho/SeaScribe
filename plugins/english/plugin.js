@@ -22,7 +22,7 @@ const EnglishPlugin = {
   _answerCol: 1,
 
   /** 扫描地址列表 */
-  _scanURLs: [],
+  scanURLs: [],
 
   /** 缓存最近一次导入的原始行数据，用于切换列时即时重新解析 */
   _rawRows: null,
@@ -32,20 +32,9 @@ const EnglishPlugin = {
   _data: [],
 
   loadConfig() {
-    const c = window.__ENGLISH_CONFIG__;
-    if (c) {
-      if (c.defaultCount    != null) this.defaultCount    = c.defaultCount;
-      if (c.defaultColumns  != null) this.defaultColumns  = c.defaultColumns;
-      if (c.defaultFontSize != null) this.defaultFontSize = c.defaultFontSize;
-      if (c.promptCol       != null) this._promptCol      = c.promptCol;
-      if (c.answerCol       != null) this._answerCol      = c.answerCol;
-      if (c.scanURLs        != null) this._scanURLs       = c.scanURLs;
-      if (c.defaultLayout   != null) this.defaultLayout   = c.defaultLayout;
-      if (c.gridColumns     != null) this.gridColumns     = c.gridColumns;
-      if (c.listColumns     != null) this.listColumns     = c.listColumns;
-      if (c.gridFontSize    != null) this.gridFontSize    = c.gridFontSize;
-      if (c.listFontSize    != null) this.listFontSize    = c.listFontSize;
-    }
+    PluginUtils.loadConfig(this, window.__ENGLISH_CONFIG__, {
+      promptCol: '_promptCol', answerCol: '_answerCol',
+    });
   },
 
   async loadData() { return this._data; },
@@ -90,6 +79,7 @@ const EnglishPlugin = {
 
     this._bindColSteppers(container);
     this._bindImport(container);
+    CustomSelect.initAll(container);
     // 进入插件时自动扫描服务器文件
     const scanBtn = container.querySelector('#english-scan-btn');
     if (scanBtn) setTimeout(() => scanBtn.click(), 100);
@@ -109,7 +99,7 @@ const EnglishPlugin = {
       update();
       if (this._rawRows) {
         this._data = this._parseRows(this._rawRows, this._hasHeader);
-        this._refreshCount();
+        PluginUtils.refreshCount(this);
       }
     };
 
@@ -154,7 +144,7 @@ const EnglishPlugin = {
     // 扫描按钮：遍历 scanURLs，合并去重
     if (scanBtn) {
       scanBtn.addEventListener('click', async () => {
-        if (!this._scanURLs || !this._scanURLs.length) {
+        if (!this.scanURLs || !this.scanURLs.length) {
           msgEl.textContent = '❌ 请在 config.js 中配置 scanURLs';
           msgEl.className   = 'import-msg error';
           return;
@@ -167,8 +157,8 @@ const EnglishPlugin = {
           const seen = new Set();
           const allFiles = [];
 
-          for (const url of this._scanURLs) {
-            const files = await this._scanDir(url);
+          for (const url of this.scanURLs) {
+            const files = await PluginUtils.scanDir(url, /\.(xlsx|xls|csv)$/i);
             for (const f of files) {
               if (!seen.has(f.url)) {
                 seen.add(f.url);
@@ -181,7 +171,8 @@ const EnglishPlugin = {
 
           fileSel.innerHTML = '<option value="">— 选择文件 —</option>' +
             allFiles.map(f => `<option value="${SeaScribe.esc(f.url)}">${SeaScribe.esc(f.name)}</option>`).join('');
-          fileSel.classList.remove('hidden');
+          fileSel.hidden = false;
+          if (fileSel._customSelect) fileSel._customSelect.refresh();
 
           msgEl.textContent = `✅ 找到 ${allFiles.length} 个文件`;
           msgEl.className   = 'import-msg success';
@@ -206,48 +197,6 @@ const EnglishPlugin = {
     }
   },
 
-  /** 扫描目录页面，提取 .xlsx/.csv 链接 */
-  async _scanDir(url) {
-    // 相对路径补全为完整 URL
-    const base = new URL(url, location.origin).href;
-
-    let resp;
-    try {
-      resp = await fetch(base);
-    } catch (e) {
-      throw new Error('请求被阻止（CORS 或网络问题），请确保通过 HTTP 服务器访问页面而非 file://');
-    }
-    if (!resp.ok) throw new Error(`目录不可达 (${resp.status})`);
-
-    const ct = resp.headers.get('content-type') || '';
-
-    // JSON API 格式
-    if (ct.includes('application/json')) {
-      const json = await resp.json();
-      return json.map(f => ({
-        url: new URL(f.url, base).href,
-        name: f.name
-      }));
-    }
-
-    // HTML 目录页格式
-    const html = await resp.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-
-    const links = [];
-    doc.querySelectorAll('a[href]').forEach(a => {
-      const href = a.getAttribute('href');
-      const name = a.textContent.trim() || href;
-      if (/\.(xlsx|xls|csv)$/i.test(href)) {
-        const full = new URL(href, base).href;
-        links.push({ url: full, name });
-      }
-    });
-
-    return links;
-  },
-
   /** 统一导入流程：show loading → run → update data → show result */
   async _doImport(msgEl, parseFn) {
     msgEl.textContent = '读取中…';
@@ -268,7 +217,7 @@ const EnglishPlugin = {
       msgEl.className   = 'import-msg error';
     }
 
-    this._refreshCount();
+    PluginUtils.refreshCount(this);
   },
 
   /** File → ArrayBuffer */
@@ -334,20 +283,6 @@ const EnglishPlugin = {
       prompt: String(r[pc] || '').trim(),
       answer: String(r[ac] || '').trim(),
     })).filter(item => item.prompt || item.answer);
-  },
-
-  /** 刷新主页面的数量上限 */
-  _refreshCount() {
-    setTimeout(() => {
-      const cntInput = document.getElementById('count-input');
-      if (cntInput) {
-        cntInput.min = this._data.length ? 1 : 0;
-        cntInput.max = this._data.length || 1;
-        if (parseInt(cntInput.value) > this._data.length) cntInput.value = this._data.length;
-        if (!this._data.length) cntInput.value = 0;
-        else if (parseInt(cntInput.value) === 0) cntInput.value = Math.min(this.defaultCount, this._data.length);
-      }
-    }, 50);
   },
 
   /** 动态加载 SheetJS CDN */

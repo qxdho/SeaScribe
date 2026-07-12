@@ -1,16 +1,19 @@
 /* ============================================================
    SeaScribe — Theme Manager
+   与 admin 共享 localStorage key: seascribe_theme
    ============================================================ */
 
 (function() {
-  const btnTheme = document.getElementById('btn-theme');
+  var btnTheme = document.getElementById('btn-theme');
 
   window.SeaScribe.applyTheme = function(dark) {
-    document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+    var t = dark ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', t);
     btnTheme.textContent = dark ? '☀️' : '🌙';
+    localStorage.setItem('seascribe_theme', t);
   };
 
-  // Init
+  // Init button icon
   btnTheme.textContent = document.documentElement.getAttribute('data-theme') === 'dark' ? '☀️' : '🌙';
 
   btnTheme.addEventListener('click', function() {

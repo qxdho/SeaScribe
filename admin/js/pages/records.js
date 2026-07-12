@@ -12,7 +12,7 @@ function render() {
   content.innerHTML =
     '<div class="admin-card">' +
       '<h3>📋 点名记录管理</h3>' +
-      '<p style="color:var(--muted);margin-bottom:12px">选择班级查看点名时间戳记录，支持清空全部记录。</p>' +
+      '<p style="color:var(--muted);margin-bottom:12px">选择班级查看点名记录，可逐条删除或一键清空。</p>' +
       '<div class="admin-form-group">' +
         '<label for="records-class">班级</label>' +
         '<select id="records-class">' +
@@ -105,12 +105,31 @@ function renderTable(ts) {
     return;
   }
   names.sort(function(a, b) { return (ts[b] || '').localeCompare(ts[a] || ''); });
-  var html = '<table class="admin-table"><thead><tr><th>姓名</th><th>最近点名时间</th></tr></thead><tbody>';
+  var html = '<table class="admin-table"><thead><tr><th>姓名</th><th>最近点名时间</th><th>操作</th></tr></thead><tbody>';
   names.forEach(function(n) {
-    html += '<tr><td>' + Admin.esc(n) + '</td><td>' + formatTime(ts[n]) + '</td></tr>';
+    html += '<tr><td>' + Admin.esc(n) + '</td><td>' + formatTime(ts[n]) + '</td>' +
+      '<td><button class="admin-btn admin-btn-danger admin-btn-sm" data-del-name="' + Admin.esc(n) + '">删除</button></td></tr>';
   });
   html += '</tbody></table>';
   wrap.innerHTML = html;
+
+  // 绑定逐条删除
+  wrap.querySelectorAll('[data-del-name]').forEach(function(btn) {
+    btn.addEventListener('click', async function() {
+      var name = this.dataset.delName;
+      if (!confirm('确定删除「' + name + '」的点名记录吗？')) return;
+      var res = await Admin.api('/api/admin/picker-timestamps/delete', {
+        method: 'POST',
+        body: { list: _currentFileName, name: name },
+      });
+      if (res.ok) {
+        Admin.toast('已删除「' + name + '」的记录', 'success');
+        loadRecordsFromFile(_currentFileName);
+      } else {
+        Admin.toast(res.data.error || '删除失败', 'error');
+      }
+    });
+  });
   document.getElementById('records-actions').classList.remove('hidden');
 }
 

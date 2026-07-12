@@ -82,7 +82,7 @@
     // 彩带
     fireConfetti();
 
-    await delay(300);
+    await SeaScribe.delay(300);
 
     // 直接在修饰层上追加签名和时间（不再用独立 display 层）
     if (window.PickerDisplay && decorativeEl && decorativeText) {
@@ -110,12 +110,14 @@
   var _decorTarget = null;
   var _decorResolve = null;
   var _decorStartTime = 0;
-  var _decorMinMs = cfg.decorMinMs || 3000;
+  var _decorMinMs = cfg.decorMinMs || 2000;
+  var _decorGeneration = 0;
 
   function startDecorative(list) {
     _decorRunning = true;
     _decorTarget = null;
     _decorStartTime = performance.now();
+    var gen = ++_decorGeneration;
 
     return new Promise(function(resolve) {
       _decorResolve = resolve;
@@ -125,6 +127,7 @@
       var lastTick = 0;
 
       function tick(ts) {
+        if (gen !== _decorGeneration) return;
         if (!_decorRunning) {
           if (_decorTarget) {
             decorativeText.textContent = _decorTarget;
@@ -166,7 +169,7 @@
     // 初始淡入
     el.style.opacity = '0';
     el.style.transition = 'opacity 0.3s var(--ease)';
-    await delay(50);
+    await SeaScribe.delay(50);
     el.style.opacity = '1';
 
     while (true) {
@@ -178,7 +181,7 @@
         result = data.person;
         lastTime = data.lastPickedTime;
         renderProcessResult(el, data.person);
-        await delay(cfg.processResultMs || 800);
+        await SeaScribe.delay(cfg.processResultMs || 800);
         break;
       } else if (data.type === 'step') {
         stepIdx++;
@@ -188,7 +191,7 @@
 
     // 淡出消失
     el.style.opacity = '0';
-    await delay(cfg.processFadeMs || 300);
+    await SeaScribe.delay(cfg.processFadeMs || 300);
     el.style.opacity = '';
     el.style.transition = '';
 
@@ -203,7 +206,7 @@
       var roundInfo = data.round ? ' · 第 ' + data.round + ' 轮（剩 ' + data.poolSize + ' → ' + data.subset.length + ' 人）' : '';
       el.innerHTML = '<div class="proc-phase">时间加权随机法' + roundInfo + '</div>' +
         '<div class="proc-step-title">随机选出 <strong>' + data.subset.length + '</strong> 人进入下一轮</div>' +
-        '<div class="proc-subset">' + esc(subsetNames) + '</div>' +
+        '<div class="proc-subset">' + SeaScribe.esc(subsetNames) + '</div>' +
         '<div class="proc-rest-label">淘汰 ' + restCount + ' 人</div>';
     } else if (data.phase === 'select') {
       // 时间加权随机法 —— 显示选中逻辑
@@ -222,21 +225,21 @@
         var subsetNames = (data.subset || []).map(function(p) {
           var name = p.name;
           if (neverNames.indexOf(name) >= 0) {
-            return '<span class="proc-highlight">' + esc(name) + '</span>';
+            return '<span class="proc-highlight">' + SeaScribe.esc(name) + '</span>';
           }
-          return esc(name);
+          return SeaScribe.esc(name);
         }).join('、');
         detailHtml = '<div class="proc-subset">' + subsetNames + '</div>';
       } else {
         reasonText = '子集中所有人均已点过名，选<strong>距上次点名最久</strong>的人';
         var subsetNames2 = (data.subset || []).map(function(p) { return p.name; }).join('、');
-        detailHtml = '<div class="proc-subset">' + esc(subsetNames2) + '</div>';
+        detailHtml = '<div class="proc-subset">' + SeaScribe.esc(subsetNames2) + '</div>';
       }
 
       el.innerHTML = '<div class="proc-phase">时间加权随机法 · 选定结果</div>' +
         '<div class="proc-reason">' + reasonText + '</div>' +
         detailHtml +
-        '<div class="proc-chosen-name">🎯 ' + esc(chosenName) + '</div>';
+        '<div class="proc-chosen-name">🎯 ' + SeaScribe.esc(chosenName) + '</div>';
     } else {
       // 二分法
       var leftNames = (data.left || []).map(function(p) { return p.name; });
@@ -255,11 +258,11 @@
         '<div class="proc-split">' +
           '<div class="proc-group proc-keep">' +
             '<div class="proc-group-label">✔ 保留</div>' +
-            esc(keepSide.join(' ')) +
+            SeaScribe.esc(keepSide.join(' ')) +
           '</div>' +
           '<div class="proc-group proc-elim proc-out">' +
             '<div class="proc-group-label">✘ 淘汰</div>' +
-            esc(elimSide.join(' ')) +
+            SeaScribe.esc(elimSide.join(' ')) +
           '</div>' +
         '</div>' +
         '<div class="proc-elim-msg">淘汰 ' + elimNames.length + ' 人，剩余 <strong>' + remaining + '</strong> / ' + total + '</div>' +
@@ -269,7 +272,7 @@
 
   function renderProcessResult(el, person) {
     el.innerHTML = '<div class="proc-phase">结果</div>' +
-      '<div class="proc-result-name">🎯 ' + esc(person.name) + '</div>' +
+      '<div class="proc-result-name">🎯 ' + SeaScribe.esc(person.name) + '</div>' +
       '<div class="proc-result-sub">点击屏幕继续</div>';
   }
 
@@ -358,16 +361,6 @@
       processEl.classList.remove('windowed');
       processEl.innerHTML = '';
     }
-  }
-
-  function delay(ms) {
-    return new Promise(function(resolve) { setTimeout(resolve, ms); });
-  }
-
-  function esc(s) {
-    var d = document.createElement('div');
-    d.textContent = s;
-    return d.innerHTML;
   }
 
   /* ====== 导出 ====== */

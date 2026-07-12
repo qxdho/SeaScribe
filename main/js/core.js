@@ -50,16 +50,8 @@ window.SeaScribe.esc = function(s) {
   return d.innerHTML;
 };
 
-
-// ---------- Dictation Utilities ----------
-window.SeaScribe.shuffleAndPick = function(items, count) {
-  const arr = [...items];
-  const n = arr.length;
-  const limit = Math.min(count, n);
-  for (let i = n - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr.slice(0, limit);
+// Shared delay helper
+window.SeaScribe.delay = function(ms) {
+  return new Promise(function(resolve) { setTimeout(resolve, ms); });
 };
 

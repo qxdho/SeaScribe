@@ -63,7 +63,7 @@
     document.querySelectorAll('#btn-theme, #btn-theme-login, #btn-theme-bind').forEach(function(b) {
       b.textContent = t === 'dark' ? '☀️' : '🌙';
     });
-    localStorage.setItem('seascribe_admin_theme', t);
+    localStorage.setItem('seascribe_theme', t);
   }
 
   window.Admin = {
@@ -80,12 +80,15 @@
     type = type || 'info';
     var area = document.getElementById('admin-toast-area');
     if (!area) return;
+    var isWarn = type === 'error';
+    var cssClass = isWarn ? 'warn' : 'normal';
+    var icon = isWarn ? '⚠️ ' : '';
     var el = document.createElement('div');
-    el.className = 'admin-toast admin-toast-' + type;
-    el.innerHTML = Admin.esc(msg) + '<button class="admin-toast-close" title="关闭">✕</button>';
+    el.className = 'admin-toast admin-toast-' + cssClass;
+    el.innerHTML = icon + Admin.esc(msg) + '<button class="admin-toast-close" title="关闭">✕</button>';
     el.querySelector('.admin-toast-close').addEventListener('click', function() { removeToast(el); });
     area.appendChild(el);
-    setTimeout(function() { removeToast(el); }, 3000);
+    setTimeout(function() { removeToast(el); }, isWarn ? 5000 : 3000);
   }
 
   function removeToast(el) {

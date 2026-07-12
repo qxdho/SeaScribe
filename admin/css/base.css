@@ -15,6 +15,7 @@ body {
                "Microsoft YaHei", sans-serif;
   background: var(--bg);
   color: var(--text);
+  overflow-x: hidden;
 }
 /* Smooth theme transition */
 body, #admin-login, #admin-bind, .admin-card, .admin-topbar, .admin-login-topbar, .admin-login-card,
@@ -23,3 +24,29 @@ input, select, textarea, button, .admin-table th, .admin-table td,
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
 .hidden { display: none !important; }
+
+/* ---- 全局过渡动画 ---- */
+@keyframes adminFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes adminFadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-8px); }
+}
+.admin-content > .admin-card {
+  animation: adminFadeIn 0.3s var(--ease) both;
+}
+.admin-btn:active {
+  transform: scale(0.96);
+  transition: transform 0.1s var(--ease);
+}
+.admin-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+.admin-form-group input:focus,
+.admin-form-group select:focus,
+.admin-form-group textarea:focus {
+  box-shadow: 0 0 0 3px rgba(128,128,128,0.12);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}

@@ -24,19 +24,9 @@ const MyPlugin = {
   ],
 
   loadConfig() {
-    const c = window.__MY_SUBJECT_CONFIG__;
-    if (c) {
-      if (c.defaultCount    != null) this.defaultCount    = c.defaultCount;
-      if (c.defaultColumns  != null) this.defaultColumns  = c.defaultColumns;
-      if (c.defaultFontSize != null) this.defaultFontSize = c.defaultFontSize;
-      if (c.defaultRangeStart!=null) this._rangeStart     = c.defaultRangeStart;
-      if (c.defaultRangeEnd != null) this._rangeEnd       = c.defaultRangeEnd;
-      if (c.defaultLayout   != null) this.defaultLayout   = c.defaultLayout;
-      if (c.gridColumns     != null) this.gridColumns     = c.gridColumns;
-      if (c.listColumns     != null) this.listColumns     = c.listColumns;
-      if (c.gridFontSize    != null) this.gridFontSize    = c.gridFontSize;
-      if (c.listFontSize    != null) this.listFontSize    = c.listFontSize;
-    }
+    PluginUtils.loadConfig(this, window.__MY_SUBJECT_CONFIG__, {
+      defaultRangeStart: '_rangeStart', defaultRangeEnd: '_rangeEnd',
+    });
     if (this._rangeEnd === 0) this._rangeEnd = this._data.length;
   },
 

@@ -1,37 +1,116 @@
 # SeaScribe 更新日志
 
+## v4.3.1
+
+### 代码质量重构
+- 统一版本号至 v4.3.0（index.html、splash.js 此前残留 v4.2.0）
+- 移除 `picker/index.js` 和 `picker/animation.js` 中重复的 `esc()` 函数，统一使用 `SeaScribe.esc()`
+- 提取 `SeaScribe.delay()` 到 `core.js`，消除 `random.js` 和 `animation.js` 中的重复定义
+- 修复 `picker/animation.js` 中 rAF 竞争条件：增加代数计数器防止旧帧错误 resolve 新 Promise
+- 简化 `picker/index.js` 中冗余的 `CustomSelect` 初始化判断
+- 删除 `index.html` 中空的 `<!-- Student lists -->` 注释块
+
+### Bug 修复
+- 修复化学/英语插件文件选择下拉框扫描后 CustomSelect 选项不刷新、默认文件不显示
+- 修复 CustomSelect 下拉框滚动条样式缺失（与主站 `.range-select` 统一滚动条风格）
+- 修复 `csStaggerIn` 动画 opacity:0 导致下拉选项长时间空白、translateY 导致抖动
+
+## v4.3.0
+
+### 界面全面适配移动端
+- 主站和管理后台全部页面适配手机/平板，两档断点（≤768px / ≤480px）
+- 顶栏在窄屏不换行，逐步隐藏文字仅留图标、点名结果、版本号
+- 卡片网格手机端单列，学科卡片自适应缩小
+- 管理后台所有表格支持横向滚动，表单行纵向堆叠
+- 模态弹窗在手机端 96vw 全宽
+- 登录/注册/绑定页面完全适配
+
+### 过渡动画
+- 管理后台补全动画：页面卡片淡入、按钮点击缩放反馈、表格行平滑过渡、表单聚焦光环
+- 登录卡片入场动画、上传区交互动画
+- 主站登录状态指示器滑入动画
+- 所有动画使用 opacity + transform（GPU 加速）
+
+### 自定义下拉组件
+- 全新 `custom-select.js` 替换全部原生 select 元素
+- 支持键盘导航（↑↓ Enter Esc）、点击外部关闭、交错滑入动画
+- 箭头旋转 180° 展开/收起过渡
+- 深色模式适配
+- 管理后台和主站全部统一，化学/英语插件同时适配
+
+### 用户管理增强
+- 表格从 9 列精简为 7 列（移除用户ID、签名列），文字不再换行错位
+- 点击表头排序（用户名/姓名/昵称/班级/角色），▲▼ 指示方向
+- 筛选栏默认展开，点击搜索框收起；容器级 focusout 防止误收起
+- 编辑表单按「账号信息」「个人信息」「安全」分组
+- 编辑时显示用户 ID（只读）
+- 姓名池新增绑定状态列（已绑定用户名 / 未绑定）
+- 点名记录新增逐条删除功能
+
+### 登录系统优化
+- 登录失败改用 toast 弹窗提示（401 改 400 防止页面刷新）
+- toast 统一为普通提示（绿左边框）和警告（红左边框+⚠️）
+- 密码框新增一键清除按钮、显示/隐藏改为 SVG 睁眼/闭眼图标
+- 注册昵称提示修正为「给自己起个好记的名字」
+
+### 点名系统
+- 头像和上次点名时间位置互换（时间在上、头像在下）
+- 无头像用户显示默认剪影 SVG
+- 最短滚动动画降至 2 秒
+
+### 导航整理
+- 管理后台页面重新排序（我的资料→用户管理→姓名池→点名记录→英语文件→配置管理）
+- 姓名池图标改为 🏫，所有导航图标唯一化
+- 主站管理后台入口移至顶栏独立按钮，显示登录状态
+- 退出登录按钮换为手绘 SVG 图标
+
+### 其他修复
+- `scanURLs` 属性名统一（修复化学/英语插件服务器扫描失败）
+- `history.replaceState` 消除浏览器 skippable history 警告
+- 404/401 状态码修正
+- 深色模式下拉箭头亮度适配
+- Splash 启动日志从 19 项扩展到 29 项
+- 全部下拉框统一美化（自定义三角形箭头）
+
+---
 ## v4.2.0
 
 ### 代码优化
-- 统一 HTML 转义函数：`SeaScribe.esc()` 消除 4 处重复定义
+- 统一 HTML 转义函数：`SeaScribe.esc()` 消除全局所有局部定义
 - 修复 `records.js` 重复加载
 - 简化 `DictationEngine` 类为 `SeaScribe.shuffleAndPick()` 普通函数
 - 抽取统一 Markdown 渲染器 `main/js/markdown.js`，`about.js` 和 `changelog.js` 共用
 - 管理后台复用主站主题 CSS 变量，消除重复定义
 - `picker.css` 从 `main/js/picker/` 移至 `main/css/`
-- 主题切换逻辑提取为 `Admin.toggleTheme()`，与主站 `SeaScribe.applyTheme()` 对齐
-- CSS `transition` 属性统一使用 `background-color` 替代缩写 `background`
-- 删除点名系统 `parseCSV()` 死代码（已迁移至 JSON 名册 API）
-- 删除 `.topbar-author` 死 CSS 规则
+- 主题切换提取为 `Admin.toggleTheme()` + `SeaScribe.applyTheme()`，主站与后台统一 localStorage key
+- CSS `transition` 属性统一使用 `background-color`
+- 新建 `plugin-utils.js`：提取 `loadConfig`/`scanDir`/`refreshCount`/`parseCSV` 公共方法，english/chemistry 插件各减少约 50 行
+- `core.js` 拆分出 `engine.js`（`shuffleAndPick`），core.js 仅保留 `SubjectRegistry` + `esc`
+- 删除点名系统 `parseCSV()` 死代码、`.topbar-author` 死 CSS
 
 ### Bug 修复
-- 修复 `server.py` logout 接口引用未定义变量导致 500 错误
-- 修复 `server.py` `list_directory` 方法复制粘贴残留死代码
-- 修复 `cards.js` `configUI` 调用传入多余参数
-- 修复 `timestamp.js` JSDoc 注释过时（`.csv` 后缀）
-
-### 文档更新
-- 移除 `docs/` 目录，文档移至根目录（`UPDATE.md`、`PLUGINS.md`、`RULES.md`）
-- README 修正离线限制说明（学科数据需 HTTP 服务器）
-- PLUGINS.md 更新 `_scanDir` 说明（需自行实现）
-- RULES.md 更新名单规范（CSV → JSON roster）、目录结构、文件计数
+- 修复 `server.py` logout 接口引用未定义变量导致 500 错误、`list_directory` 死代码、register 接口响应顺序错误
+- 修复 `cards.js` `configUI` 传入多余参数、`timestamp.js` JSDoc 过时
+- 修复退出登录后登录表单无法输入
+- 修复注册页 `[redacted]` 残留文本导致 `ReferenceError`
+- 修复主站与管理后台主题切换不同步
 
 ### 界面增强
-- 学生资料页新增班级显示
-- 用户管理页新增用户ID、班级列和筛选功能
-- 登录页和绑定页新增顶栏（logo + 主题切换）
-- 深色模式下禁用输入框不再白底突兀
-- 主题切换添加平滑过渡动画
+- 学生资料页新增班级显示、用户管理页新增用户ID/班级列和筛选、姓名字段改为姓名池下拉选择
+- 登录页和绑定页新增顶栏（logo + 主题切换 + 退出），绑定页支持退出登录
+- 深色模式禁用输入框不再白底突兀、主题切换添加平滑过渡动画
+
+### 注册系统
+- 新增学生自助注册：用户名（字母开头3-20位）+ 昵称 + 密码
+- 注册表单实时校验（边框变色 + 提示文字）、Enter 键提交、注册中禁用输入框
+- 注册后自动进入绑定姓名流程
+- 登录/注册卡片支持 hash 路由（`#/login`、`#/register`），浏览器前进后退可用
+
+### 文档更新
+- 移除 `docs/` 目录，文档移至根目录
+- RULES.md 新增模块架构章节、更新名单规范（CSV → JSON roster）、文件计数
+- PLUGINS.md 更新 `loadConfig` 模板为 `PluginUtils.loadConfig`
+- README 修正离线限制说明
 
 ---
 ## 近期更新

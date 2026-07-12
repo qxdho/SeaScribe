@@ -44,8 +44,6 @@ const PageRegistry = {
     if (this._navigating) return;
     this._navigating = true;
 
-    location.hash = '#/' + pageId;
-
     // Highlight nav
     var nav = document.getElementById('admin-nav');
     nav.querySelectorAll('a').forEach(function(a) {
@@ -68,7 +66,10 @@ const PageRegistry = {
 
     var self = this;
     nav.querySelectorAll('a').forEach(function(a) {
-      a.addEventListener('click', function() { self.navigate(this.dataset.page); });
+      a.addEventListener('click', function() {
+        location.hash = '#/' + this.dataset.page;
+        self.navigate(this.dataset.page);
+      });
     });
   },
 
@@ -93,10 +94,14 @@ const PageRegistry = {
     }
     var allowed = this.list(user);
     if (hashPage && allowed.some(function(p) { return p.id === hashPage; })) {
+      history.replaceState(null, '', '#/' + hashPage);
       this.navigate(hashPage);
     } else {
       var first = allowed[0];
-      if (first) this.navigate(first.id);
+      if (first) {
+        history.replaceState(null, '', '#/' + first.id);
+        this.navigate(first.id);
+      }
     }
 
     // 浏览器前进/后退（校验角色权限）

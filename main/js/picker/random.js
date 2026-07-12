@@ -72,7 +72,7 @@
 
       // 短暂延迟让动画帧渲染
       if (group.length > 1 && !skip) {
-        await delay(cfg.binaryStepDelay || 1000);
+        await SeaScribe.delay(cfg.binaryStepDelay || 1000);
       }
     }
 
@@ -115,7 +115,7 @@
         poolSize: pool.length,
       };
 
-      if (!skip) await delay(cfg.fairStepDelay || 1200);
+      if (!skip) await SeaScribe.delay(cfg.fairStepDelay || 1200);
       pool = subset;
     }
 
@@ -172,14 +172,10 @@
       };
     }
 
-    if (!skip) await delay(cfg.fairResultDelay || 1000);
+    if (!skip) await SeaScribe.delay(cfg.fairResultDelay || 1000);
 
     var lastTime = timestamps[person.name] || null;
     yield { type: 'result', person: person, lastPickedTime: lastTime };
-  }
-
-  function delay(ms) {
-    return new Promise(function(resolve) { setTimeout(resolve, ms); });
   }
 
   /* ====== 导出 ====== */

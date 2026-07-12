@@ -36,7 +36,7 @@ window.__PICKER_CONFIG__ = {
   fairTargetSize: 5,
 
   // 【滚动时长】修饰动画滚名字总时长 (ms)，1000 ~ 8000
-  decorMinMs: 2300,
+  decorMinMs: 2000,
 
   // 【滚动间隔】两个名字切换间隔 (ms)，30 ~ 300
   decorIntervalMs: 80,

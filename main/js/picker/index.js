@@ -83,9 +83,9 @@
             return '<option value="' + escAttr(c) + '">' + SeaScribe.esc(c) + '</option>';
           }).join('');
         btnStart.disabled = true;
-        var opts = listSelect.options;
-        if (opts.length > 1) {
-          listSelect.selectedIndex = opts.length - 1;
+        if (listSelect._customSelect) listSelect._customSelect.refresh();
+        if (listSelect.options.length > 1) {
+          listSelect.selectedIndex = listSelect.options.length - 1;
           listSelect.dispatchEvent(new Event('change'));
         }
       })

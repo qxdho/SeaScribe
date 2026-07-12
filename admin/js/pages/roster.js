@@ -66,6 +66,7 @@ function render() {
       '<td style="color:var(--muted);font-size:0.78rem">+</td>' +
       '<td><input type="text" class="iedit-name" name="name" placeholder="姓名" autocomplete="name" style="box-sizing:border-box;width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem"></td>' +
       '<td><input type="text" class="iedit-sig" name="signature" placeholder="签名" autocomplete="off" style="box-sizing:border-box;width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem"></td>' +
+      '<td style="color:var(--muted);font-size:0.78rem">—</td>' +
       '<td style="white-space:nowrap">' +
         '<button class="admin-btn admin-btn-primary admin-btn-sm iedit-save">保存</button> ' +
         '<button class="admin-btn admin-btn-ghost admin-btn-sm iedit-cancel">取消</button>' +
@@ -134,6 +135,21 @@ function bindEditRow(tr) {
 }
 
 var _currentStudents = [];
+var _bindMap = {};  // displayName -> username (绑定状态)
+var _rosterSortKey = '';
+var _rosterSortDir = 1;
+
+async function loadBindMap() {
+  try {
+    var res = await Admin.api('/api/admin/users');
+    if (res.ok) {
+      _bindMap = {};
+      res.data.forEach(function(u) {
+        if (u.displayName) _bindMap[u.displayName] = u.username;
+      });
+    }
+  } catch(e) {}
+}
 
 async function loadClasses() {
   try {
@@ -149,6 +165,7 @@ async function loadClasses() {
 
 async function loadStudents(cls) {
   try {
+    loadBindMap();  // fire and forget, table renders below already
     var res = await fetch('/api/roster/' + encodeURIComponent(cls));
     var students = await res.json();
     _currentStudents = students;
@@ -171,18 +188,27 @@ async function loadStudents(cls) {
   }
 }
 
+function bindStatusHTML(name) {
+  var username = _bindMap[name];
+  if (username) {
+    return '<span style="color:#27ae60;font-size:0.82rem" title="已绑定用户: ' + Admin.esc(username) + '">✅ 已绑定</span>';
+  }
+  return '<span style="color:var(--muted);font-size:0.82rem">—</span>';
+}
+
 function renderStudentTable(students) {
   var wrap = document.getElementById('roster-table-wrap');
   if (!students.length) {
     wrap.innerHTML = '<p style="color:var(--muted)">暂无学生，点击「+ 添加学生」</p>';
     return;
   }
-  var html = '<table class="admin-table" style="table-layout:fixed"><colgroup><col style="width:36px"><col style="width:40%"><col style="width:40%"><col style="width:150px"></colgroup><thead><tr><th>#</th><th>姓名</th><th>个性签名</th><th>操作</th></tr></thead><tbody>';
+  var html = '<table class="admin-table" style="table-layout:fixed"><colgroup><col style="width:36px"><col style="width:28%"><col style="width:28%"><col style="width:90px"><col style="width:130px"></colgroup><thead><tr><th>#</th><th>姓名</th><th>个性签名</th><th>绑定状态</th><th>操作</th></tr></thead><tbody>';
   students.forEach(function(s, i) {
     html += '<tr data-idx="' + i + '">' +
       '<td style="color:var(--muted);font-size:0.78rem">' + (i + 1) + '</td>' +
       '<td>' + Admin.esc(s.name) + '</td>' +
       '<td>' + Admin.esc(s.signature || '—') + '</td>' +
+      '<td>' + bindStatusHTML(s.name) + '</td>' +
       '<td>' +
         '<button class="admin-btn admin-btn-outline admin-btn-sm iedit-btn">编辑</button> ' +
         '<button class="admin-btn admin-btn-danger admin-btn-sm idel-btn">删除</button>' +
@@ -202,6 +228,7 @@ function renderStudentTable(students) {
         '<td style="color:var(--muted);font-size:0.78rem">' + (idx + 1) + '</td>' +
         '<td><input type="text" class="iedit-name" name="name" autocomplete="name" value="' + Admin.esc(s.name) + '" style="box-sizing:border-box;width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem"></td>' +
         '<td><input type="text" class="iedit-sig" name="signature" value="' + Admin.esc(s.signature || '') + '" autocomplete="off" style="box-sizing:border-box;width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:0.85rem"></td>' +
+        '<td>' + bindStatusHTML(s.name) + '</td>' +
         '<td style="white-space:nowrap">' +
           '<button class="admin-btn admin-btn-primary admin-btn-sm iedit-save">保存</button> ' +
           '<button class="admin-btn admin-btn-ghost admin-btn-sm iedit-cancel">取消</button>' +
@@ -253,7 +280,7 @@ async function saveRoster() {
 PageRegistry.register({
   id: 'roster',
   label: '姓名池',
-  icon: '📋',
+  icon: '🏫',
   roles: ['admin'],
   render: render,
 });

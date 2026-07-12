@@ -21,25 +21,13 @@ const ChemistryPlugin = {
   _data: [],
 
   loadConfig() {
-    const c = window.__CHEMISTRY_CONFIG__;
-    if (c) {
-      if (c.defaultCount    != null) this.defaultCount    = c.defaultCount;
-      if (c.defaultColumns  != null) this.defaultColumns  = c.defaultColumns;
-      if (c.defaultFontSize != null) this.defaultFontSize = c.defaultFontSize;
-      if (c.defaultRangeStart!=null) this._rangeStart     = c.defaultRangeStart;
-      if (c.defaultRangeEnd != null) this._rangeEnd       = c.defaultRangeEnd;
-      if (c.defaultLayout   != null) this.defaultLayout   = c.defaultLayout;
-      if (c.gridColumns     != null) this.gridColumns     = c.gridColumns;
-      if (c.listColumns     != null) this.listColumns     = c.listColumns;
-      if (c.gridFontSize    != null) this.gridFontSize    = c.gridFontSize;
-      if (c.listFontSize    != null) this.listFontSize    = c.listFontSize;
-      if (c.dataURL         != null) this._csvURL          = c.dataURL;
-      if (c.scanURLs        != null) this._scanURLs        = c.scanURLs;
-    }
+    PluginUtils.loadConfig(this, window.__CHEMISTRY_CONFIG__, {
+      dataURL: '_csvURL', defaultRangeStart: '_rangeStart', defaultRangeEnd: '_rangeEnd',
+    });
   },
 
   _csvURL: 'data/chemistry/elements.csv',
-  _scanURLs: [],
+  scanURLs: [],
 
   async loadData() {
     if (this._csvLoaded) return this._data;
@@ -118,6 +106,7 @@ const ChemistryPlugin = {
 
     this._bindRangeSelects(container);
     this._bindFileImport(container);
+    CustomSelect.initAll(container);
 
     const scanBtn = container.querySelector('#chemistry-scan-btn');
     if (scanBtn) setTimeout(() => scanBtn.click(), 100);
@@ -157,6 +146,8 @@ const ChemistryPlugin = {
     this._rangeEnd = this._data.length;
     s.value = 0;
     e.value = this._rangeEnd - 1;
+    if (s._customSelect) s._customSelect.refresh();
+    if (e._customSelect) e._customSelect.refresh();
   },
 
   _bindFileImport(container) {
@@ -174,7 +165,7 @@ const ChemistryPlugin = {
         this._data = parsed;
         this._csvLoaded = true;
         this._refreshRangeOpts(container);
-        this._refreshCount();
+        PluginUtils.refreshCount(this);
         msgEl.textContent = `✅ 已导入 ${parsed.length} 个元素`;
         msgEl.className = 'import-msg success';
       } else {
@@ -186,7 +177,7 @@ const ChemistryPlugin = {
 
     if (scanBtn) {
       scanBtn.addEventListener('click', async () => {
-        if (!this._scanURLs || !this._scanURLs.length) {
+        if (!this.scanURLs || !this.scanURLs.length) {
           msgEl.textContent = '❌ 请在 config.js 中配置 scanURLs';
           msgEl.className = 'import-msg error';
           return;
@@ -196,8 +187,8 @@ const ChemistryPlugin = {
         try {
           const seen = new Set();
           const allFiles = [];
-          for (const url of this._scanURLs) {
-            const files = await this._scanDir(url);
+          for (const url of this.scanURLs) {
+            const files = await PluginUtils.scanDir(url, /\.csv$/i);
             for (const f of files) {
               if (!seen.has(f.url)) { seen.add(f.url); allFiles.push(f); }
             }
@@ -205,10 +196,11 @@ const ChemistryPlugin = {
           if (!allFiles.length) throw new Error('未找到 .csv 文件');
           fileSel.innerHTML = '<option value="">— 选择文件 —</option>' +
             allFiles.map(f => `<option value="${SeaScribe.esc(f.url)}">${SeaScribe.esc(f.name)}</option>`).join('');
-          fileSel.classList.remove('hidden');
+          fileSel.hidden = false;
           // 自动选中 elements.csv
           const def = allFiles.find(f => f.name === 'elements.csv') || allFiles[0];
           fileSel.value = def.url;
+          if (fileSel._customSelect) fileSel._customSelect.refresh();
           fileSel.dispatchEvent(new Event('change'));
           msgEl.textContent = `✅ 找到 ${allFiles.length} 个文件`;
           msgEl.className = 'import-msg success';
@@ -235,7 +227,7 @@ const ChemistryPlugin = {
           this._csvLoaded = true;
           if (this._rangeEnd === 0) this._rangeEnd = parsed.length;
           this._refreshRangeOpts(container);
-          this._refreshCount();
+          PluginUtils.refreshCount(this);
           msgEl.textContent = `✅ 已加载 ${parsed.length} 个元素`;
           msgEl.className = 'import-msg success';
         } catch (err) {
@@ -244,49 +236,6 @@ const ChemistryPlugin = {
         }
       });
     }
-  },
-
-  async _scanDir(url) {
-    const base = new URL(url, location.origin).href;
-    let resp;
-    try {
-      resp = await fetch(base);
-    } catch (e) {
-      throw new Error('请求被阻止（CORS 或网络问题），请确保通过 HTTP 服务器访问');
-    }
-    if (!resp.ok) throw new Error(`目录不可达 (${resp.status})`);
-    const ct = resp.headers.get('content-type') || '';
-    if (ct.includes('application/json')) {
-      const json = await resp.json();
-      return json.filter(f => /\.csv$/i.test(f.name)).map(f => ({
-        url: new URL(f.url, base).href, name: f.name
-      }));
-    }
-    const html = await resp.text();
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    const links = [];
-    doc.querySelectorAll('a[href]').forEach(a => {
-      const href = a.getAttribute('href');
-      const name = a.textContent.trim() || href;
-      if (/\.csv$/i.test(href)) {
-        links.push({ url: new URL(href, base).href, name });
-      }
-    });
-    return links;
-  },
-
-  _refreshCount() {
-    setTimeout(() => {
-      const cntInput = document.getElementById('count-input');
-      if (cntInput) {
-        cntInput.min = this._data.length ? 1 : 0;
-        cntInput.max = this._data.length || 1;
-        if (parseInt(cntInput.value) > this._data.length) cntInput.value = this._data.length;
-        if (!this._data.length) cntInput.value = 0;
-        else if (parseInt(cntInput.value) === 0) cntInput.value = Math.min(this.defaultCount, this._data.length);
-      }
-    }, 50);
   },
 
   _fmtElectron(text) {

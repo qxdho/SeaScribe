@@ -1,9 +1,202 @@
 /* ============================================================
    SeaScribe Admin — Responsive
+   适配手机 / 平板 / 桌面
    ============================================================ */
 
-@media (max-width: 700px) {
-  .admin-topbar { flex-wrap: wrap; padding: 10px 16px; }
-  .admin-nav { order: 10; width: 100%; overflow-x: auto; }
-  .admin-content { padding: 16px; }
+/* ====== 平板 (≤768px) ====== */
+@media (max-width: 768px) {
+  /* 登录/绑定顶栏 */
+  .admin-login-topbar {
+    padding: 10px 14px;
+    gap: 8px;
+  }
+  .admin-login-topbar-brand { font-size: 1.1rem; }
+
+  /* 登录/绑定卡片 */
+  .admin-login-card {
+    padding: 28px 20px;
+    width: 340px;
+    max-width: 92vw;
+  }
+  .admin-login-card h1 { font-size: 1.2rem; }
+
+  /* 管理顶栏 */
+  .admin-topbar {
+    flex-wrap: wrap;
+    padding: 10px 14px;
+    gap: 8px;
+  }
+  .admin-topbar-brand { font-size: 1.1rem; }
+  .admin-topbar-version { display: none; }
+  .admin-nav {
+    order: 10;
+    width: 100%;
+    overflow-x: auto;
+    gap: 1px;
+    padding-bottom: 6px;
+  }
+  .admin-nav a {
+    padding: 7px 10px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+  .admin-content { padding: 16px 12px; max-width: 100%; }
+
+  /* 卡片 */
+  .admin-card { padding: 16px 14px; }
+  .admin-card h3 { font-size: 1rem; }
+
+  /* 表单列堆叠 */
+  .admin-form-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .admin-form-row .admin-btn { width: auto; }
+
+  /* 头像区域按钮居中 */
+  #profile-avatar-preview + div { text-align: center; }
+
+  /* 表格：横向滚动 */
+  .admin-table-wrap,
+  #roster-table-wrap,
+  #users-table-wrap,
+  #records-table-wrap,
+  #files-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 6px;
+  }
+  .admin-table { min-width: 600px; font-size: 0.8rem; }
+  .admin-table th, .admin-table td { padding: 6px 8px; }
+
+  /* 用户表更多列 */
+  #users-table-wrap .admin-table { min-width: 580px; }
+
+  /* 文件/记录表列少，不需要最小宽度 */
+  #files-table-wrap .admin-table,
+  #records-table-wrap .admin-table { min-width: auto; }
+
+  /* 姓名池工具栏 */
+  #roster-toolbar { flex-wrap: wrap; }
+
+  /* 文件上传区 */
+  .admin-upload-zone { padding: 20px 14px; }
+
+  /* 配置编辑 —— 字段纵向排列 */
+  .admin-config-field {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .admin-config-label { width: 100%; }
+
+  /* 按钮 */
+  .admin-btn { font-size: 0.82rem; }
+  .admin-btn-sm { font-size: 0.72rem; padding: 4px 10px; }
+
+  /* 用户管理筛选栏 */
+  #users-filter-bar { gap: 6px; }
+  #users-filter-bar input,
+  #users-filter-extra .cs-trigger { font-size: 0.78rem; padding: 5px 8px; }
+  #users-filter-search { min-width: 120px !important; }
+}
+
+/* ====== 手机 (≤480px) ====== */
+@media (max-width: 480px) {
+  /* 登录/绑定顶栏 */
+  .admin-login-topbar {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .admin-login-topbar-brand { font-size: 1rem; }
+
+  /* 登录/绑定卡片 */
+  .admin-login-card {
+    padding: 20px 16px;
+    width: auto;
+    max-width: 96vw;
+    gap: 12px;
+    border-radius: 12px;
+  }
+  .admin-login-body { overflow-y: auto; }
+  .admin-login-card h1 { font-size: 1.1rem; }
+  .admin-login-sub { font-size: 0.78rem; }
+  .admin-login-logo { font-size: 2.2rem; }
+  .admin-login-field input,
+  .admin-login-field select {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+  }
+  .admin-login-field select { padding-right: 32px; }
+  .reg-hint { font-size: 0.65rem; }
+
+  /* 管理顶栏 */
+  .admin-topbar {
+    padding: 8px 10px;
+    gap: 5px;
+  }
+  .admin-topbar-brand { font-size: 1rem; }
+  .admin-topbar-logo { width: 0.9em; height: 0.9em; }
+  .admin-user-info { font-size: 0.72rem; white-space: nowrap; }
+  .admin-nav a {
+    padding: 7px 10px;
+    font-size: 0.72rem;
+    border-radius: 6px;
+  }
+  .admin-content { padding: 12px 8px; max-width: 100%; }
+
+  /* 用户管理筛选栏 */
+
+  /* 卡片 */
+  .admin-card { padding: 12px 10px; margin-bottom: 10px; }
+  .admin-card h3 { font-size: 0.95rem; margin-bottom: 10px; }
+
+  /* 表单 */
+  .admin-form-group { margin-bottom: 10px; }
+  .admin-form-group label { font-size: 0.7rem; }
+  .admin-form-group input,
+  .admin-form-group select,
+  .admin-form-group textarea {
+    padding: 7px 10px;
+    font-size: 0.82rem;
+  }
+
+  /* 表格 */
+  .admin-table { min-width: 520px; font-size: 0.75rem; }
+  .admin-table th, .admin-table td { padding: 5px 6px; }
+  #users-table-wrap .admin-table { min-width: 500px; }
+  #files-table-wrap .admin-table,
+  #records-table-wrap .admin-table { min-width: auto; }
+
+  /* 姓名池工具栏 */
+  #roster-toolbar select,
+  #roster-toolbar button {
+    font-size: 0.72rem;
+  }
+
+  /* 配置编辑 —— 更紧凑 */
+  .admin-config-field { gap: 4px; }
+  .admin-config-field input[type=text],
+  .admin-config-field input[type=number],
+  .admin-config-field select { font-size: 0.78rem; padding: 6px 8px; max-width: 100%; }
+  .admin-config-field textarea { font-size: 0.72rem; max-width: 100%; }
+  .admin-config-label { font-size: 0.8rem; }
+  .admin-config-label small { font-size: 0.68rem; }
+
+  /* 卡片内 flex 容器防止溢出 */
+  .admin-card [style*="display:flex"] { flex-wrap: wrap; max-width: 100%; }
+
+  /* Toast */
+  #admin-toast-area { top: 50px; right: 8px; }
+  .admin-toast { min-width: 160px; max-width: 280px; font-size: 0.78rem; padding: 10px 30px 10px 12px; }
+
+  /* 头像 */
+  .admin-avatar { width: 32px; height: 32px; }
+  .admin-avatar-lg { width: 56px; height: 56px; }
+
+  /* 退出登录按钮 —— 手机端只显示图标 */
+  #admin-logout-btn .btn-label,
+  #btn-theme .btn-label { display: none; }
+  #admin-logout-btn,
+  #btn-theme { font-size: 0.9rem; padding: 4px 8px; }
 }

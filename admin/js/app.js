@@ -21,5 +21,11 @@
     });
   } else {
     AdminAuth.showLogin();
+    // If loading #/register directly, swap to register card
+    if (location.hash === '#/register') {
+      var lc = document.querySelector('#admin-login .admin-login-card:first-of-type');
+      var rc = document.getElementById('register-card');
+      if (lc && rc) { lc.classList.add('hidden'); rc.classList.remove('hidden'); }
+    }
   }
 })();

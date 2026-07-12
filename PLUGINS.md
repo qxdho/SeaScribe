@@ -108,31 +108,15 @@ window.__MY_SUBJECT_CONFIG__ = {
 
 ```js
 loadConfig() {
-  const c = window.__MY_SUBJECT_CONFIG__;
-  if (c) {
-    if (c.defaultCount    != null) this.defaultCount    = c.defaultCount;
-    if (c.defaultColumns  != null) this.defaultColumns  = c.defaultColumns;
-    if (c.defaultFontSize != null) this.defaultFontSize = c.defaultFontSize;
-    if (c.defaultLayout   != null) this.defaultLayout   = c.defaultLayout;
-    if (c.gridColumns     != null) this.gridColumns     = c.gridColumns;
-    if (c.listColumns     != null) this.listColumns     = c.listColumns;
-    if (c.gridFontSize    != null) this.gridFontSize    = c.gridFontSize;
-    if (c.listFontSize    != null) this.listFontSize    = c.listFontSize;
-    // 可选：范围
-    if (c.defaultRangeStart!=null) this._rangeStart     = c.defaultRangeStart;
-    if (c.defaultRangeEnd != null) this._rangeEnd       = c.defaultRangeEnd;
-    // 可选：xlsx 列
-    if (c.promptCol       != null) this._promptCol      = c.promptCol;
-    if (c.answerCol       != null) this._answerCol      = c.answerCol;
-    // 可选：扫描地址
-    if (c.scanURLs        != null) this._scanURLs       = c.scanURLs;
-    // 可选：CSV 数据文件
-    if (c.dataURL         != null) this._csvURL          = c.dataURL;
-  }
+  PluginUtils.loadConfig(this, window.__MY_SUBJECT_CONFIG__, {
+    defaultRangeStart: '_rangeStart',
+    defaultRangeEnd: '_rangeEnd',
+    // 可选：promptCol: '_promptCol', answerCol: '_answerCol', dataURL: '_csvURL'
+  });
   if (this._rangeEnd === 0) this._rangeEnd = this._data.length;
 },
 
-/** 可选：从 CSV 解析数据（带表头跳过） */
+/** 可选：从 CSV 解析数据（带表头跳过），也可直接用 PluginUtils.parseCSV(text) */
 _parseCSV(text) {
   const lines = text.split(/\r?\n/);
   let start = lines[0] && /^\w+,/.test(lines[0]) ? 1 : 0;
@@ -205,7 +189,7 @@ const MyPlugin = {
 ]
 ```
 
-插件在 `config.js` 中配置 `scanURLs` 即可使用。插件内需自行实现 `_scanDir(url)` 和文件下载逻辑（参考 `chemistry/plugin.js` 和 `english/plugin.js`）。
+插件在 `config.js` 中配置 `scanURLs` 即可使用。推荐使用 `PluginUtils.scanDir(url, extRegex)` 扫描文件，`PluginUtils.refreshCount(this)` 刷新数量上限（参见 `main/js/plugin-utils.js`）。
 
 ---
 

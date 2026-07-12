@@ -52,6 +52,36 @@
   outline: none; transition: border-color 0.2s;
   font-family: inherit;
 }
+.admin-form-group select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23999'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+  cursor: pointer;
+}
+.filter-select {
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.85rem;
+  color: var(--text);
+  background: var(--surface);
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23999'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  padding-right: 24px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.filter-select:hover { border-color: var(--muted); }
+.filter-select:focus { outline: none; border-color: var(--text); }
+[data-theme="dark"] .filter-select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%23aaa'/%3E%3C/svg%3E");
+}
 .admin-form-group input:focus,
 .admin-form-group select:focus,
 .admin-form-group textarea:focus { border-color: var(--dark); }
@@ -71,6 +101,70 @@
 .admin-table th { font-weight: 600; color: var(--muted); font-size: 0.78rem; }
 .admin-table tr:hover td { background: var(--hover); }
 
+/* ---- Custom Select ---- */
+.cs-wrap {
+  position: relative;
+  display: inline-block;
+  min-width: 100px;
+}
+.cs-trigger {
+  display: flex; align-items: center; justify-content: space-between;
+  width: 100%; padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface); color: var(--text);
+  font-size: 0.85rem; font-family: inherit;
+  cursor: pointer; text-align: left;
+  transition: border-color 0.2s;
+  gap: 6px; outline: none; line-height: 1.4;
+}
+.cs-trigger:hover { border-color: var(--muted); }
+.cs-wrap.open .cs-trigger { border-color: var(--text); }
+.cs-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cs-arrow {
+  flex-shrink: 0;
+  width: 0; height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--muted);
+  transition: transform 0.2s;
+}
+.cs-wrap.open .cs-arrow { transform: rotate(180deg); }
+.cs-drop {
+  position: absolute; top: calc(100% + 4px); left: 0; z-index: 100;
+  min-width: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  max-height: 0; overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.2s var(--ease), opacity 0.15s;
+}
+.cs-wrap.open .cs-drop {
+  max-height: 220px; overflow-y: auto;
+  opacity: 1;
+  scrollbar-width: thin;
+  scrollbar-color: var(--muted) transparent;
+}
+.cs-drop::-webkit-scrollbar { width: 6px; }
+.cs-drop::-webkit-scrollbar-track { background: transparent; }
+.cs-drop::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
+.cs-option {
+  padding: 8px 12px; font-size: 0.85rem; color: var(--text);
+  cursor: pointer; transition: background 0.1s;
+  white-space: nowrap;
+}
+.cs-option:hover, .cs-option.focused { background: var(--hover); }
+.cs-option.active { font-weight: 600; color: var(--dark); }
+.cs-option.stagger-in {
+  animation: csStaggerIn 0.25s var(--ease) backwards;
+}
+@keyframes csStaggerIn {
+  from { opacity: 0.7; }
+  to   { opacity: 1; }
+}
+
 /* ---- Messages ---- */
 .admin-msg { padding: 10px 14px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 12px; }
 .admin-msg-success { background: #d4edda; color: #155724; }
@@ -85,7 +179,8 @@
   transition: all 0.2s;
   margin-bottom: 16px;
 }
-.admin-upload-zone:hover { border-color: var(--text); color: var(--text); }
+.admin-upload-zone:hover { border-color: var(--text); color: var(--text); transform: scale(1.01); }
+.admin-upload-zone:active { transform: scale(0.99); }
 .admin-upload-zone input[type=file] { display: none; }
 
 /* ---- Avatar ---- */
