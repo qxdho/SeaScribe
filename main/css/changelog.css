@@ -6,16 +6,20 @@
   position: fixed;
   top: 0; right: 0; bottom: 0; left: 0;
   z-index: 20000;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 1;
   pointer-events: auto;
-  transition: opacity 0.22s var(--ease);
+  transition: opacity 0.25s var(--ease-out), backdrop-filter 0.25s var(--ease-out);
 }
 .changelog-overlay.hidden {
   opacity: 0;
+  backdrop-filter: blur(0);
+  -webkit-backdrop-filter: blur(0);
   pointer-events: none;
 }
 
@@ -34,7 +38,7 @@
 }
 
 .changelog-overlay:not(.hidden) .changelog-card {
-  animation: changelogIn 0.28s var(--ease);
+  animation: changelogIn 0.4s var(--spring);
 }
 #about-overlay .changelog-card {
   max-width: 600px;
@@ -57,12 +61,13 @@
   color: var(--muted);
   display: flex;
   align-items: center; justify-content: center;
-  transition: background-color 0.15s, color 0.15s;
+  transition: background-color 0.15s, color 0.15s, transform 0.2s var(--spring);
   z-index: 1;
 }
 .modal-close-x:hover {
   background: var(--hover);
   color: var(--text);
+  transform: rotate(90deg);
 }
 
 
@@ -117,6 +122,6 @@
 .changelog-body h3 { margin: 16px 0 6px; font-size: 1rem; color: var(--text); }
 
 @keyframes changelogIn {
-  from { opacity: 0; transform: translateY(20px) scale(0.96); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+  from { opacity: 0; transform: translateY(24px) scale(0.94); filter: blur(3px); }
+  to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }

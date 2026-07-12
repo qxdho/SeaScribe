@@ -63,7 +63,7 @@
 }
 
 .picker-modal:not(.hidden) .picker-modal-card {
-  animation: pickerModalIn 0.28s var(--ease);
+  animation: pickerModalIn 0.4s var(--spring);
 }
 
 .picker-modal-title {
@@ -332,7 +332,7 @@
 }
 
 .pick-decorative-text.pop {
-  animation: pickPop 0.35s var(--ease);
+  animation: pickPop 0.4s var(--spring);
 }
 
 /* 签名 —— 始终占位，min-height 防止名字跳动 */
@@ -617,8 +617,9 @@
 
 /* ====== Keyframes ====== */
 @keyframes pickPop {
-  0%   { transform: scale(1.4); }
-  100% { transform: scale(1); }
+  0%   { transform: scale(1.5); opacity: 0.6; }
+  60%  { transform: scale(0.95); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 @keyframes pickOverlayFade {
@@ -632,16 +633,16 @@
 }
 
 @keyframes procStepIn {
-  0%   { opacity: 0; transform: translateY(8px) scale(0.97); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
+  0%   { opacity: 0; transform: translateY(12px) scale(0.96); filter: blur(2px); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }
 
 @keyframes pickerModalIn {
-  0%   { opacity: 0; transform: scale(0.92) translateY(10px); }
-  100% { opacity: 1; transform: scale(1) translateY(0); }
+  0%   { opacity: 0; transform: scale(0.9) translateY(16px); filter: blur(2px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
 }
 
 @keyframes pickerModalOut {
   0%   { opacity: 1; transform: scale(1) translateY(0); }
-  100% { opacity: 0; transform: scale(0.94) translateY(6px); }
+  100% { opacity: 0; transform: scale(0.92) translateY(8px); filter: blur(2px); }
 }

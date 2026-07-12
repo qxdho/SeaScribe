@@ -56,11 +56,11 @@
   text-decoration: none;
   font-size: 0.88rem;
   border-radius: 8px;
-  transition: all 0.15s;
+  transition: all 0.2s var(--spring);
   cursor: pointer;
 }
-.admin-nav a:hover { background: var(--hover); }
-.admin-nav a.active { background: var(--dark); color: var(--bg); font-weight: 600; }
+.admin-nav a:hover { background: var(--hover); transform: translateY(-1px); }
+.admin-nav a.active { background: var(--dark); color: var(--bg); font-weight: 600; transform: none; }
 
 /* ---- User info ---- */
 .admin-user-info {
@@ -88,12 +88,12 @@
   font-size: 0.85rem; min-width: 200px; max-width: 360px;
   box-shadow: 0 6px 20px rgba(0,0,0,0.12);
   position: relative; pointer-events: auto;
-  animation: toastIn 0.25s ease;
+  animation: toastIn 0.35s var(--spring);
   border-left: 4px solid transparent;
   background: var(--surface);
   color: var(--text);
 }
-@keyframes toastIn { from { opacity:0; transform:translateX(20px) } to { opacity:1; transform:translateX(0) } }
+@keyframes toastIn { from { opacity:0; transform:translateX(30px) scale(0.95); } to { opacity:1; transform:translateX(0) scale(1); } }
 .admin-toast-normal { border-left-color: #27ae60; }
 .admin-toast-warn   { border-left-color: #e74c3c; background: #fef2f2; color: #991b1b; }
 [data-theme="dark"] .admin-toast-warn { background: #3b1111; color: #fca5a5; }

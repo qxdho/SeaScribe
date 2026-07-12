@@ -6,6 +6,9 @@
 :root {
   --radius: 12px;
   --ease:   cubic-bezier(0.22, 0.61, 0.36, 1);
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -27,22 +30,25 @@ input, select, textarea, button, .admin-table th, .admin-table td,
 
 /* ---- 全局过渡动画 ---- */
 @keyframes adminFadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from { opacity: 0; transform: translateY(12px) scale(0.98); filter: blur(2px); }
+  to   { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
 }
 @keyframes adminFadeOut {
-  from { opacity: 1; transform: translateY(0); }
-  to   { opacity: 0; transform: translateY(-8px); }
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(-10px) scale(0.97); filter: blur(2px); }
 }
 .admin-content > .admin-card {
-  animation: adminFadeIn 0.3s var(--ease) both;
+  animation: adminFadeIn 0.35s var(--spring) both;
 }
 .admin-btn:active {
-  transform: scale(0.96);
-  transition: transform 0.1s var(--ease);
+  transform: scale(0.95);
+  transition: transform 0.1s var(--spring);
 }
 .admin-table tbody tr {
-  transition: background-color 0.15s ease;
+  transition: background-color 0.15s ease, transform 0.15s var(--spring);
+}
+.admin-table tbody tr:hover {
+  transform: scale(1.005);
 }
 .admin-form-group input:focus,
 .admin-form-group select:focus,
