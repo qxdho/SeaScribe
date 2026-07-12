@@ -98,6 +98,18 @@
         </div>
         <div id="picker-ts-body" class="picker-ts-body"></div>
       </div>
+      <label class="picker-checkbox" style="margin-top:8px">
+        <input type="checkbox" id="picker-debug-toggle">
+        <span>🔧 调试模式（跳过随机，指定姓名播动画）</span>
+      </label>
+    </div>
+
+    <div class="picker-section picker-section-advanced" id="picker-debug-section" style="display:none">
+      <span class="picker-section-label">🔧 调试动画</span>
+      <select id="picker-debug-name" class="picker-select">
+        <option value="">— 选择姓名后播放动画 —</option>
+      </select>
+      <button id="picker-debug-play" class="btn btn-dark btn-sm" disabled>🎬 播放动画</button>
     </div>
 
     <div class="picker-actions">

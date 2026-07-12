@@ -25,6 +25,12 @@
   var _currentFileName = '';
   var _animating = false;
 
+  // 调试 DOM
+  var debugToggle = document.getElementById('picker-debug-toggle');
+  var debugSection = document.getElementById('picker-debug-section');
+  var debugSelect = document.getElementById('picker-debug-name');
+  var debugPlay = document.getElementById('picker-debug-play');
+
   /* ====== 初始化配置 UI ====== */
   (function() {
     // 随机方式 radio
@@ -114,6 +120,12 @@
         btnStart.disabled = _currentList.length === 0;
         btnTsView.disabled = _currentList.length === 0;
         tsPanel.classList.add('hidden');
+        // 填充调试下拉框
+        debugSelect.innerHTML = '<option value="">— 选择姓名后播放动画 —</option>' +
+          _currentList.map(function(s) {
+            return '<option value="' + SeaScribe.esc(s.name) + '">' + SeaScribe.esc(s.name) + (s.signature ? ' — ' + SeaScribe.esc(s.signature) : '') + '</option>';
+          }).join('');
+        debugPlay.disabled = true;
       })
       .catch(function(err) {
         console.error('[Picker] 名单加载失败:', err);
@@ -153,6 +165,21 @@
     }
   });
 
+  /* ====== 调试模式开关 ====== */
+  if (debugToggle) {
+    debugToggle.addEventListener('change', function() {
+      if (debugToggle.checked) {
+        debugSection.style.display = '';
+        debugPlay.disabled = !debugSelect.value;
+      } else {
+        debugSection.style.display = 'none';
+      }
+    });
+    debugSelect.addEventListener('change', function() {
+      debugPlay.disabled = !debugSelect.value;
+    });
+  }
+
   /* ====== 开始点名 ====== */
   btnStart.addEventListener('click', async function() {
     if (_animating) return;
@@ -189,6 +216,43 @@
     if (window.PickerTimestamp && doTimestamp) {
       await PickerTimestamp.save(_currentFileName, result);
     }
+
+    _animating = false;
+  });
+
+  /* ====== 调试播放动画 ====== */
+  debugPlay.addEventListener('click', async function() {
+    var name = debugSelect.value;
+    if (!name || _animating || !_currentList.length) return;
+
+    // 从名单中匹配签名
+    var person = null;
+    for (var i = 0; i < _currentList.length; i++) {
+      if (_currentList[i].name === name) { person = _currentList[i]; break; }
+    }
+    if (!person) person = { name: name, signature: '' };
+
+    _animating = true;
+    modal.classList.add('hidden');
+
+    // 查询时间戳（若有记录则显示上次时间）
+    var timestamps = {};
+    if (window.PickerTimestamp && _currentFileName) {
+      timestamps = await PickerTimestamp.load(_currentFileName);
+    }
+    var lastTime = timestamps[name] || null;
+
+    // 构造 fake generator：直接返回指定结果
+    async function* fakeGen() {
+      yield { type: 'result', person: person, lastPickedTime: lastTime };
+    }
+
+    // 运行动画（不保存时间戳）
+    await PickerAnimation.run(_currentList, fakeGen(), {
+      showProcess: false,
+      decorativeType: decorativeSelect.value || cfg.defaultDecorative,
+      timestamps: timestamps,
+    });
 
     _animating = false;
   });
