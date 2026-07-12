@@ -62,6 +62,7 @@ const MyPlugin = {
       const sv=parseInt(s.value), ev=parseInt(e.value);
       if(ev<sv){e.value=sv;this._rangeEnd=sv+1;}else this._rangeEnd=ev+1;
     });
+    CustomSelect.initAll(container);
   },
 };
 

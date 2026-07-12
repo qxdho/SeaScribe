@@ -83,11 +83,11 @@
             return '<option value="' + escAttr(c) + '">' + SeaScribe.esc(c) + '</option>';
           }).join('');
         btnStart.disabled = true;
-        if (listSelect._customSelect) listSelect._customSelect.refresh();
         if (listSelect.options.length > 1) {
           listSelect.selectedIndex = listSelect.options.length - 1;
           listSelect.dispatchEvent(new Event('change'));
         }
+        if (listSelect._customSelect) listSelect._customSelect.refresh();
       })
       .catch(function() {
         listSelect.innerHTML = '<option value="">加载失败</option>';

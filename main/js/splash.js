@@ -209,7 +209,7 @@
     // ====== 阶段 9：汇总 ======
     function() { logPhase('汇总'); },
     function() {
-      logLine('SeaScribe 版本', true, 'v4.3.2', '');
+      logLine('SeaScribe 版本', true, 'v4.4.0', '');
     },
   ];
 
