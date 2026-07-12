@@ -1,140 +1,72 @@
-# SeaScribe — 插件扩展指南
+# SeaScribe — 插件开发指南
+
+添加新学科只需 **4 步**：复制模板 → 写配置 → 写逻辑 → 注册加载。
 
 ---
 
-## 快速开始
+## 第一步：复制模板
 
-添加新学科只需 **4 步**：
-
-1. 复制 `plugins/_template/plugin.js` → 重命名文件夹和文件
-2. 复制 `config/_template/config.js` → 放到 `config/你的学科/` 下
-3. 修改 `config.js`（默认值）和 `plugin.js`（数据+渲染逻辑）
-4. 在 `main/js/app.js` 中注册：
-
-```js
-SubjectRegistry.register(YourPlugin);
+```
+cp -r plugins/_template plugins/你的学科
+cp config/_template/config.js config/你的学科/config.js
 ```
 
-同时在 `index.html` 底部添加脚本引用：
-
-```html
-<script src="config/你的学科/config.js"></script>
-<script src="plugins/你的学科/plugin.js"></script>
-```
+模板已包含完整的接口骨架，直接改即可。
 
 ---
 
-## 目录结构
+## 第二步：写配置文件
 
-```
-config/你的学科/
-└── config.js   ← 默认配置（修改后刷新页面生效）
-
-plugins/你的学科/
-└── plugin.js   ← 插件逻辑（数据 + 渲染 + 自定义控件）
-
-data/你的学科/   ← 可选：xlsx/csv 等数据文件
-```
-
----
-
-## 配置文件
-
-### 主配置 `config/config.js`
-
-```js
-window.__SEASCRIBE_CONFIG__ = {
-  theme: "light"  // "light"（浅色）或 "dark"（夜间）
-};
-```
-
-### 学科配置 `config/你的学科/config.js`
+`config/你的学科/config.js`：
 
 ```js
 window.__MY_SUBJECT_CONFIG__ = {
-  // 基础设置
-  defaultCount: 10,       // 每次出题数量
-  defaultColumns: 3,      // 初始列数（1-6）
-  defaultFontSize: 100,   // 初始字号（60-200）
-  defaultLayout: "grid",  // 默认布局："grid"=网格，"list"=列表
+  // 基础
+  defaultCount: 10,        // 每次出题数量
+  defaultColumns: 3,       // 初始列数 1-6
+  defaultFontSize: 100,    // 初始字号 60-200
+  defaultLayout: "grid",   // "grid"=网格方阵 / "list"=列表横向
 
-  // 网格模式（切换到网格时自动应用）
-  gridColumns: 4,         // 网格模式列数
-  gridFontSize: 100,      // 网格模式字号
+  // 网格模式
+  gridColumns: 4,
+  gridFontSize: 100,
 
-  // 列表模式（切换到列表时自动应用）
-  listColumns: 2,         // 列表模式列数
-  listFontSize: 100,      // 列表模式字号
+  // 列表模式
+  listColumns: 2,
+  listFontSize: 100,
 
   // 可选：按范围抽题
   defaultRangeStart: 0,
-  defaultRangeEnd: 0,     // 0 = 自动设为数据总量
+  defaultRangeEnd: 0,      // 0 = 自动设为数据总量
 
   // 可选：Excel 导入
-  promptCol: 0,           // 听写内容列（0=A列）
-  answerCol: 1,           // 答案列
-  scanURLs: [             // 服务器扫描地址
+  promptCol: 0,            // 听写内容列（0=A列）
+  answerCol: 1,            // 答案列
+  scanURLs: [              // 服务器扫描
     "/api/my-subject-files",
   ],
 
   // 可选：CSV 数据文件
-  dataURL: "data/my-subject/data.csv",  // 默认加载的 CSV
+  dataURL: "data/my-subject/data.csv",
 };
 ```
 
 ---
 
-## 接口规范
+## 第三步：写插件逻辑
 
-| 成员 | 必需 | 说明 |
-|---|---|---|
-| `meta` | ✅ | `{ id, name, description, icon }`，icon 支持 emoji 或内联 SVG |
-| `defaultCount` | ✅ | 默认出题数 |
-| `defaultColumns` | ✅ | 默认列数（初始布局） |
-| `defaultFontSize` | ✅ | 默认字号 60-200 |
-| `defaultLayout` | ✅ | 默认布局 `"grid"` 或 `"list"` |
-| `gridColumns` | ✅ | 网格模式列数 1-6 |
-| `listColumns` | ✅ | 列表模式列数 1-6 |
-| `gridFontSize` | ✅ | 网格模式字号 60-200 |
-| `listFontSize` | ✅ | 列表模式字号 60-200 |
-| `loadConfig()` | ✅ | 从 `window.__XXX_CONFIG__` 读取配置 |
-| `loadData()` | ✅ | 返回题目数组 |
-| `getRange()` | 可选 | 返回 `[start, end)` |
-| `renderPrompt(item, index)` | ✅ | 返回题目 HTML |
-| `renderAnswer(item)` | ✅ | 返回答案 HTML |
-| `configUI(container)` | 可选 | 渲染自定义控件 |
-
-### `loadConfig()` 模板
-
-```js
-loadConfig() {
-  PluginUtils.loadConfig(this, window.__MY_SUBJECT_CONFIG__, {
-    defaultRangeStart: '_rangeStart',
-    defaultRangeEnd: '_rangeEnd',
-    // 可选：promptCol: '_promptCol', answerCol: '_answerCol', dataURL: '_csvURL'
-  });
-  if (this._rangeEnd === 0) this._rangeEnd = this._data.length;
-},
-
-/** 可选：从 CSV 解析数据（带表头跳过），也可直接用 PluginUtils.parseCSV(text) */
-_parseCSV(text) {
-  const lines = text.split(/\r?\n/);
-  let start = lines[0] && /^\w+,/.test(lines[0]) ? 1 : 0;
-  return lines.slice(start).filter(l => l.trim()).map(l => {
-    const c = l.split(',');
-    return { prompt: c[0].trim(), answer: c[1].trim() };
-  });
-},
-```
-
----
-
-## 示例：最小插件
+`plugins/你的学科/plugin.js`：
 
 ```js
 const MyPlugin = {
-  meta: { id:'my-subject', name:'我的学科', description:'描述', icon:'📚' },
+  meta: {
+    id: 'my-subject',
+    name: '我的学科',
+    description: '简短描述',
+    icon: '📚'            // emoji 或内联 SVG
+  },
 
+  // 默认值（会被配置覆盖）
   defaultCount: 5,
   defaultColumns: 3,
   defaultFontSize: 100,
@@ -144,43 +76,147 @@ const MyPlugin = {
   gridFontSize: 100,
   listFontSize: 100,
 
-  _data: [
-    { prompt:'题目1', answer:'答案1' },
-    { prompt:'题目2', answer:'答案2' },
-  ],
+  _data: [],
 
-  loadConfig() { /* 见上方模板 */ },
-  async loadData() { return this._data; },
-
-  renderPrompt(item) {
-    return `<span>${SeaScribe.esc(item.prompt)}</span>`;
+  // 加载配置
+  loadConfig() {
+    PluginUtils.loadConfig(this, window.__MY_SUBJECT_CONFIG__, {
+      defaultRangeStart: '_rangeStart',
+      defaultRangeEnd: '_rangeEnd',
+      dataURL: '_csvURL',
+      promptCol: '_promptCol',
+      answerCol: '_answerCol',
+    });
   },
+
+  // 返回题目数组 [{prompt, answer}, ...]
+  async loadData() {
+    // 硬编码数据 或 fetch CSV 或 fetch API
+    return this._data;
+  },
+
+  // 可选：返回抽题范围 [start, end)
+  getRange() {
+    return [this._rangeStart, this._rangeEnd];
+  },
+
+  // 渲染题目 HTML
+  renderPrompt(item) {
+    return `<span class="card-word">${SeaScribe.esc(item.prompt)}</span>`;
+  },
+
+  // 渲染答案 HTML
   renderAnswer(item) {
-    return `<div class="a-line"><span class="a-label">答案</span><span class="a-val">${SeaScribe.esc(item.answer)}</span></div>`;
+    return `<div class="a-line">
+      <span class="a-label">答案</span>
+      <span class="a-val">${SeaScribe.esc(item.answer)}</span>
+    </div>`;
+  },
+
+  // 可选：渲染自定义控件
+  configUI(container) {
+    container.innerHTML = `<button>自定义按钮</button>`;
+    CustomSelect.initAll(container);
   },
 };
 ```
 
 ---
 
-## 控件说明
+## 第四步：注册并加载
 
-| 控件 | 位置 | 操作 |
-|---|---|---|
-| 数量 | 听写页 | `-` `+` 步进、键盘输入、Enter |
-| 列数 | 听写页 | `-` `+` 步进，1-6 |
-| 字号 | 听写页 | `A-` `A+` 按钮、滑块 60%-200% |
-| 布局 | 听写页 | `☰`/`⊞` 切换网格/列表 |
-| 夜间 | 顶栏 | `🌙`/`☀️` 切换 |
-| 公布答案 | 听写页 | 展开/收起 |
-| 返回 | 听写页 | `←` 或点击 Logo |
-| 随机点名 | 顶栏 | 选名单 → 点名 → 全屏动画 |
+在 `index.html` 底部添加脚本引用（放在 plugin-utils.js 之后、app.js 之前）：
+
+```html
+<script src="config/你的学科/config.js"></script>
+<script src="plugins/你的学科/plugin.js"></script>
+```
+
+在 `main/js/app.js` 中注册：
+
+```js
+SubjectRegistry.register(MyPlugin);
+```
+
+刷新页面即可在学科选择页看到新卡片。
+
+---
+
+## 接口参考
+
+### 必需成员
+
+| 成员 | 类型 | 说明 |
+|------|------|------|
+| `meta` | Object | `{id, name, description, icon}` |
+| `defaultCount` | Number | 默认出题数 |
+| `defaultColumns` | Number | 默认列数 |
+| `defaultFontSize` | Number | 默认字号 60-200 |
+| `defaultLayout` | String | `"grid"` 或 `"list"` |
+| `gridColumns` | Number | 网格列数 1-6 |
+| `listColumns` | Number | 列表列数 1-6 |
+| `gridFontSize` | Number | 网格字号 60-200 |
+| `listFontSize` | Number | 列表字号 60-200 |
+| `loadConfig()` | Function | 从 `window.__XXX_CONFIG__` 读取配置 |
+| `loadData()` | Async | 返回 `[{prompt, answer}, ...]` |
+| `renderPrompt(item)` | Function | 返回题目 HTML |
+| `renderAnswer(item)` | Function | 返回答案 HTML |
+
+### 可选成员
+
+| 成员 | 类型 | 说明 |
+|------|------|------|
+| `getRange()` | Function | 返回 `[start, end)`，控制抽题范围 |
+| `configUI(container)` | Function | 渲染自定义控件到听写页控制栏 |
+
+---
+
+## PluginUtils 工具集
+
+插件可调用 `PluginUtils` 的公共方法（定义在 `main/js/plugin-utils.js`）：
+
+| 方法 | 说明 |
+|------|------|
+| `loadConfig(plugin, config, extraMap)` | 从配置对象加载标准属性 |
+| `scanDir(url, extRegex)` | 扫描服务器目录，返回文件列表 |
+| `refreshCount(plugin)` | 根据 `_data` 长度刷新数量上限 |
+| `parseCSV(text)` | 解析 CSV 文本为 `[{prompt,answer}]` |
+
+### loadConfig 映射表
+
+`extraMap` 参数将配置键映射到插件内部属性：
+
+```js
+PluginUtils.loadConfig(this, window.__MY_CONFIG__, {
+  dataURL: '_csvURL',              // config.dataURL → this._csvURL
+  defaultRangeStart: '_rangeStart', // config.defaultRangeStart → this._rangeStart
+  defaultRangeEnd: '_rangeEnd',
+  promptCol: '_promptCol',
+  answerCol: '_answerCol',
+});
+```
+
+未列入 extraMap 的属性从 `std` 标准列表中自动映射（defaultCount、defaultColumns、defaultFontSize、defaultLayout、gridColumns、listColumns、gridFontSize、listFontSize、scanURLs）。
+
+---
+
+## 目录约定
+
+```
+config/你的学科/
+└── config.js      配置文件（用户可编辑）
+
+plugins/你的学科/
+└── plugin.js      插件逻辑（数据+渲染+控件）
+
+data/你的学科/     可选：xlsx/csv 数据文件
+```
 
 ---
 
 ## 服务器文件扫描
 
-`server.py` 内置通用 API：`/api/<学科名>-files` 自动返回 `data/<学科名>/` 下所有文件。
+`server.py` 内置通用 API：访问 `/api/<学科名>-files` 自动返回 `data/<学科名>/` 下所有文件：
 
 ```json
 [
@@ -189,60 +225,21 @@ const MyPlugin = {
 ]
 ```
 
-插件在 `config.js` 中配置 `scanURLs` 即可使用。推荐使用 `PluginUtils.scanDir(url, extRegex)` 扫描文件，`PluginUtils.refreshCount(this)` 刷新数量上限（参见 `main/js/plugin-utils.js`）。
+在 `config.js` 中配置 `scanURLs` 后，插件可调用 `PluginUtils.scanDir()` 获取文件列表。
 
 ---
 
-## 答案渲染
+## 答案渲染样式
+
+推荐的答案 HTML 结构：
 
 ```html
 <div class="a-line">
-  <span class="a-label">标签</span>
+  <span class="a-label">电子式</span>
   <span class="a-val">答案内容</span>
 </div>
 ```
 
-- `.a-val.orbital` — 等宽字体，适合化学轨道式
-- 用 `em` 单位自动响应 `--card-font-scale`
-
----
-
-## 投屏建议
-
-| 屏幕 | 列数 | 字号 | 数量 |
-|---|---|---|---|
-| 1024×768 | 3 | 100% | 12 |
-| 1920×1080 | 4 | 120% | 16 |
-| ≥2560 | 5 | 140% | 20 |
-
----
-
-## 用户需求记录
-
-1. 网页版听写，多学科，随机出题，显示答案 ✅
-2. 全班默写用，不计分；英语 Excel 导入 ✅；化学合并 ✅
-3. 命名 SeaScribe，署名 谦虚の海鸥 ✅
-4. 双击即用（数据内联 + 网络加载）✅
-5. 简约单页，答案同卡展开 ✅
-6. 范围选择 ✅、字号无极 ✅、夜间模式 ✅
-7. 步进器+键盘输入 ✅、字号滑块+按钮 ✅
-8. 配置在文件中，无 localStorage ✅
-9. 插件化架构 ✅
-10. 夜间模式同步加载防闪白 ✅
-11. 配置 `.js` 文件，行内注释 ✅
-12. 美化下拉框和滚动条 ✅
-13. 开屏动画 ✅
-14. 标签页 favicon ✅
-15. 随机点名：全屏遍历→定格弹跳→缩小飞入右上角 ✅
-16. 名单管理 ✅
-17. xlsx 导入听写数据，可自定列映射 ✅
-18. 服务器文件扫描 API ✅
-19. 列表/网格双模式切换 ✅
-20. 模式独立列数和字号配置 ✅
-21. 答案换行显示 ✅
-22. 卡片序号跟随字号缩放 ✅
-23. URL hash 路由 ✅
-24. 开屏启动检查 ✅
-25. 更新日志读取 UPDATE.md ✅
-26. 代码模块化拆分，CSS/JS 按职责分文件 ✅
-27. 化学数据 CSV 化，可编辑可导入 ✅
+可用样式类：
+- `.a-val.orbital` — 等宽字体 + 背景色，适合化学轨道式
+- 用 `em` 单位配合 `--card-font-scale` 自动响应字号变化
