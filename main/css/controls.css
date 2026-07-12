@@ -113,18 +113,6 @@
   transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
   max-width: 160px;
   text-overflow: ellipsis;
-  scrollbar-width: thin;
-  scrollbar-color: var(--muted) transparent;
-}
-.range-select::-webkit-scrollbar {
-  width: 6px;
-}
-.range-select::-webkit-scrollbar-track {
-  background: transparent;
-}
-.range-select::-webkit-scrollbar-thumb {
-  background: var(--muted);
-  border-radius: 3px;
 }
 .range-select:hover {
   border-color: var(--muted);
@@ -242,12 +230,7 @@
 .cs-wrap.open .cs-drop {
   max-height: 220px; overflow-y: auto;
   opacity: 1;
-  scrollbar-width: thin;
-  scrollbar-color: var(--muted) transparent;
 }
-.cs-drop::-webkit-scrollbar { width: 6px; }
-.cs-drop::-webkit-scrollbar-track { background: transparent; }
-.cs-drop::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
 .cs-option {
   padding: 8px 12px; font-size: 0.85rem; color: var(--text);
   cursor: pointer; transition: background 0.1s;

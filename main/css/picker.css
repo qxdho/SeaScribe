@@ -234,13 +234,7 @@
   overflow-y: auto;
   font-size: 0.82rem;
   line-height: 1.7;
-  scrollbar-width: thin;
-  scrollbar-color: var(--border) transparent;
 }
-
-.picker-ts-body::-webkit-scrollbar { width: 5px; }
-.picker-ts-body::-webkit-scrollbar-track { background: transparent; }
-.picker-ts-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
 .picker-ts-row {
   display: flex;
