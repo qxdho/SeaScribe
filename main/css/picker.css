@@ -49,12 +49,12 @@
 .picker-modal-card {
   position: relative;
   background: var(--bg);
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
   padding: 28px 32px;
   min-width: 380px;
   max-width: 480px;
   width: auto;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+  box-shadow: var(--shadow-xl);
   display: flex;
   flex-direction: column;
   gap: 18px;
@@ -108,9 +108,9 @@
   gap: 8px;
   padding: 8px 12px;
   border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  transition: border-color 0.2s, background 0.2s;
+  transition: border-color var(--dur-md), background var(--dur-md);
   font-size: 0.9rem;
 }
 
@@ -162,7 +162,7 @@
   -webkit-appearance: none;
   padding: 9px 32px 9px 14px;
   border: 1.5px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   background: var(--surface);
   background-image: var(--select-arrow);
   background-repeat: no-repeat;
@@ -172,7 +172,7 @@
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: border-color var(--dur-md);
   width: 100%;
 }
 
@@ -206,13 +206,13 @@
   padding: 4px 10px;
   font-size: 0.78rem;
   font-weight: 500;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
 }
 
 .picker-ts-panel {
   margin-top: 10px;
   border: 1px solid var(--border);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -317,7 +317,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transition: background 0.3s;
+  transition: background var(--dur-slow);
 }
 
 .pick-decorative.hidden { display: none; }
@@ -333,7 +333,7 @@
   font-size: 12vw;
   font-weight: 800;
   color: var(--text);
-  transition: color 0.3s;
+  transition: color var(--dur-slow);
   line-height: 1.1;
 }
 
@@ -350,7 +350,7 @@
   margin-top: 16px;
   height: 1.4em;
   line-height: 1.4em;
-  transition: opacity 0.3s;
+  transition: opacity var(--dur-slow);
 }
 
 .pick-decorative-sig.empty {
@@ -364,7 +364,7 @@
   border-radius: 50%;
   object-fit: cover;
   margin-bottom: 12px;
-  transition: opacity 0.3s;
+  transition: opacity var(--dur-slow);
 }
 .pick-decorative-avatar.hidden { display: none; }
 
@@ -414,7 +414,7 @@
   font-size: 1.1rem;
   overflow: auto;
   padding: 20px;
-  transition: opacity 0.3s;
+  transition: opacity var(--dur-slow);
 }
 
 .pick-process.hidden { display: none; }
@@ -429,7 +429,7 @@
   width: 560px;
   max-width: 90vw;
   max-height: 70vh;
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
   background: var(--surface);
   color: var(--text);
   box-shadow: 0 8px 32px rgba(0,0,0,0.3);
@@ -512,7 +512,7 @@
   line-height: 1.6;
   padding: 14px;
   border: 2px solid rgba(255,255,255,0.2);
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
   max-width: 600px;
   text-align: center;
   animation: procStepIn 0.35s var(--ease);
@@ -589,14 +589,14 @@
   max-width: 400px;
   height: 6px;
   background: rgba(255,255,255,0.12);
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   overflow: hidden;
 }
 
 .proc-bar-fill {
   height: 100%;
   background: rgba(76,175,80,0.6);
-  border-radius: 3px;
+  border-radius: var(--radius-xs);
   transition: width 0.4s var(--ease);
 }
 
@@ -618,7 +618,7 @@
   text-align: center;
   display: inline-block;
   white-space: nowrap;
-  transition: color 0.3s;
+  transition: color var(--dur-slow);
 }
 
 /* ====== Keyframes ====== */

@@ -10,7 +10,7 @@
   border-bottom: 1px solid var(--border);
   background: var(--surface);
   flex-wrap: wrap;
-  transition: background-color 0.3s, border-color 0.3s;
+  transition: background-color var(--dur-slow), border-color var(--dur-slow);
 }
 
 .topbar-brand {
@@ -22,7 +22,7 @@
   letter-spacing: -0.02em;
   cursor: pointer;
   user-select: none;
-  transition: opacity 0.15s;
+  transition: opacity var(--dur-fast);
 }
 .topbar-brand:hover { opacity: 0.7; }
 
@@ -49,12 +49,12 @@
 .topbar-btn {
   padding: 6px 10px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: var(--surface);
   cursor: pointer;
   font-size: 0.9rem;
   color: var(--text);
-  transition: background-color 0.2s;
+  transition: background-color var(--dur-md);
   text-decoration: none;
 }
 .topbar-btn:hover { background: var(--hover); }
@@ -62,14 +62,14 @@
 .tool-btn {
   width: 28px; height: 28px;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: var(--surface);
   font-size: 0.8rem;
   cursor: pointer;
   color: var(--text);
   display: flex;
   align-items: center; justify-content: center;
-  transition: background-color 0.15s, border-color 0.15s;
+  transition: background-color var(--dur-fast), border-color var(--dur-fast);
 }
 .tool-btn:hover { background: var(--hover); }
 
@@ -107,8 +107,8 @@
   right: 0;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
   padding: 4px;
   display: flex;
   flex-direction: column;

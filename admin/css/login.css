@@ -27,7 +27,7 @@
   text-decoration: none; color: inherit;
   cursor: pointer;
   user-select: none;
-  transition: opacity 0.15s;
+  transition: opacity var(--dur-fast);
 }
 .admin-login-topbar-brand:hover { opacity: 0.7; }
 .admin-login-topbar-spacer { flex: 1; }
@@ -40,7 +40,7 @@
 
 .admin-login-card {
   background: var(--surface);
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
   padding: 40px 36px;
   width: 360px; max-width: 90vw;
   box-shadow: 0 4px 24px rgba(0,0,0,0.08);
@@ -57,14 +57,14 @@
   padding: 10px 14px; border: 1px solid var(--border);
   border-radius: var(--radius); font-size: 0.95rem;
   background: var(--surface); color: var(--text);
-  outline: none; transition: border-color 0.2s;
+  outline: none; transition: border-color var(--dur-md);
 }
 .admin-login-field input:focus { border-color: var(--dark); }
 .admin-login-field select {
   padding: 10px 14px; border: 1px solid var(--border);
   border-radius: var(--radius); font-size: 0.95rem;
   background: var(--surface); color: var(--text);
-  outline: none; transition: border-color 0.2s;
+  outline: none; transition: border-color var(--dur-md);
   font-family: inherit; cursor: pointer;
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
@@ -79,7 +79,7 @@
   position: absolute; top: 50%; transform: translateY(-50%);
   background: none; border: none; cursor: pointer;
   padding: 4px; line-height: 1; color: var(--muted);
-  border-radius: 4px; transition: color 0.15s, background 0.15s;
+  border-radius: var(--radius-xs); transition: color var(--dur-fast), background var(--dur-fast);
 }
 .pw-action-btn:hover { color: var(--text); background: var(--hover); }
 
@@ -88,7 +88,7 @@
 /* ---- Register validation hints ---- */
 .reg-hint {
   font-size: 0.7rem; color: var(--muted);
-  margin-top: 2px; min-height: 1em; transition: color 0.2s;
+  margin-top: 2px; min-height: 1em; transition: color var(--dur-md);
 }
 .reg-hint.ok   { color: #2ecc71; }
 .reg-hint.bad  { color: #e74c3c; }

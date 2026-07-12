@@ -54,12 +54,12 @@
   padding: 18px 16px;
   display: flex; flex-direction: column; gap: 8px;
   animation: fadeUp 0.45s var(--spring) both;
-  transition: background-color 0.3s, border-color 0.3s, transform 0.25s var(--spring), box-shadow 0.25s var(--spring);
+  transition: background-color var(--dur-slow), border-color var(--dur-slow), transform 0.25s var(--spring), box-shadow 0.25s var(--spring);
   min-width: 0;
 }
 .card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-sm);
 }
 [data-theme="dark"] .card:hover { box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
 
@@ -108,6 +108,6 @@
   font-family: "SF Mono", "Cascadia Code", "Fira Code", "Consolas", "Microsoft YaHei", monospace;
   font-size: 0.88em; letter-spacing: 0.03em;
   background: var(--orb-bg);
-  padding: 1px 5px; border-radius: 4px;
+  padding: 1px 5px; border-radius: var(--radius-xs);
   white-space: normal; word-break: break-all; line-height: 1.5;
 }

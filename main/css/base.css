@@ -3,12 +3,30 @@
    ============================================================ */
 
 :root {
-  --radius:   12px;
+  /* === Spacing === */
+  --radius:   12px;            /* card, modal */
+  --radius-xs: 3px;            /* scrollbar, slider track */
+  --radius-sm: 6px;            /* small btn, stepper, close X */
+  --radius-md: 8px;            /* btn, nav, back */
+  --radius-lg: 10px;           /* input, select, toast */
+  --radius-xl: 12px;           /* card (alias of --radius) */
+  --radius-2xl: 16px;          /* modal card */
   --gap:      14px;
+
+  /* === Motion === */
   --ease:     cubic-bezier(0.22, 0.61, 0.36, 1);
   --spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --bounce:   cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --dur-fast: 0.15s;
+  --dur-md:   0.2s;
+  --dur-slow: 0.3s;
+
+  /* === Shadow === */
+  --shadow-sm: 0 4px 16px rgba(0,0,0,0.1);
+  --shadow-md: 0 6px 20px rgba(0,0,0,0.12);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
+  --shadow-xl: 0 12px 40px rgba(0,0,0,0.2);
 }
 
 /* ---- Global scrollbar ---- */
