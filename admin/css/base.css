@@ -1,24 +1,10 @@
 /* ============================================================
    SeaScribe Admin — Base (variables + reset)
-   Theme colors loaded from ../main/css/theme.css
+   Design tokens loaded from ../main/css/theme.css
    ============================================================ */
 
-:root {
-  --radius: 12px;
-  --ease:   cubic-bezier(0.22, 0.61, 0.36, 1);
-  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-out: cubic-bezier(0, 0, 0.2, 1);
-  --bounce: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-/* ---- Global scrollbar ---- */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--border); }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 17px; scrollbar-width: thin; scrollbar-color: var(--muted) transparent; }
+html { font-size: 17px; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
                "Microsoft YaHei", sans-serif;

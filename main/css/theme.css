@@ -1,6 +1,24 @@
 /* ============================================================
-   SeaScribe — Theme Variables
+   SeaScribe — Theme Variables (shared by main + admin)
    ============================================================ */
+
+/* === Design Tokens === */
+:root {
+  --radius-xs: 3px;     --radius-sm: 6px;
+  --radius-md: 8px;     --radius-lg: 10px;
+  --radius-xl: 12px;    --radius-2xl: 16px;
+  --radius: var(--radius-xl);
+  --gap:      14px;
+  --dur-fast: 0.15s;    --dur-md: 0.2s;    --dur-slow: 0.3s;
+  --ease:     cubic-bezier(0.22, 0.61, 0.36, 1);
+  --spring:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --bounce:   cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  --shadow-sm: 0 4px 16px rgba(0,0,0,0.1);
+  --shadow-md: 0 6px 20px rgba(0,0,0,0.12);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
+  --shadow-xl: 0 12px 40px rgba(0,0,0,0.2);
+}
 
 /* ---- Light Theme ---- */
 :root, [data-theme="light"] {
