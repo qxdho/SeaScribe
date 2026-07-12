@@ -4,7 +4,7 @@
 
 > 课堂听写投屏系统 — 教师大屏随机出题，学生纸笔作答，一键公布答案
 >
-> by **谦虚の海鸥** · v4.5.0 · [GitHub](https://github.com/qxdho/SeaScribe)
+> by **谦虚の海鸥** · v4.5.1 · [GitHub](https://github.com/qxdho/SeaScribe)
 
 ---
 
@@ -13,7 +13,7 @@
 | 方式 | 命令 |
 |------|------|
 | 本地使用 | 双击 `index.html` → 选择学科 → 随机出题 |
-| 一键启动 | 双击 `start.bat`（自动打开浏览器） |
+| 一键启动 | 双击 `start.bat`（需安装 Python） |
 | 服务器部署 | `python server.py 9360` |
 
 管理后台：`/admin/`（默认 `admin` / `admin123`）
@@ -73,15 +73,15 @@
 ├── server/                 后端模块包
 │   ├── config.py           常量配置
 │   ├── auth.py             鉴权·用户·会话
-│   └── routes.py           API 路由（15 GET + 12 POST）
+│   └── routes.py           API 路由（15 GET + 14 POST）
 ├── start.bat               一键启动
 │
 ├── main/                   主站资源
-│   ├── css/                12 文件（含 theme / custom-select 共享）
+│   ├── css/                11 文件（含 theme / custom-select 共享）
 │   └── js/                 核心模块 + picker/ 点名子模块
 │
 ├── admin/                  管理后台 SPA
-│   ├── css/                7 文件（复用 main/css/theme.css + custom-select.css）
+│   ├── css/                6 文件（复用 main/css/theme.css + custom-select.css）
 │   └── js/                 路由/鉴权 + pages/ 6 页面
 │
 ├── config/                 JS 配置（主站·点名·化学·英语）

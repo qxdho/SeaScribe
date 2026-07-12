@@ -62,6 +62,8 @@
     var nameSelect = document.getElementById('bind-displayname');
     classSelect.innerHTML = '<option value="">扫描中…</option>';
     nameSelect.innerHTML = '<option value="">— 先选择班级 —</option>';
+    if (classSelect._customSelect) classSelect._customSelect.refresh();
+    if (nameSelect._customSelect) nameSelect._customSelect.refresh();
     document.getElementById('bind-submit').disabled = true;
     bindError.classList.add('hidden');
     loadClassList();
@@ -74,14 +76,17 @@
       var classes = await res.json();
       if (!classes.length) {
         classSelect.innerHTML = '<option value="">无班级数据</option>';
+        if (classSelect._customSelect) classSelect._customSelect.refresh();
         return;
       }
       classSelect.innerHTML = '<option value="">— 选择班级 —</option>' +
         classes.map(function(c) {
           return '<option value="' + Admin.esc(c) + '">' + Admin.esc(c) + '</option>';
         }).join('');
+      if (classSelect._customSelect) classSelect._customSelect.refresh();
     } catch(e) {
       classSelect.innerHTML = '<option value="">加载失败</option>';
+      if (classSelect._customSelect) classSelect._customSelect.refresh();
     }
   }
 
@@ -313,26 +318,29 @@
   document.getElementById('bind-class').addEventListener('change', async function() {
     var nameSelect = document.getElementById('bind-displayname');
     var btn = document.getElementById('bind-submit');
+    var ref = function() { if (nameSelect._customSelect) nameSelect._customSelect.refresh(); };
     if (!this.value) {
       nameSelect.innerHTML = '<option value="">— 先选择班级 —</option>';
-      btn.disabled = true;
+      ref(); btn.disabled = true;
       return;
     }
     nameSelect.innerHTML = '<option value="">加载中…</option>';
-    btn.disabled = true;
+    ref(); btn.disabled = true;
     try {
       var res = await fetch('/api/roster/' + encodeURIComponent(this.value));
       var students = await res.json();
       if (!students.length) {
         nameSelect.innerHTML = '<option value="">名单为空</option>';
-        return;
+        ref(); return;
       }
       nameSelect.innerHTML = '<option value="">— 选择姓名 —</option>' +
         students.map(function(s) {
           return '<option value="' + Admin.esc(s.name) + '" data-sig="' + Admin.esc(s.signature || '') + '">' + Admin.esc(s.name) + (s.signature ? ' — ' + Admin.esc(s.signature) : '') + '</option>';
         }).join('');
+      ref();
     } catch(e) {
       nameSelect.innerHTML = '<option value="">加载失败</option>';
+      ref();
     }
   });
 

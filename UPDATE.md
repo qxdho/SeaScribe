@@ -1,5 +1,33 @@
 # SeaScribe 更新日志
 
+## v4.5.1
+
+### 阻断修复
+- **B1 roster.js 数据静默丢失**：`saveRoster()` 未检查 `res.ok`，网络故障时所有非当前班级的名单数据被覆盖为空数组 → 增加 `res.ok` 检查并阻断写入
+- **B2 users.js 隐式全局变量**：`va`/`vb` 缺少 `var` 声明 → 泄漏为 `window.va`/`window.vb`，严格模式下排序崩溃
+- **B3 roster.js 绑定竞态**：`loadBindMap()` fire-and-forget 无 `await` → 绑定状态列始终为空 → 改 `await loadBindMap()`
+- **B4 custom-select.js 全局事件破坏**：捕获阶段 `preventDefault()` + `stopPropagation()` → 下拉框展开时页面所有链接、按钮失效 → 删除两行
+
+### CustomSelect v2
+- **捕获阶段拦截点击穿透**：改用 `addEventListener('click', handler, true)` 替代 `fixed` 遮罩层（避开了 `overflow: hidden` 层叠上下文陷阱）
+- **Admin 页面导航自动刷新**：hook `PageRegistry.navigate` 替代 `init`（之前切换页面不走 `init`，下拉框回退成原生）
+- **`const PageRegistry` 检测修复**：`window.PageRegistry` → `typeof PageRegistry !== 'undefined'`（`const` 不挂 `window`）
+- **下拉选项动态刷新**：admin 各页面修改 `<select>` 选项后补调 `_customSelect.refresh()`（共 9 处）
+
+### 后端补路
+- **点名记录管理**：新增 `POST /api/admin/picker-timestamps/delete` 和 `/clear` 两个 handler，修复 404
+
+### 滚动条全局统一
+- **4px 窄滚动条**：`base.css`（主站+admin）、`custom-select.css`、`picker.css`、`changelog.css` 全覆盖
+- 提升 `.changelog-card` 桌面端宽度：460→540px（更新日志）、600→680px（关于）、80→85vw（系统日志）
+- 新增 1024px 平板断点 + 修复点名调试模式展开裁剪
+
+### 文档更新
+- RULES.md：管理员加载顺序、API 数量同步
+- UPDATE.md：本条目
+
+---
+
 ## v4.5.0
 
 ### 项目模块化
@@ -8,7 +36,7 @@
 - `server.py` 从 809 行单体拆分为 `server/` 包：
   - `config.py` — 常量集中管理
   - `auth.py` — 用户/密码/会话/令牌/限流/鉴权
-  - `routes.py` — 15 GET + 12 POST handler 统一分发
+  - `routes.py` — 15 GET + 14 POST handler 统一分发
   - `server.py` — 精简至 106 行入口
 
 **CSS 去重**
@@ -21,8 +49,8 @@
 - 跳过随机算法和时间戳记录，方便调试动画效果
 
 ### 全局滚动条
-- 滚动条样式统一全局定义（6px 宽、圆角滑块、hover 变深）
-- 删除 5 处分散的组件级滚动条样式
+- 滚动条样式统一全局定义（v4.5.0 为 6px，v4.5.1 统一为 4px）
+- 原删除 5 处分散样式，v4.5.1 补全 3 个组件区域（changelog / picker / custom-select）
 
 ### 性能优化
 - 移除所有 `filter: blur()` 动画（19 处）— 低端 GPU 最大瓶颈

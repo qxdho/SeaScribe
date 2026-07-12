@@ -86,7 +86,6 @@
 
     // 直接在修饰层上追加签名和时间（不再用独立 display 层）
     if (window.PickerDisplay && decorativeEl && decorativeText) {
-      console.log('[Animation] finalPerson:', JSON.stringify(finalPerson));
       decorativeText.classList.remove('pop');
       await PickerDisplay.showOnDecorative(decorativeEl, decorativeText, {
         name: finalPerson.name,

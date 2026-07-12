@@ -57,7 +57,7 @@
 ```
 server/config.py   常量 (PORT, 路径, 限制)
 server/auth.py     用户/密码/会话/令牌/限流/_require_auth
-server/routes.py   API handler (15 GET + 12 POST) + 分发列表
+server/routes.py   API handler (15 GET + 14 POST) + 分发列表
 server.py          入口 + Handler 类 + 静态文件服务
 ```
 
@@ -73,7 +73,7 @@ core → engine → theme → navigator → controls → cards
 
 **管理后台加载顺序**：
 ```
-common → custom-select → router → [pages/*] → auth → app
+common → router → custom-select → [pages/*] → auth → app
 ```
 
 ### 前端 CSS

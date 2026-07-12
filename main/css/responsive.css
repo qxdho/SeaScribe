@@ -3,7 +3,20 @@
    适配手机 / 平板 / 桌面
    ============================================================ */
 
-/* ====== 平板 (≤768px) ====== */
+/* ====== 平板 (≤1024px) ====== */
+@media (max-width: 1024px) {
+  .changelog-card {
+    max-width: 70vw;
+  }
+  #about-overlay .changelog-card {
+    max-width: 75vw;
+  }
+  #syslog-overlay .changelog-card {
+    max-width: 85vw;
+  }
+}
+
+/* ====== 小平板 (≤768px) ====== */
 @media (max-width: 768px) {
   /* 顶栏 */
   .topbar {

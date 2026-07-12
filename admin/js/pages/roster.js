@@ -41,6 +41,7 @@ function render() {
     var exists = Array.from(select.options).some(function(o) { return o.value === name; });
     if (exists) { Admin.toast('该班级已存在'); return; }
     select.appendChild(new Option(name, name));
+    if (select._customSelect) select._customSelect.refresh();
     select.value = name;
     select.dispatchEvent(new Event('change'));
     saveRoster();
@@ -52,6 +53,7 @@ function render() {
     if (!confirm('确定删除班级「' + cls + '」及其所有学生吗？')) return;
     var select = document.getElementById('roster-class-select');
     select.querySelector('option[value="' + cls + '"]').remove();
+    if (select._customSelect) select._customSelect.refresh();
     select.value = '';
     select.dispatchEvent(new Event('change'));
     saveRoster();
@@ -160,12 +162,13 @@ async function loadClasses() {
     classes.forEach(function(c) {
       select.appendChild(new Option(c, c));
     });
+    if (select._customSelect) select._customSelect.refresh();
   } catch(e) {}
 }
 
 async function loadStudents(cls) {
   try {
-    loadBindMap();  // fire and forget, table renders below already
+    await loadBindMap();
     var res = await fetch('/api/roster/' + encodeURIComponent(cls));
     var students = await res.json();
     _currentStudents = students;
@@ -255,10 +258,10 @@ function renderStudentTable(students) {
 async function saveRoster() {
   var select = document.getElementById('roster-class-select');
   var classes = Array.from(select.options).filter(function(o) { return o.value; }).map(function(o) { return o.value; });
-  try {
-    var res = await Admin.api('/api/admin/roster');
-    var data = res.data || {};
-  } catch(e) { var data = {}; }
+  var res = await Admin.api('/api/admin/roster');
+  if (!res.ok) { Admin.toast('无法获取服务器名单，请检查网络后重试', 'error'); return; }
+  var data = res.data || {};
+
   var newData = {};
   classes.forEach(function(cls) {
     if (cls === document.getElementById('roster-class-select').value) {
@@ -269,7 +272,7 @@ async function saveRoster() {
       newData[cls] = [];
     }
   });
-  var res = await Admin.api('/api/admin/roster', { method: 'POST', body: newData });
+  res = await Admin.api('/api/admin/roster', { method: 'POST', body: newData });
   if (res.ok) {
     Admin.toast('姓名池已保存', 'success');
   } else {

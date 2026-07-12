@@ -9,6 +9,8 @@
 
   window.__SEASCRIBE_LOG__ = [];
 
+  if (!splash) return;
+
   // 拦截 console 输出到系统日志
   (function() {
     var orig = { log: console.log, error: console.error, warn: console.warn };
@@ -209,27 +211,41 @@
     // ====== 阶段 9：汇总 ======
     function() { logPhase('汇总'); },
     function() {
-      logLine('SeaScribe 版本', true, 'v4.4.0', '');
+      logLine('SeaScribe 版本', true, 'v4.5.1', '');
     },
   ];
 
   var i = 0;
+  var _checksDone = false;
+  var _closeQueued = false;
   function runCheck() {
     if (i < checks.length) {
       checks[i](); i++;
       log.scrollTop = log.scrollHeight;
       setTimeout(runCheck, 20);
     } else {
+      _checksDone = true;
       updateBadge();
+      if (_closeQueued) closeSplashNow();
     }
   }
-  setTimeout(runCheck, 100);
+  setTimeout(runCheck, 50);
 
   splash.addEventListener('click', closeSplashFn, { once: true });
   document.addEventListener('keydown', closeSplashFn, { once: true });
 
   function closeSplashFn() {
     if (!splash || !splash.parentNode) return;
+    if (!_checksDone) {
+      _closeQueued = true;
+      var hint = splash.querySelector('.splash-hint');
+      if (hint) hint.textContent = '请等待自检完成…';
+      return;
+    }
+    closeSplashNow();
+  }
+
+  function closeSplashNow() {
     splash.style.animation = 'splashOut 0.2s var(--ease-out) forwards';
     splash.addEventListener('animationend', function(e) {
       if (e.target === splash && e.animationName === 'splashOut') {

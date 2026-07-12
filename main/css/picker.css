@@ -50,14 +50,14 @@
   position: relative;
   background: var(--bg);
   border-radius: var(--radius-2xl);
-  padding: 28px 32px;
+  padding: 24px 28px;
   min-width: 380px;
   max-width: 480px;
   width: auto;
   box-shadow: var(--shadow-xl);
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 12px;
   max-height: 90vh;
   overflow-y: auto;
 }
@@ -272,15 +272,16 @@
 
 /* 调试区 —— 平滑展开/收起 */
 #picker-debug-section {
-  max-height: 120px;
+  max-height: 300px;
   opacity: 1;
-  overflow: hidden;
   transition: max-height 0.3s var(--ease), opacity 0.25s;
 }
 #picker-debug-section.picker-debug-collapsed {
   max-height: 0;
   opacity: 0;
+  overflow: hidden;
 }
+#picker-debug-section .cs-wrap.open { overflow: visible; z-index: 102; }
 
 .picker-process-mode-row label {
   display: flex;
@@ -355,6 +356,10 @@
   max-width: 120px; max-height: 120px;
   border-radius: 50%;
   object-fit: cover;
+  border: none;
+  outline: none;
+  background: var(--bg);
+  box-shadow: 0 0 0 1px var(--bg);
   margin-bottom: 12px;
   transition: opacity var(--dur-slow);
 }
@@ -627,3 +632,29 @@
   0%   { opacity: 0; transform: scale(0.9) translateY(16px); }
   100% { opacity: 1; transform: scale(1) translateY(0); }
 }
+
+/* ---- Picker scrollbars ---- */
+.picker-modal-card::-webkit-scrollbar,
+.picker-ts-body::-webkit-scrollbar,
+.pick-process::-webkit-scrollbar { width: 4px; height: 4px; }
+.picker-modal-card::-webkit-scrollbar-button:vertical:decrement,
+.picker-modal-card::-webkit-scrollbar-button:vertical:increment,
+.picker-ts-body::-webkit-scrollbar-button:vertical:decrement,
+.picker-ts-body::-webkit-scrollbar-button:vertical:increment,
+.pick-process::-webkit-scrollbar-button:vertical:decrement,
+.pick-process::-webkit-scrollbar-button:vertical:increment { height: 0; }
+.picker-modal-card::-webkit-scrollbar-track,
+.picker-ts-body::-webkit-scrollbar-track,
+.pick-process::-webkit-scrollbar-track { background: transparent; }
+.picker-modal-card::-webkit-scrollbar-thumb,
+.picker-ts-body::-webkit-scrollbar-thumb,
+.pick-process::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 2px; }
+.picker-modal-card::-webkit-scrollbar-thumb:hover,
+.picker-ts-body::-webkit-scrollbar-thumb:hover,
+.pick-process::-webkit-scrollbar-thumb:hover { background: var(--border); }
+.picker-modal-card::-webkit-scrollbar-corner,
+.picker-ts-body::-webkit-scrollbar-corner,
+.pick-process::-webkit-scrollbar-corner { background: transparent; }
+.picker-modal-card,
+.picker-ts-body,
+.pick-process { scrollbar-width: thin; scrollbar-color: var(--muted) transparent; }

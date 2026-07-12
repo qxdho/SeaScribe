@@ -55,3 +55,12 @@
   from { opacity: 0.7; }
   to   { opacity: 1; }
 }
+
+/* ---- CustomSelect dropdown scrollbar ---- */
+.cs-drop::-webkit-scrollbar { width: 4px; height: 4px; }
+.cs-drop::-webkit-scrollbar-button:vertical:decrement,
+.cs-drop::-webkit-scrollbar-button:vertical:increment { height: 0; }
+.cs-drop::-webkit-scrollbar-track { background: transparent; }
+.cs-drop::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 2px; }
+.cs-drop::-webkit-scrollbar-thumb:hover { background: var(--border); }
+.cs-drop { scrollbar-width: thin; scrollbar-color: var(--muted) transparent; }

@@ -643,6 +643,47 @@ def handle_picker_timestamps_post(path, body, handler):
     return True
 
 
+def handle_picker_timestamps_delete(path, body, handler):
+    """POST /api/admin/picker-timestamps/delete"""
+    if path != '/api/admin/picker-timestamps/delete':
+        return False
+    user = require_role(handler, 'admin')
+    if not user: return True
+    p = _parse_json_body(handler, body)
+    if p is None: return True
+    list_name = p.get('list', '')
+    name = p.get('name', '')
+    if not list_name or not name:
+        handler.send_json(400, {'error': '缺少参数'})
+        return True
+    safe = _safe_filename(list_name.replace('.csv', '') + '.json')
+    filepath = os.path.join(PICKER_DIR, safe)
+    data = _read_json(filepath)
+    if name in data:
+        del data[name]
+        _write_json(filepath, data)
+    handler.send_json(200, {'ok': True})
+    return True
+
+
+def handle_picker_timestamps_clear(path, body, handler):
+    """POST /api/admin/picker-timestamps/clear"""
+    if path != '/api/admin/picker-timestamps/clear':
+        return False
+    user = require_role(handler, 'admin')
+    if not user: return True
+    p = _parse_json_body(handler, body)
+    if p is None: return True
+    list_name = p.get('list', '')
+    if not list_name:
+        handler.send_json(400, {'error': '缺少名单名称'})
+        return True
+    safe = _safe_filename(list_name.replace('.csv', '') + '.json')
+    _write_json(os.path.join(PICKER_DIR, safe), {})
+    handler.send_json(200, {'ok': True})
+    return True
+
+
 def handle_english_upload(path, body, handler):
     if path != '/api/admin/upload/english':
         return False
@@ -740,6 +781,8 @@ POST_HANDLERS = [
     handle_admin_config_save,
     handle_roster_save,
     handle_picker_timestamps_post,
+    handle_picker_timestamps_delete,
+    handle_picker_timestamps_clear,
     handle_english_upload,
     handle_english_delete,
     handle_avatar_upload,

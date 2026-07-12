@@ -24,9 +24,9 @@
   background: var(--surface);
   border-radius: var(--radius-2xl);
   padding: 24px 32px 20px;
-  max-width: 460px;
+  max-width: 540px;
   width: auto;
-  min-width: 340px;
+  min-width: 360px;
   max-height: 80vh;
   display: flex;
   flex-direction: column;
@@ -37,10 +37,10 @@
   animation: changelogIn 0.4s var(--spring);
 }
 #about-overlay .changelog-card {
-  max-width: 600px;
+  max-width: 680px;
 }
 #syslog-overlay .changelog-card {
-  max-width: 80vw;
+  max-width: 85vw;
 }
 .changelog-card h2 { margin: 0 0 12px; font-size: 1.3rem; flex-shrink: 0; padding-right: 32px; }
 
@@ -72,6 +72,13 @@
   flex: 1;
   min-height: 0;
 }
+.changelog-body::-webkit-scrollbar { width: 4px; height: 4px; }
+.changelog-body::-webkit-scrollbar-button:vertical:decrement,
+.changelog-body::-webkit-scrollbar-button:vertical:increment { height: 0; }
+.changelog-body::-webkit-scrollbar-track { background: transparent; }
+.changelog-body::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 2px; }
+.changelog-body::-webkit-scrollbar-thumb:hover { background: var(--border); }
+.changelog-body { scrollbar-width: thin; scrollbar-color: var(--muted) transparent; }
 .changelog-body ul { padding-left: 20px; line-height: 1.8; font-size: 0.92rem; }
 .changelog-body table {
   width: 100%; border-collapse: collapse;

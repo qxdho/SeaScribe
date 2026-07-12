@@ -109,6 +109,7 @@
       if (w._cs && w._cs !== this) w._cs.close();
     }, this);
     this._isOpen = true;
+    document.addEventListener('click', this._boundDocClick, true);
     this.wrap.classList.add('open');
     var opts = this.drop.querySelectorAll('.cs-option');
     opts.forEach(function(o, i) {
@@ -117,10 +118,6 @@
     });
     var active = this.drop.querySelector('.cs-option.active');
     if (active) active.scrollIntoView({ block: 'nearest' });
-    var self = this;
-    setTimeout(function() {
-      document.addEventListener('click', self._boundDocClick);
-    }, 0);
   };
 
   CustomSelect.prototype.close = function() {
@@ -131,7 +128,7 @@
       o.style.animationDelay = '';
     });
     this.wrap.classList.remove('open');
-    document.removeEventListener('click', this._boundDocClick);
+    document.removeEventListener('click', this._boundDocClick, true);
   };
 
   CustomSelect.prototype.toggle = function() {
@@ -162,6 +159,7 @@
   };
 
   CustomSelect.prototype._onDocClick = function(e) {
+    if (this.wrap.contains(e.target)) return;
     this.close();
   };
 
@@ -169,14 +167,12 @@
 
   document.addEventListener('DOMContentLoaded', function() { initAll(); });
 
-  // Admin: 动态页面切换后重新初始化
-  if (window.PageRegistry) {
-    var origInit = PageRegistry.init;
-    Object.defineProperty(PageRegistry, 'init', {
-      value: function(user) {
-        origInit.call(PageRegistry, user);
-        setTimeout(function() { initAll(document.getElementById('admin-content')); }, 100);
-      }
-    });
+  // Admin: 动态页面渲染后重新初始化 CustomSelect
+  if (typeof PageRegistry !== 'undefined') {
+    var _origNavigate = PageRegistry.navigate;
+    PageRegistry.navigate = function(pageId) {
+      _origNavigate.call(this, pageId);
+      setTimeout(function() { window.CustomSelect.initAll(document.getElementById('admin-content')); }, 150);
+    };
   }
 })();

@@ -63,14 +63,17 @@ async function loadClassList() {
     var classes = await res.json();
     if (!classes.length) {
       select.innerHTML = '<option value="">无班级数据</option>';
+      if (select._customSelect) select._customSelect.refresh();
       return;
     }
     select.innerHTML = '<option value="">— 选择班级 —</option>' +
       classes.map(function(c) {
         return '<option value="' + Admin.esc(c) + '" data-filename="' + Admin.esc(c) + '">' + Admin.esc(c) + '</option>';
       }).join('');
+    if (select._customSelect) select._customSelect.refresh();
   } catch(e) {
     select.innerHTML = '<option value="">加载失败</option>';
+    if (select._customSelect) select._customSelect.refresh();
   }
 }
 

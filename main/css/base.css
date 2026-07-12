@@ -3,10 +3,16 @@
    ============================================================ */
 
 /* ---- Global scrollbar ---- */
-::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-button:vertical:decrement,
+::-webkit-scrollbar-button:vertical:increment { height: 0; }
+::-webkit-scrollbar-button:horizontal:decrement,
+::-webkit-scrollbar-button:horizontal:increment { width: 0; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
+::-webkit-scrollbar-track-piece { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 2px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--border); }
+::-webkit-scrollbar-corner { background: transparent; }
 
 *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
 html { font-size: 17px; scrollbar-width: thin; scrollbar-color: var(--muted) transparent; }

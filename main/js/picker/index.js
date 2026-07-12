@@ -172,8 +172,10 @@
       if (debugToggle.checked) {
         debugSection.classList.remove('picker-debug-collapsed');
         debugPlay.disabled = !debugSelect.value;
+        btnStart.style.display = 'none';
       } else {
         debugSection.classList.add('picker-debug-collapsed');
+        btnStart.style.display = '';
       }
     });
     debugSelect.addEventListener('change', function() {
@@ -236,6 +238,11 @@
     _animating = true;
     modal.classList.add('hidden');
 
+    // 调试模式：隐藏头像
+    var avatarEl = document.getElementById('pick-decorative-avatar');
+    var avatarWasHidden = avatarEl ? avatarEl.classList.contains('hidden') : true;
+    if (avatarEl) avatarEl.classList.add('hidden');
+
     // 查询时间戳（若有记录则显示上次时间）
     var timestamps = {};
     if (window.PickerTimestamp && _currentFileName) {
@@ -250,12 +257,14 @@
 
     // 运行动画（不保存时间戳）
     await PickerAnimation.run(_currentList, fakeGen(), {
-      showProcess: false,
+      showProcess: showProcessCheck.checked,
+      processMode: getRadioValue(processModeRadios, cfg.processMode),
       decorativeType: decorativeSelect.value || cfg.defaultDecorative,
       timestamps: timestamps,
     });
 
     _animating = false;
+    if (avatarEl) { avatarEl.src = ''; avatarEl.classList.add('hidden'); }
   });
 
   /* ====== 辅助函数 ====== */

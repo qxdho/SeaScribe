@@ -52,6 +52,7 @@ function render() {
   var filterClass = document.getElementById('users-filter-class');
 
   function hideFilters() {
+    filterExtra.querySelectorAll('.cs-wrap.open').forEach(function(w) { if (w._cs) w._cs.close(); });
     filterExtra.style.maxWidth = '0';
     filterExtra.style.opacity = '0';
   }
@@ -94,6 +95,7 @@ async function loadData() {
       classes.forEach(function(c) {
         classSelect.appendChild(new Option(c, c));
       });
+      if (classSelect._customSelect) classSelect._customSelect.refresh();
     }
   }
 
@@ -127,11 +129,11 @@ function applyFilter() {
   if (_sortKey) {
     filtered.sort(function(a, b) {
       if (_sortKey === 'class') {
-        va = (_classMap[a.displayName] || '').toLowerCase();
-        vb = (_classMap[b.displayName] || '').toLowerCase();
+        var va = (_classMap[a.displayName] || '').toLowerCase();
+        var vb = (_classMap[b.displayName] || '').toLowerCase();
       } else {
-        va = (a[_sortKey] || '').toString().toLowerCase();
-        vb = (b[_sortKey] || '').toString().toLowerCase();
+        var va = (a[_sortKey] || '').toString().toLowerCase();
+        var vb = (b[_sortKey] || '').toString().toLowerCase();
       }
       return va < vb ? -_sortDir : va > vb ? _sortDir : 0;
     });
@@ -257,6 +259,8 @@ function renderForm(username) {
       '<button id="uform-cancel" class="admin-btn admin-btn-ghost admin-btn-sm">取消</button>' +
     '</div>';
 
+  window.CustomSelect.initAll(card);
+
   document.getElementById('uform-cancel').addEventListener('click', function() {
     card.classList.add('hidden');
   });
@@ -328,7 +332,8 @@ async function fetchDisplayNames(thenSelect) {
     if (thenSelect) {
       sel.value = thenSelect;
     }
-  } catch(e) { sel.innerHTML = '<option value="">加载失败</option>'; }
+    if (sel._customSelect) sel._customSelect.refresh();
+  } catch(e) { sel.innerHTML = '<option value="">加载失败</option>'; if (sel._customSelect) sel._customSelect.refresh(); }
 }
 
 PageRegistry.register({
