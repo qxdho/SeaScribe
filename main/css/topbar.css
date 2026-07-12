@@ -141,6 +141,6 @@
 }
 
 @keyframes adminStatusIn {
-  from { opacity: 0; transform: translateX(-12px); filter: blur(2px); }
-  to   { opacity: 1; transform: translateX(0); filter: blur(0); }
+  from { opacity: 0; transform: translateX(-12px); }
+  to   { opacity: 1; transform: translateX(0); }
 }
