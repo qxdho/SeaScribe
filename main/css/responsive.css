@@ -63,6 +63,12 @@
     width: 92vw;
     padding: 20px 18px;
   }
+  #about-overlay .changelog-card,
+  #syslog-overlay .changelog-card {
+    max-width: 92vw;
+  }
+  .changelog-card h2 { font-size: 1.15rem; }
+  .changelog-body { max-height: 65vh; }
 
   /* Splash */
   .splash-logo { width: 70px; height: 70px; }
@@ -152,9 +158,18 @@
     padding: 16px 14px;
     border-radius: 12px;
   }
-  .changelog-card h2 { font-size: 1.1rem; }
+  #about-overlay .changelog-card,
+  #syslog-overlay .changelog-card {
+    max-width: 96vw;
+  }
+  .changelog-card h2 { font-size: 1.05rem; }
   .changelog-body ul { font-size: 0.82rem; }
   .changelog-body { max-height: 60vh; }
+  .changelog-body table { font-size: 0.72rem; display: block; overflow-x: auto; white-space: nowrap; }
+  .changelog-body pre { font-size: 0.72rem; padding: 8px 10px; white-space: pre-wrap; word-break: break-all; }
+  .changelog-body code { font-size: 0.82em; word-break: break-all; }
+  .changelog-body blockquote { margin: 6px 0; padding: 3px 10px; }
+  .changelog-body img { max-width: 100%; height: auto; }
 
   /* Splash */
   .splash { padding: 16px; }
