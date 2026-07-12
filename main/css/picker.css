@@ -284,6 +284,18 @@
   margin-top: 0;
 }
 
+/* 调试区 —— 平滑展开/收起 */
+#picker-debug-section {
+  max-height: 120px;
+  opacity: 1;
+  overflow: hidden;
+  transition: max-height 0.3s var(--ease), opacity 0.25s;
+}
+#picker-debug-section.picker-debug-collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
 .picker-process-mode-row label {
   display: flex;
   align-items: center;

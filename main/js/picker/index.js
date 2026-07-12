@@ -125,6 +125,7 @@
           _currentList.map(function(s) {
             return '<option value="' + SeaScribe.esc(s.name) + '">' + SeaScribe.esc(s.name) + (s.signature ? ' — ' + SeaScribe.esc(s.signature) : '') + '</option>';
           }).join('');
+        if (debugSelect._customSelect) debugSelect._customSelect.refresh();
         debugPlay.disabled = true;
       })
       .catch(function(err) {
@@ -169,10 +170,10 @@
   if (debugToggle) {
     debugToggle.addEventListener('change', function() {
       if (debugToggle.checked) {
-        debugSection.style.display = '';
+        debugSection.classList.remove('picker-debug-collapsed');
         debugPlay.disabled = !debugSelect.value;
       } else {
-        debugSection.style.display = 'none';
+        debugSection.classList.add('picker-debug-collapsed');
       }
     });
     debugSelect.addEventListener('change', function() {
