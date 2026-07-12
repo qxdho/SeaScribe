@@ -230,7 +230,7 @@
 
   function closeSplashFn() {
     if (!splash || !splash.parentNode) return;
-    splash.style.animation = 'splashOut 0.5s var(--ease) forwards';
+    splash.style.animation = 'splashOut 0.2s var(--ease-out) forwards';
     splash.addEventListener('animationend', function(e) {
       if (e.target === splash && e.animationName === 'splashOut') {
         splash.remove();
