@@ -201,6 +201,8 @@ def append_log(action, detail="", handler=None, user=None):
     if handler and hasattr(handler, "client_address"):
         entry["ip"] = handler.client_address[0] if handler.client_address else ""
     logs = _read_json(LOGS_PATH)
+    if not isinstance(logs, list):
+        logs = []
     logs.append(entry)
     if len(logs) > _MAX_LOG_ENTRIES:
         logs = logs[-_MAX_LOG_ENTRIES:]
@@ -209,5 +211,7 @@ def append_log(action, detail="", handler=None, user=None):
 
 def get_logs(limit=200):
     logs = _read_json(LOGS_PATH)
+    if not isinstance(logs, list):
+        return []
     return logs[-limit:]
 
