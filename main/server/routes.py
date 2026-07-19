@@ -19,6 +19,7 @@ from .auth import (
     clean_expired_sessions, make_session,
     check_ratelimit, record_fail, clear_fails,
     require_auth, require_role,
+    get_client_ip,
     get_session, list_sessions_by_uid, delete_session,
     append_log, get_logs,
 )
@@ -412,7 +413,7 @@ def handle_admin_register(path, body, handler):
 def handle_admin_login(path, body, handler):
     if path != '/api/admin/login':
         return False
-    client_ip = handler.client_address[0]
+    client_ip = get_client_ip(handler)
     if not check_ratelimit(client_ip):
         handler.send_json(429, {'error': '尝试次数过多，请60秒后再试'})
         return True

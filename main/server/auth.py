@@ -186,6 +186,17 @@ def _extract_token(handler):
         return auth[7:].strip()
     return None
 
+def get_client_ip(handler):
+    """Get real client IP, preferring X-Forwarded-For from reverse proxy."""
+    xff = handler.headers.get('X-Forwarded-For', '')
+    if xff:
+        return xff.split(',')[0].strip()
+    xri = handler.headers.get('X-Real-IP', '')
+    if xri:
+        return xri.strip()
+    return handler.client_address[0] if handler.client_address else ''
+
+
 # ── Operation logs ──
 
 _MAX_LOG_ENTRIES = 2000
@@ -201,8 +212,8 @@ def append_log(action, detail="", handler=None, user=None):
         entry["uid"] = user.get("uid", "")
         entry["username"] = user.get("username", "")
         entry["displayName"] = user.get("displayName", "")
-    if handler and hasattr(handler, "client_address"):
-        entry["ip"] = handler.client_address[0] if handler.client_address else ""
+    if handler:
+        entry["ip"] = get_client_ip(handler)
     logs = _read_json(LOGS_PATH)
     if not isinstance(logs, list):
         logs = []
