@@ -252,7 +252,7 @@ function renderForm(username) {
     '<p style="color:var(--muted);font-size:0.72rem;font-weight:600;margin:16px 0 4px">安全</p>' +
     '<div class="admin-form-group">' +
       '<label for="uform-password">密码' + (isEdit ? '（留空不修改）' : '') + '</label>' +
-      '<input type="password" id="uform-password" name="password" placeholder="' + (isEdit ? '留空不修改' : '默认 123456') + '" autocomplete="new-password">' +
+      '<input type="password" id="uform-password" name="password" placeholder="' + (isEdit ? '留空不修改' : '至少6位') + '" autocomplete="new-password">' +
     '</div>' +
     '<div style="display:flex;gap:8px;margin-top:16px">' +
       '<button id="uform-save" class="admin-btn admin-btn-primary admin-btn-sm">保存</button>' +
@@ -291,7 +291,7 @@ function renderForm(username) {
         role: document.getElementById('uform-role').value,
       };
       var pw = document.getElementById('uform-password').value.trim();
-      if (pw) body.password = [redacted];
+      if (pw) body.password = pw;
       var res = await Admin.api('/api/admin/users/' + username, { method: 'POST', body: body });
       if (res.ok) { card.classList.add('hidden'); loadData(); }
       else Admin.toast(res.data.error || '保存失败');
@@ -306,7 +306,7 @@ function renderForm(username) {
         role: document.getElementById('uform-role').value,
       };
       var pw = document.getElementById('uform-password').value.trim();
-      if (pw) body.password = [redacted];
+      if (pw) body.password = pw;
       var res = await Admin.api('/api/admin/users', { method: 'POST', body: body });
       if (res.ok) { card.classList.add('hidden'); loadData(); }
       else Admin.toast(res.data.error || '保存失败');

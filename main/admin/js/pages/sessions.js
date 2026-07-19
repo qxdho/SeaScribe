@@ -1,5 +1,5 @@
 /* ============================================================
-   SeaScribe Admin ? Session Management Page
+   SeaScribe Admin — Session Management Page
    ============================================================ */
 
 (function() {
@@ -8,9 +8,9 @@ function render() {
   var content = document.getElementById("admin-content");
   content.innerHTML =
     '<div class="admin-card">' +
-      '<h3>📱 ??????</h3>' +
-      '<p style="color:var(--muted);margin-bottom:16px">???????????????????????????</p>' +
-      '<div id="sessions-list"><p style="color:var(--muted)">???...</p></div>' +
+      '<h3>📱 设备管理</h3>' +
+      '<p style="color:var(--muted);margin-bottom:16px">以下是您账号的所有活跃会话，可强制退出非当前设备</p>' +
+      '<div id="sessions-list"><p style="color:var(--muted)">加载中…</p></div>' +
     '</div>';
   loadSessions();
 }
@@ -19,12 +19,12 @@ function loadSessions() {
   Admin.api("/api/admin/sessions").then(function(res) {
     var container = document.getElementById("sessions-list");
     if (!res.ok) {
-      container.innerHTML = '<p class="admin-msg warn">????</p>';
+      container.innerHTML = '<p class="admin-msg warn">加载失败</p>';
       return;
     }
     var sessions = res.data;
     if (!sessions || !sessions.length) {
-      container.innerHTML = '<p style="color:var(--muted)">????????</p>';
+      container.innerHTML = '<p style="color:var(--muted)">暂无活跃会话</p>';
       return;
     }
     var tokenMap = [];  // tokens stored in JS memory, not DOM
@@ -33,17 +33,17 @@ function loadSessions() {
         var currentToken = Admin.getSession().token;
         var isCurrent = currentToken && s.token && s.token.indexOf(currentToken.slice(0, 12)) === 0;
         var ua = s.user_agent || "";
-        var deviceName = parseUA(ua) || "????";
+        var deviceName = parseUA(ua) || "未知设备";
         var ip = s.ip || "--";
         var time = formatTime(s.created_at);
         var expires = formatTime(s.expires_at);
         if (!isCurrent) tokenMap[i] = s.token;
         return '<div class="session-item">' +
           '<div class="session-info">' +
-            '<div class="session-device">' + Admin.esc(deviceName) + (isCurrent ? ' <span class="session-current-tag">????</span>' : "") + '</div>' +
-            '<div class="session-meta"><span>IP: ' + Admin.esc(ip) + '</span> | <span>????: ' + time + '</span> | <span>??: ' + expires + '</span></div>' +
+            '<div class="session-device">' + Admin.esc(deviceName) + (isCurrent ? ' <span class="session-current-tag">当前</span>' : "") + '</div>' +
+            '<div class="session-meta"><span>IP: ' + Admin.esc(ip) + '</span> | <span>登录: ' + time + '</span> | <span>过期: ' + expires + '</span></div>' +
           '</div>' +
-          (isCurrent ? "" : '<button class="admin-btn admin-btn-outline admin-btn-sm session-logout-btn" data-idx="' + i + '">????</button>') +
+          (isCurrent ? "" : '<button class="admin-btn admin-btn-outline admin-btn-sm session-logout-btn" data-idx="' + i + '">退出</button>') +
         '</div>';
       }).join("") +
       '</div>';
@@ -53,16 +53,16 @@ function loadSessions() {
         var idx = parseInt(this.getAttribute("data-idx"));
         var token = tokenMap[idx];
         if (!token) return;
-        if (!confirm("????????????")) return;
+        if (!confirm("确定要强制退出该设备吗？")) return;
         Admin.api("/api/admin/sessions", {
           method: "POST",
           body: { token: token },
         }).then(function(res) {
           if (res.ok) {
-            Admin.toast("????????", "success");
+            Admin.toast("已退出该设备", "success");
             loadSessions();
           } else {
-            Admin.toast(res.data.error || "????", "error");
+            Admin.toast(res.data.error || "操作失败", "error");
           }
         });
       });
@@ -71,9 +71,9 @@ function loadSessions() {
 }
 
 function parseUA(ua) {
-  if (!ua) return "????";
-  if (/Linux.*Android/i.test(ua)) return "Android ??";
-  if (/iPhone|iPad|iPod/i.test(ua)) return "iOS ??";
+  if (!ua) return "未知设备";
+  if (/Linux.*Android/i.test(ua)) return "Android 设备";
+  if (/iPhone|iPad|iPod/i.test(ua)) return "iOS 设备";
   if (/Windows/i.test(ua)) {
     if (/Edg/i.test(ua)) return "Windows (Edge)";
     if (/Chrome/i.test(ua)) return "Windows (Chrome)";
@@ -86,7 +86,7 @@ function parseUA(ua) {
     return "macOS";
   }
   if (/Linux/i.test(ua)) return "Linux";
-  return "????";
+  return "未知设备";
 }
 
 function formatTime(ts) {
@@ -99,7 +99,7 @@ function formatTime(ts) {
 
 PageRegistry.register({
   id: "sessions",
-  label: "????",
+  label: "设备管理",
   icon: "📱",
   roles: ["admin", "teacher"],
   render: render,
