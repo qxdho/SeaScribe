@@ -1,4 +1,4 @@
-﻿#!/bin/sh
+#!/bin/sh
 cd "$(dirname "$0")"
 
 PORT="${1:-9360}"
