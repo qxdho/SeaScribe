@@ -1,8 +1,11 @@
 // ================================================================
 //  学科配置模板 — 复制此文件到 config/你的学科名/ 下使用
+//  struct: window._CONF.你的学科id
 // ================================================================
 
-window.__MY_SUBJECT_CONFIG__ = {
+window._CONF = window._CONF || {};
+
+window._CONF.mySubject = {
 
   // 【出题数量】每次随机抽几道，填 1 ~ 数据总量
   defaultCount: 10,
@@ -13,34 +16,35 @@ window.__MY_SUBJECT_CONFIG__ = {
   // 【默认布局】"grid"=网格方阵 / "list"=列表横向
   defaultLayout: "grid",
 
-  // 【初始字号】百分比基准，60 ~ 200
+  // 【初始字号】百分比基准，0 ~ 200
   defaultFontSize: 100,
 
   // 【网格列数】切换到网格模式后的列数，1 ~ 6
   gridColumns: 4,
 
-  // 【网格字号】切换到网格模式后的字号，60 ~ 200
+  // 【网格字号】切换到网格模式后的字号，0 ~ 200
   gridFontSize: 100,
 
   // 【列表列数】切换到列表模式后的列数，1 ~ 6
   listColumns: 2,
 
-  // 【列表字号】切换到列表模式后的字号，60 ~ 200
+  // 【列表字号】切换到列表模式后的字号，0 ~ 200
   listFontSize: 100,
 
-  // ====== 可选（按需取消注释） ======
+  // ====== 可选（按需取消注释）======
 
   // 【元素范围】限定随机出题的数据区间
   // defaultRangeStart: 0,     // 起始索引，0=第一条
   // defaultRangeEnd: 0,       // 结束索引（不包含），0=自动取全部
 
   // 【列映射】xlsx/csv 中听写内容和答案所在列
-  // promptCol: 0,             // 听写内容列，0=A列, 1=B列 ...
-  // answerCol: 1,             // 答案列，0=A列, 1=B列 ...
+  // promptCol: 0,             // 听写内容列，0=A列 1=B列...
+  // answerCol: 1,             // 答案列，0=A列 1=B列...
 
   // 【服务器扫描】部署后自动发现数据文件
-  // scanURLs: [
-  //   "/api/my-subject-files",
-  // ]
+  // scanURLs: [ "/api/my-subject-files" ],
 
 };
+
+// 向后兼容
+window.__MY_SUBJECT_CONFIG__ = window._CONF.mySubject;

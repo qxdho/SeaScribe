@@ -1,5 +1,32 @@
 ﻿# SeaScribe 更新日志
 
+## v5.0.0
+
+### 架构重构 + 新插件
+
+**ES Module 模块化**
+- 全部 JS 从 script 全局变量转为 ES Module import/export
+- 目录重组：js/ → core/ ui/ pages/ utils/ picker/
+- 入口从 28 个 script 标签缩减为 1 个 type=module + 插件
+- 启动日志自动扫描插件和配置
+
+**英语跟读插件**
+- 全新 plugins/enword/，30 个高频词库
+- 顺序朗读 + 浏览器 TTS 发音（SpeechSynthesis）
+- 大字号居中布局，底部固定控制栏
+- 从指定单词开始、暂停/继续、间隔调节
+
+**随机算法升级**
+- Math.random() 替换为 crypto.getRandomValues()
+
+### 编码 + 死锁 + 代码审查
+- 全项目 UTF-16/GBK → UTF-8 统一
+- Lock → RLock 修复 session 过期死锁
+- do_GET/do_POST 全局异常保护
+- 插件注册 typeof 检查、DOM 判空、冗余代码清理
+- 操作日志权限隔离 + 用户筛选
+- 配置编辑器兼容间接引用格式
+
 ## v4.7.0
 
 ### 安全加固（全量代码审查修复）

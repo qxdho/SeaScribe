@@ -4,27 +4,36 @@
 
 (function() {
 
+var _userList = [];   // cached user list for admin filter
+
 function render() {
+  var user = Admin.getSession().user;
+  var isAdmin = user.role === 'admin';
   var content = document.getElementById("admin-content");
   content.innerHTML =
     '<div class="admin-card">' +
       '<h3>📝 操作日志</h3>' +
-      '<p style="color:var(--muted);margin-bottom:16px">记录最近 200 条操作</p>' +
+      '<p style="color:var(--muted);margin-bottom:16px">' + (isAdmin ? '记录最近 200 条操作' : '以下是你账号最近的操作记录') + '</p>' +
       '<div class="logs-toolbar">' +
+        (isAdmin ? '<div class="logs-filter">' +
+          '<select id="logs-user-filter">' +
+            '<option value="">全部用户</option>' +
+          '</select>' +
+        '</div>' : '') +
         '<div class="logs-filter">' +
           '<select id="logs-action-filter">' +
-            '<option value="">全部</option>' +
+            '<option value="">全部操作</option>' +
             '<option value="login">登录</option>' +
             '<option value="logout">退出登录</option>' +
             '<option value="session_logout">强制退出</option>' +
             '<option value="profile_update">修改资料</option>' +
             '<option value="password_change">修改密码</option>' +
-            '<option value="register">注册</option>' +
+            (isAdmin ? '<option value="register">注册</option>' +
             '<option value="user_create">创建用户</option>' +
             '<option value="user_modify">修改用户</option>' +
             '<option value="user_delete">删除用户</option>' +
             '<option value="config_save">保存配置</option>' +
-            '<option value="roster_save">保存名单</option>' +
+            '<option value="roster_save">保存名单</option>' : '') +
             '<option value="avatar_upload">上传头像</option>' +
           '</select>' +
         '</div>' +
@@ -32,12 +41,34 @@ function render() {
       '</div>' +
       '<div id="logs-table-wrap"><p style="color:var(--muted)">加载中…</p></div>' +
     '</div>';
+
+  // Load user list for admin filter
+  if (isAdmin) {
+    loadUserFilter();
+  }
   loadLogs();
 }
 
+function loadUserFilter() {
+  Admin.api("/api/admin/users").then(function(res) {
+    if (!res.ok) return;
+    _userList = res.data || [];
+    var sel = document.getElementById("logs-user-filter");
+    if (!sel) return;
+    sel.innerHTML = '<option value="">全部用户</option>' +
+      _userList.map(function(u) {
+        return '<option value="' + Admin.esc(u.uid) + '">' + Admin.esc(u.displayName || u.nickname || u.username) + '</option>';
+      }).join('');
+    // 刷新已被 CustomSelect 包装的下拉组件
+    if (sel._customSelect) sel._customSelect.refresh();
+  });
+}
+
 function loadLogs() {
-  var filterEl = document.getElementById("logs-action-filter");
-  var filterValue = filterEl ? filterEl.value : "";
+  var actionFilterEl = document.getElementById("logs-action-filter");
+  var actionValue = actionFilterEl ? actionFilterEl.value : "";
+  var userFilterEl = document.getElementById("logs-user-filter");
+  var userValue = userFilterEl ? userFilterEl.value : "";
   Admin.api("/api/admin/logs").then(function(res) {
     var wrap = document.getElementById("logs-table-wrap");
     if (!res.ok) {
@@ -50,9 +81,12 @@ function loadLogs() {
       return;
     }
 
-    // Apply filter
-    if (filterValue) {
-      logs = logs.filter(function(l) { return l.action === filterValue; });
+    // Apply filters
+    if (actionValue) {
+      logs = logs.filter(function(l) { return l.action === actionValue; });
+    }
+    if (userValue) {
+      logs = logs.filter(function(l) { return l.uid === userValue; });
     }
 
     wrap.innerHTML = '<table class="admin-table logs-table">' +
@@ -95,7 +129,7 @@ function fmtTime(ts) {
 // Auto-refresh and filter
 (function() {
   document.addEventListener("change", function(e) {
-    if (e.target.id === "logs-action-filter") loadLogs();
+    if (e.target.id === "logs-action-filter" || e.target.id === "logs-user-filter") loadLogs();
   });
   document.addEventListener("click", function(e) {
     if (e.target.id === "logs-refresh") loadLogs();
@@ -106,7 +140,7 @@ PageRegistry.register({
   id: "logs",
   label: "操作日志",
   icon: "📝",
-  roles: ["admin", "teacher"],
+  roles: null,
   render: render,
 });
 

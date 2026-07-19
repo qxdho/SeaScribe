@@ -150,12 +150,13 @@ function renderTable(users) {
   var th = function(key, label) {
     return '<th style="cursor:pointer;user-select:none" data-sort="' + key + '">' + label + sortIndicator(key) + '</th>';
   };
-  var html = '<table class="admin-table"><thead><tr><th></th>' + th('username','用户名') + th('displayName','姓名') + th('nickname','昵称') + th('class','班级') + th('role','角色') + '<th style="white-space:nowrap">操作</th></tr></thead><tbody>';
+  var html = '<table class="admin-table"><thead><tr><th>#</th><th>头像</th>' + th('username','用户名') + th('displayName','姓名') + th('nickname','昵称') + th('class','班级') + th('role','角色') + '<th style="white-space:nowrap">操作</th></tr></thead><tbody>';
   if (!users.length) {
-    html += '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">无匹配用户</td></tr>';
+    html += '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:24px">无匹配用户</td></tr>';
   } else {
-    users.forEach(function(u) {
+    users.forEach(function(u, i) {
       html += '<tr>' +
+        '<td style="width:32px;color:var(--muted);font-size:0.82rem">' + (i + 1) + '</td>' +
         '<td style="width:40px">' + avatarCell(u) + '</td>' +
         '<td style="white-space:nowrap"><code>' + Admin.esc(u.username) + '</code></td>' +
         '<td style="white-space:nowrap">' + Admin.esc(u.displayName || '—') + '</td>' +

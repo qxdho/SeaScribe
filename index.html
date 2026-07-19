@@ -125,7 +125,7 @@
     <img class="splash-logo" src="main/logo.png" alt="">
     <span class="splash-title">SeaScribe</span>
     <span class="splash-author">谦虚の海鸥</span>
-    <span class="splash-version">v4.5.1</span>
+    <span class="splash-version">v5.0.0</span>
     <span class="splash-vibecoding">本项目使用 vibecoding 开发</span>
     <div id="splash-log" class="splash-log"></div>
     <span class="splash-hint">点击任意位置或按任意键继续</span>
@@ -134,7 +134,7 @@
 
 <!-- ========== 顶栏 ========== -->
 <header class="topbar">
-  <span class="topbar-brand" id="brand-logo" title="回到学科选择"><img class="topbar-logo" src="main/logo.png" alt="">SeaScribe</span><span class="topbar-version">v4.5.1</span>
+  <span class="topbar-brand" id="brand-logo" title="回到学科选择"><img class="topbar-logo" src="main/logo.png" alt="">SeaScribe</span><span class="topbar-version">v5.0.0</span>
   <span class="topbar-spacer"></span>
   <div class="topbar-picker" id="topbar-picker">
     <span id="pick-result" class="pick-result"></span>
@@ -179,6 +179,7 @@
           <button class="stepper-btn" id="count-minus">-</button>
           <input type="number" class="stepper-input" id="count-input" value="12" min="1" max="36" step="1">
           <button class="stepper-btn" id="count-plus">+</button>
+          <button class="stepper-btn" id="count-max" title="设为最大数量">max</button>
         </div>
       </div>
       <div class="control-item">
@@ -232,37 +233,42 @@
   </div>
 </div>
 
-<!-- ========== Scripts (order matters) ========== -->
-<script src="main/js/core.js"></script>
-<script src="main/js/engine.js"></script>
-<script src="main/js/theme.js"></script>
-<script src="main/js/navigator.js"></script>
-<script src="main/js/controls.js"></script>
-<script src="main/js/cards.js"></script>
-
-<!-- Plugins -->
-<script src="main/js/plugin-utils.js"></script>
+<!-- ========== Scripts ========== -->
+<script>
+// Pre-init for non-module scripts (picker, config) that need SeaScribe at parse time
+window.SeaScribe = {
+  esc: function(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; },
+  delay: function(ms) { return new Promise(function(r) { setTimeout(r, ms); }); },
+  bindModal: function(overlayId, closeXId) {
+    var overlay = document.getElementById(overlayId);
+    var closeX = document.getElementById(closeXId);
+    function close() { overlay.classList.add('hidden'); }
+    if (closeX) closeX.addEventListener('click', close);
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) close(); });
+  }
+};
+window.SubjectRegistry = {
+  _plugins: new Map(),
+  register: function(p) { if (p && p.meta && p.meta.id) this._plugins.set(p.meta.id, p); },
+  get: function(id) { return this._plugins.get(id) || null; },
+  list: function() { return Array.from(this._plugins.values()); }
+};
+</script>
 <script src="config/english/config.js"></script>
 <script src="plugins/english/plugin.js"></script>
 <script src="config/chemistry/config.js"></script>
 <script src="plugins/chemistry/plugin.js"></script>
-
-<!-- App modules -->
-<script src="main/js/modal.js"></script>
+<script src="config/enword/config.js"></script>
+<script src="plugins/enword/plugin.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.4/dist/confetti.browser.min.js"
   integrity="sha384-JSZXO0kKYHTylAsDYTb+7Kg2eUyalm19b8Pydcdf8sQ1cCKYZr9lLahoKT9+LFY5"
   crossorigin="anonymous"></script>
 <script src="config/picker/config.js"></script>
-<script src="main/js/picker/random.js"></script>
-<script src="main/js/picker/timestamp.js"></script>
-<script src="main/js/picker/animation.js"></script>
-<script src="main/js/picker/display.js"></script>
-<script src="main/js/picker/index.js"></script>
-<script src="main/js/markdown.js"></script>
-<script src="main/js/changelog.js"></script>
-<script src="main/js/splash.js"></script>
-<script src="main/js/about.js"></script>
-<script src="main/js/custom-select.js"></script>
-<script src="main/js/app.js"></script>
+<script src="main/picker/random.js"></script>
+<script src="main/picker/timestamp.js"></script>
+<script src="main/picker/animation.js"></script>
+<script src="main/picker/display.js"></script>
+<script src="main/picker/index.js"></script>
+<script type="module" src="main/core/app.js"></script>
 </body>
 </html>

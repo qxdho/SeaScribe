@@ -33,6 +33,7 @@ _avatar_cache_lock = threading.Lock()
 _CONFIG_MAP = {
     'main': 'config/config.js', 'chemistry': 'config/chemistry/config.js',
     'english': 'config/english/config.js', 'picker': 'config/picker/config.js',
+    'enword': 'config/enword/config.js',
 }
 
 def _build_avatar_cache():
@@ -66,7 +67,7 @@ def handle_get_files(path, handler, params=None):
         return False
     name = m.group(1)
     # Restrict to known subdirectories
-    allowed = {'chemistry', 'english'}
+    allowed = {'chemistry', 'english', 'enword'}
     if name not in allowed:
         handler.send_json(403, {'error': '未知目录'})
         return True
@@ -277,6 +278,18 @@ def handle_admin_avatar(path, handler, params):
     return True
 
 
+def _read_text_file(filepath):
+    """Read a text file, trying UTF-8 first then UTF-16 (Windows Unicode)."""
+    with open(filepath, 'rb') as f:
+        raw = f.read()
+    for enc in ('utf-8-sig', 'utf-16'):
+        try:
+            return raw.decode(enc)
+        except (UnicodeDecodeError, LookupError):
+            continue
+    return raw.decode('utf-8', errors='replace')
+
+
 def handle_admin_config_get(path, handler, params=None):
     m = re.match(r'^/api/admin/config/(\w+)$', path)
     if not m:
@@ -290,8 +303,8 @@ def handle_admin_config_get(path, handler, params=None):
     if not os.path.isfile(filepath):
         handler.send_json(404, {'error': '配置文件不存在'})
         return True
-    with open(filepath, 'r', encoding='utf-8') as f:
-        handler.send_json(200, {'name': m.group(1), 'content': f.read()})
+    content = _read_text_file(filepath)
+    handler.send_json(200, {'name': m.group(1), 'content': content})
     return True
 
 
@@ -799,6 +812,41 @@ def handle_english_delete(path, body, handler):
     return True
 
 
+AVATAR_MAX_SIZE = 512   # max width/height after resize
+AVATAR_JPEG_QUALITY = 80
+
+def _compress_avatar(raw_data, ext):
+    """Resize + compress avatar image. Always outputs JPEG for size efficiency."""
+    from io import BytesIO
+    from PIL import Image
+    try:
+        img = Image.open(BytesIO(raw_data))
+    except Exception:
+        return None
+    # Convert RGBA/transparent to white-background RGB
+    if img.mode in ('RGBA', 'LA', 'P', 'PA'):
+        if img.mode == 'P':
+            img = img.convert('RGBA')
+        bg = Image.new('RGB', img.size, (255, 255, 255))
+        if img.mode == 'RGBA':
+            bg.paste(img, mask=img.split()[3])
+        elif img.mode == 'LA':
+            bg.paste(img, mask=img.split()[1])
+        else:
+            bg.paste(img)
+        img = bg
+    elif img.mode != 'RGB':
+        img = img.convert('RGB')
+    # Resize if larger than max
+    w, h = img.size
+    if w > AVATAR_MAX_SIZE or h > AVATAR_MAX_SIZE:
+        ratio = min(AVATAR_MAX_SIZE / w, AVATAR_MAX_SIZE / h)
+        img = img.resize((int(w * ratio), int(h * ratio)), Image.LANCZOS)
+    out = BytesIO()
+    img.save(out, format='JPEG', quality=AVATAR_JPEG_QUALITY, optimize=True)
+    return out.getvalue()
+
+
 def handle_avatar_upload(path, body, handler):
     if path != '/api/admin/upload/avatar':
         return False
@@ -814,19 +862,39 @@ def handle_avatar_upload(path, body, handler):
     ext = os.path.splitext(_safe_filename(filename))[1].lower()
     if ext not in ('.png', '.jpg', '.jpeg', '.gif', '.webp'):
         ext = '.png'
-    safe_name = user.get('uid', 'anon') + '_' + secrets.token_hex(4) + ext
+    safe_name = user.get('uid', 'anon') + '_' + secrets.token_hex(4) + '.jpg'
     os.makedirs(AVATAR_DIR, exist_ok=True)
     filepath = os.path.join(AVATAR_DIR, safe_name)
     try:
-        data = base64.b64decode(content_b64)
+        raw_data = base64.b64decode(content_b64)
     except (binascii.Error, ValueError):
         handler.send_json(400, {'error': '头像内容非法的 Base64 编码'})
         return True
+    # Delete user's old avatar file before saving new one
+    uid = user.get('uid', '')
+    _cleanup_old_avatars(uid)
+    # Compress
+    compressed = _compress_avatar(raw_data, ext)
+    if compressed is None:
+        handler.send_json(400, {'error': '图片无法处理，请上传有效图片文件'})
+        return True
     with open(filepath, 'wb') as f:
-        f.write(data)
+        f.write(compressed)
     append_log('avatar_upload', '上传头像', handler, user)
     handler.send_json(200, {'ok': True, 'url': '/admin/_store/avatars/' + safe_name})
     return True
+
+
+def _cleanup_old_avatars(uid):
+    """Remove all avatar files belonging to uid (free orphan files)."""
+    if not uid:
+        return
+    prefix = uid + '_'
+    if not os.path.isdir(AVATAR_DIR):
+        return
+    for f in os.listdir(AVATAR_DIR):
+        if f.startswith(prefix) and os.path.isfile(os.path.join(AVATAR_DIR, f)):
+            os.remove(os.path.join(AVATAR_DIR, f))
 
 
 # ═══════════════════════════════════════════
@@ -869,9 +937,12 @@ def handle_admin_sessions_delete(path, body, handler):
 def handle_admin_logs(path, handler, params=None):
     if path != '/api/admin/logs':
         return False
-    user = require_role(handler, 'admin', 'teacher')
+    user = require_auth(handler)
     if not user: return True
     logs = get_logs(200)
+    # Non-admin users can only see their own log entries
+    if user.get('role') != 'admin':
+        logs = [l for l in logs if l.get('uid') == user.get('uid')]
     handler.send_json(200, logs)
     return True
 

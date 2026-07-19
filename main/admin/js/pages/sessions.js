@@ -101,7 +101,7 @@ PageRegistry.register({
   id: "sessions",
   label: "设备管理",
   icon: "📱",
-  roles: ["admin", "teacher"],
+  roles: null,
   render: render,
 });
 

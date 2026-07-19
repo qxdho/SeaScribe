@@ -1,24 +1,26 @@
-# SeaScribe — 插件开发指南
+﻿# SeaScribe — Plugin Development Guide
 
-4 步添加新学科：复制模板 → 写配置 → 写逻辑 → 注册加载。
-
----
-
-## 1. 复制模板
-
-```
-cp -r plugins/_template plugins/你的学科
-cp config/_template/config.js config/你的学科/config.js
-```
+4 steps to add a new subject:
+copy template → write config → write logic → register loading.
 
 ---
 
-## 2. 配置文件
+## 1. Copy template
 
-`config/你的学科/config.js`：
+```
+cp -r plugins/_template plugins/{your-subject}
+cp config/_template/config.js config/{your-subject}/config.js
+```
 
+---
+
+## 2. Config file
+
+`config/{your-subject}/config.js`:
 ```js
-window.__MY_SUBJECT_CONFIG__ = {
+window._CONF = window._CONF || {};
+
+window._CONF.yourSubject = {
   defaultCount: 10,        // 每次出题数量
   defaultColumns: 3,       // 初始列数 1-6
   defaultFontSize: 100,    // 初始字号 60-200
@@ -37,37 +39,34 @@ window.__MY_SUBJECT_CONFIG__ = {
   scanURLs: ["/api/my-subject-files"],
   dataURL: "data/my-subject/data.csv",
 };
+// 向后兼容
+window.__MY_SUBJECT_CONFIG__ = window._CONF.yourSubject;
 ```
 
 ---
 
-## 3. 插件逻辑
+## 3. Plugin logic
 
-`plugins/你的学科/plugin.js`：
-
+`plugins/{your-subject}/plugin.js`:
 ```js
 const MyPlugin = {
-  meta: {
-    id: 'my-subject',
-    name: '我的学科',
-    description: '简短描述',
-    icon: '📚'
-  },
+  meta: { id: "my-subject", name: "我的学科", description: "简短描述", icon: "📎" },
 
   defaultCount: 5, defaultColumns: 3, defaultFontSize: 100,
-  defaultLayout: 'grid',
+  defaultLayout: "grid",
   gridColumns: 4, listColumns: 2,
   gridFontSize: 100, listFontSize: 100,
 
   _data: [],
 
   loadConfig() {
+    // 使用 window._CONF.yourSubject 或向后兼容的旧名
     PluginUtils.loadConfig(this, window.__MY_SUBJECT_CONFIG__, {
-      defaultRangeStart: '_rangeStart',
-      defaultRangeEnd: '_rangeEnd',
-      dataURL: '_csvURL',
-      promptCol: '_promptCol',
-      answerCol: '_answerCol',
+      defaultRangeStart: "_rangeStart",
+      defaultRangeEnd: "_rangeEnd",
+      dataURL: "_csvURL",
+      promptCol: "_promptCol",
+      answerCol: "_answerCol",
     });
   },
 
@@ -85,25 +84,23 @@ const MyPlugin = {
   },
 
   configUI(container) {
-    container.innerHTML = '...';  // 自定义控件
-    CustomSelect.initAll(container);  // 必须调用
+    container.innerHTML = "..."; // 自定义控件
+    CustomSelect.initAll(container); // 必须调用
   },
 };
 ```
 
 ---
 
-## 4. 注册加载
+## 4. Register loading
 
 `index.html` 底部添加：
-
 ```html
-<script src="config/你的学科/config.js"></script>
-<script src="plugins/你的学科/plugin.js"></script>
+<script src="config/{your-subject}/config.js"></script>
+<script src="plugins/{your-subject}/plugin.js"></script>
 ```
 
-`main/js/app.js` 中：
-
+`main/client/js/app.js` 中：
 ```js
 SubjectRegistry.register(MyPlugin);
 ```
@@ -113,20 +110,18 @@ SubjectRegistry.register(MyPlugin);
 ## 接口参考
 
 ### 必需
-
 | 成员 | 类型 | 说明 |
 |------|------|------|
 | `meta` | `{id, name, description, icon}` | 插件元信息 |
 | `defaultCount/Columns/FontSize/Layout` | Number/String | 默认值 |
 | `gridColumns/listColumns` | Number | 1-6 |
 | `gridFontSize/listFontSize` | Number | 60-200 |
-| `loadConfig()` | Function | 读取 `window.__XXX_CONFIG__` |
+| `loadConfig()` | Function | 读取 `window._CONF.{subject}` |
 | `loadData()` | Async | 返回 `[{prompt, answer}]` |
 | `renderPrompt(item)` | Function | 返回题目 HTML |
 | `renderAnswer(item)` | Function | 返回答案 HTML |
 
 ### 可选
-
 | 成员 | 说明 |
 |------|------|
 | `getRange()` | 返回 `[start, end)` |
@@ -148,27 +143,12 @@ SubjectRegistry.register(MyPlugin);
 ## 目录约定
 
 ```
-config/你的学科/config.js      用户可编辑
-plugins/你的学科/plugin.js      插件逻辑
-data/你的学科/                  数据文件
+config/{your-subject}/config.js      用户可编辑
+plugins/{your-subject}/plugin.js      插件逻辑
+data/{your-subject}/                  数据文件
 ```
 
 ---
 
 ## 服务器扫描
-
 `/api/<学科名>-files` → 返回 `data/<学科名>/` 下文件 JSON 列表。
-
----
-
-## 答案样式
-
-```html
-<div class="a-line">
-  <span class="a-label">电子式</span>
-  <span class="a-val">答案</span>
-</div>
-```
-
-- `.a-val.orbital` — 等宽字体 + 背景色
-- 用 `em` 单位响应 `--card-font-scale`

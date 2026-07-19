@@ -8,13 +8,16 @@ import time
 
 from .config import USERS_PATH, SESSIONS_PATH, LOGS_PATH
 
-_json_lock = threading.Lock()
+_json_lock = threading.RLock()
 
 def _read_json(filepath):
     with _json_lock:
         if os.path.isfile(filepath):
-            with open(filepath, 'r', encoding='utf-8') as f:
-                return json.load(f)
+            try:
+                with open(filepath, 'r', encoding='utf-8') as f:
+                    return json.load(f)
+            except (json.JSONDecodeError, IOError):
+                return {}
         return {}
 
 def _write_json(filepath, data):
