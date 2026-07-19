@@ -869,7 +869,7 @@ def handle_admin_sessions_delete(path, body, handler):
 def handle_admin_logs(path, handler, params=None):
     if path != '/api/admin/logs':
         return False
-    user = require_role(handler, 'admin')
+    user = require_role(handler, 'admin', 'teacher')
     if not user: return True
     logs = get_logs(200)
     handler.send_json(200, logs)
