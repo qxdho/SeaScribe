@@ -14,7 +14,7 @@
 |------|------|
 | 本地使用 | 双击 `index.html` → 选择学科 → 随机出题 |
 | 一键启动 | 双击 `start.bat`（需安装 Python） |
-| 服务器部署 | `python3 main/server.py 9360` |
+| 服务器部署 | `python3 main/server.py 9060` |
 
 管理后台：`/admin/`（默认 `admin` / `admin123`）
 

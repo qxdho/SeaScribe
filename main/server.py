@@ -1,5 +1,5 @@
 ﻿"""SeaScribe -- HTTP server entry point
-Usage: python server.py 9360
+Usage: python server.py 9060
 """
 import http.server
 import json
