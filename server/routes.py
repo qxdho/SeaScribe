@@ -1,4 +1,4 @@
-﻿# SeaScribe API route handlers
+# SeaScribe API route handlers
 import base64
 import json
 import os
@@ -22,9 +22,9 @@ from .auth import (
 _safe_filename = os.path.basename
 
 
-# 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+# ═══════════════════════════════════════════
 #  GET handlers
-# 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+# ═══════════════════════════════════════════
 
 def handle_get_files(path, handler, params=None):
     """GET /api/<name>-files"""
@@ -69,8 +69,6 @@ def handle_roster_get(path, handler, params=None):
 def handle_user_last_pick(path, handler, params=None):
     if path != '/api/user/last-pick':
         return False
-    user = require_auth(handler)
-    if not user: return True
     dn = user.get('displayName', '')
     if not dn:
         handler.send_json(200, {'time': None})
@@ -91,8 +89,6 @@ def handle_user_last_pick(path, handler, params=None):
 def handle_user_class(path, handler, params=None):
     if path != '/api/user/class':
         return False
-    user = require_auth(handler)
-    if not user: return True
     dn = user.get('displayName', '')
     if not dn:
         handler.send_json(200, {'className': None})
@@ -162,8 +158,6 @@ def handle_picker_timestamps_get(path, handler, params):
 def handle_admin_session(path, handler, params=None):
     if path != '/api/admin/session':
         return False
-    user = require_auth(handler)
-    if not user: return True
     handler.send_json(200, {
         'username': user['username'], 'uid': user.get('uid', ''),
         'nickname': user.get('nickname', ''), 'displayName': user.get('displayName', ''),
@@ -199,7 +193,7 @@ def handle_admin_user_get(path, handler, params=None):
     if not user: return True
     uid, u = find_user_by_name(m.group(1))
     if not u:
-        handler.send_json(404, {'error': '鐢ㄦ埛涓嶅瓨鍦?})
+        handler.send_json(404, {'error': '用户不存在'})
         return True
     handler.send_json(200, {
         'uid': uid, 'username': u.get('username', ''),
@@ -238,11 +232,11 @@ def handle_admin_config_get(path, handler, params=None):
         'english': 'config/english/config.js', 'picker': 'config/picker/config.js',
     }
     if m.group(1) not in config_map:
-        handler.send_json(404, {'error': '鏈煡閰嶇疆'})
+        handler.send_json(404, {'error': '未知配置'})
         return True
     filepath = os.path.join(ROOT, config_map[m.group(1)])
     if not os.path.isfile(filepath):
-        handler.send_json(404, {'error': '閰嶇疆鏂囦欢涓嶅瓨鍦?})
+        handler.send_json(404, {'error': '配置文件不存在'})
         return True
     with open(filepath, 'r', encoding='utf-8') as f:
         handler.send_json(200, {'name': m.group(1), 'content': f.read()})
@@ -252,8 +246,6 @@ def handle_admin_config_get(path, handler, params=None):
 def handle_admin_records(path, handler, params=None):
     if path != '/api/admin/records':
         return False
-    user = require_auth(handler)
-    if not user: return True
     if user.get('role') not in ('admin', 'teacher'):
         handler.send_json(200, [])
         return True
@@ -287,15 +279,15 @@ def handle_admin_english_files(path, handler, params=None):
     return True
 
 
-# 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+# ═══════════════════════════════════════════
 #  POST handlers
-# 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+# ═══════════════════════════════════════════
 
 def _parse_json_body(handler, body):
     try:
         return json.loads(body.decode('utf-8'))
     except Exception:
-        handler.send_json(400, {'error': 'JSON 瑙ｆ瀽澶辫触'})
+        handler.send_json(400, {'error': 'JSON 解析失败'})
         return None
 
 
@@ -310,13 +302,13 @@ def handle_admin_register(path, body, handler):
     pw = p.get('password', '')
 
     if not username or not pw:
-        handler.send_json(400, {'error': '鐢ㄦ埛鍚嶅拰瀵嗙爜涓嶈兘涓虹┖'})
+        handler.send_json(400, {'error': '用户名和密码不能为空'})
         return True
     if not re.match(r'^[a-zA-Z][a-zA-Z0-9_]{2,19}$', username):
-        handler.send_json(400, {'error': '鐢ㄦ埛鍚嶉渶瀛楁瘝寮€澶达紝3-20浣?})
+        handler.send_json(400, {'error': '用户名需字母开头，3-20位'})
         return True
     if find_user_by_name(username)[1]:
-        handler.send_json(400, {'error': '鐢ㄦ埛鍚嶅凡瀛樺湪'})
+        handler.send_json(400, {'error': '用户名已存在'})
         return True
 
     uid = new_uid()
@@ -355,7 +347,7 @@ def handle_admin_login(path, body, handler):
         return False
     client_ip = handler.client_address[0]
     if not check_ratelimit(client_ip):
-        handler.send_json(429, {'error': '灏濊瘯娆℃暟杩囧锛岃60绉掑悗鍐嶈瘯'})
+        handler.send_json(429, {'error': '尝试次数过多，请60秒后再试'})
         return True
 
     p = _parse_json_body(handler, body)
@@ -365,13 +357,13 @@ def handle_admin_login(path, body, handler):
     pw = p.get('password', '')
     if not username or not pw:
         record_fail(client_ip)
-        handler.send_json(400, {'error': '璇疯緭鍏ョ敤鎴峰悕鍜屽瘑鐮?})
+        handler.send_json(400, {'error': '请输入用户名和密码'})
         return True
 
     uid, u = find_user_by_name(username)
     if not u or hash_password(pw, u.get('salt', '')) != u.get('passwordHash', ''):
         record_fail(client_ip)
-        handler.send_json(400, {'error': '鐢ㄦ埛鍚嶆垨瀵嗙爜閿欒'})
+        handler.send_json(400, {'error': '用户名或密码错误'})
         return True
 
     clear_fails(client_ip)
@@ -408,8 +400,6 @@ def handle_admin_logout(path, body, handler):
 def handle_admin_profile(path, body, handler):
     if path != '/api/admin/profile':
         return False
-    user = require_auth(handler)
-    if not user: return True
     p = _parse_json_body(handler, body)
     if p is None: return True
 
@@ -418,13 +408,13 @@ def handle_admin_profile(path, body, handler):
     users = load_users()
     u = users['by_id'].get(old_uid, {})
     if not u:
-        handler.send_json(400, {'error': '鐢ㄦ埛涓嶅瓨鍦?})
+        handler.send_json(400, {'error': '用户不存在'})
         return True
 
     new_name = p.get('username', '').strip()
     if new_name and new_name != old_username:
         if find_user_by_name(new_name)[1]:
-            handler.send_json(400, {'error': '鐢ㄦ埛鍚嶅凡瀛樺湪'})
+            handler.send_json(400, {'error': '用户名已存在'})
             return True
         del users['by_name'][old_username]
         users['by_name'][new_name] = old_uid
@@ -437,7 +427,7 @@ def handle_admin_profile(path, body, handler):
         if dn:
             duid, _ = find_user_by_displayname(dn)
             if duid and duid != old_uid:
-                handler.send_json(400, {'error': '璇ュ鍚嶅凡琚叾浠栫敤鎴风粦瀹?})
+                handler.send_json(400, {'error': '该姓名已被其他用户绑定'})
                 return True
         u['displayName'] = dn
     if 'signature' in p: u['signature'] = (p['signature'] or '')[:200]
@@ -445,7 +435,7 @@ def handle_admin_profile(path, body, handler):
 
     if p.get('oldPassword') and p.get('newPassword'):
         if hash_password(p['oldPassword'], u.get('salt', '')) != u.get('passwordHash', ''):
-            handler.send_json(400, {'error': '鏃у瘑鐮侀敊璇?})
+            handler.send_json(400, {'error': '旧密码错误'})
             return True
         u['salt'] = new_salt()
         u['passwordHash'] = hash_password(p['newPassword'], u['salt'])
@@ -495,18 +485,18 @@ def handle_admin_user_create(path, body, handler):
 
     nu = p.get('username', '').strip()
     if not nu:
-        handler.send_json(400, {'error': '鐢ㄦ埛鍚嶄笉鑳戒负绌?})
+        handler.send_json(400, {'error': '用户名不能为空'})
         return True
     if not re.match(r'^[a-zA-Z][a-zA-Z0-9_-]*$', nu):
-        handler.send_json(400, {'error': '鐢ㄦ埛鍚嶉渶鑻辨枃瀛楁瘝寮€澶?})
+        handler.send_json(400, {'error': '用户名需英文字母开头'})
         return True
     if find_user_by_name(nu)[1]:
-        handler.send_json(400, {'error': '鐢ㄦ埛鍚嶅凡瀛樺湪'})
+        handler.send_json(400, {'error': '用户名已存在'})
         return True
 
     dn = (p.get('displayName', '') or '')[:100]
     if dn and find_user_by_displayname(dn)[1]:
-        handler.send_json(400, {'error': '璇ュ鍚嶅凡琚叾浠栫敤鎴风粦瀹?})
+        handler.send_json(400, {'error': '该姓名已被其他用户绑定'})
         return True
 
     uid = new_uid()
@@ -540,13 +530,13 @@ def handle_admin_user_modify(path, body, handler):
     users = load_users()
     uid = users.get('by_name', {}).get(target)
     if not uid or uid not in users.get('by_id', {}):
-        handler.send_json(404, {'error': '鐢ㄦ埛涓嶅瓨鍦?})
+        handler.send_json(404, {'error': '用户不存在'})
         return True
 
     u = users['by_id'][uid]
     if is_delete:
         if uid == user.get('uid'):
-            handler.send_json(400, {'error': '涓嶈兘鍒犻櫎鑷繁'})
+            handler.send_json(400, {'error': '不能删除自己'})
             return True
         del users['by_id'][uid]
         del users['by_name'][target]
@@ -559,14 +549,14 @@ def handle_admin_user_modify(path, body, handler):
             if dn:
                 duid, _ = find_user_by_displayname(dn)
                 if duid and duid != uid:
-                    handler.send_json(400, {'error': '璇ュ鍚嶅凡琚叾浠栫敤鎴风粦瀹?})
+                    handler.send_json(400, {'error': '该姓名已被其他用户绑定'})
                     return True
             u['displayName'] = dn
         if 'signature' in p: u['signature'] = (p['signature'] or '')[:200]
         if 'avatar' in p: u['avatar'] = (p['avatar'] or '')[:2000]
         if 'role' in p:
             if uid == user.get('uid') and p['role'] != user.get('role'):
-                handler.send_json(400, {'error': '涓嶈兘淇敼鑷繁鐨勮鑹?})
+                handler.send_json(400, {'error': '不能修改自己的角色'})
                 return True
             u['role'] = p['role']
         if 'password' in p and p['password']:
@@ -589,7 +579,7 @@ def handle_admin_config_save(path, body, handler):
         'english': 'config/english/config.js', 'picker': 'config/picker/config.js',
     }
     if m.group(1) not in config_map:
-        handler.send_json(404, {'error': '鏈煡閰嶇疆'})
+        handler.send_json(404, {'error': '未知配置'})
         return True
     p = _parse_json_body(handler, body)
     if p is None: return True
@@ -634,7 +624,7 @@ def handle_picker_timestamps_post(path, body, handler):
     if p is None: return True
     list_name = p.get('list', '')
     if not list_name:
-        handler.send_json(400, {'error': '缂哄皯鍚嶅崟鍚嶇О'})
+        handler.send_json(400, {'error': '缺少名单名称'})
         return True
     safe = _safe_filename(list_name.replace('.csv', '') + '.json')
     _write_json(os.path.join(PICKER_DIR, safe), p.get('data', {}))
@@ -653,7 +643,7 @@ def handle_picker_timestamps_delete(path, body, handler):
     list_name = p.get('list', '')
     name = p.get('name', '')
     if not list_name or not name:
-        handler.send_json(400, {'error': '缂哄皯鍙傛暟'})
+        handler.send_json(400, {'error': '缺少参数'})
         return True
     safe = _safe_filename(list_name.replace('.csv', '') + '.json')
     filepath = os.path.join(PICKER_DIR, safe)
@@ -675,7 +665,7 @@ def handle_picker_timestamps_clear(path, body, handler):
     if p is None: return True
     list_name = p.get('list', '')
     if not list_name:
-        handler.send_json(400, {'error': '缂哄皯鍚嶅崟鍚嶇О'})
+        handler.send_json(400, {'error': '缺少名单名称'})
         return True
     safe = _safe_filename(list_name.replace('.csv', '') + '.json')
     _write_json(os.path.join(PICKER_DIR, safe), {})
@@ -693,10 +683,10 @@ def handle_english_upload(path, body, handler):
     filename = _safe_filename(p.get('filename', '').strip())
     content_b64 = p.get('content', '')
     if not filename or not content_b64:
-        handler.send_json(400, {'error': '缂哄皯鏂囦欢鍚嶆垨鏂囦欢鍐呭'})
+        handler.send_json(400, {'error': '缺少文件名或文件内容'})
         return True
     if not re.match(r'^[\w\u4e00-\u9fff\-. ()()]+\.(xlsx|csv|xls)$', filename, re.I):
-        handler.send_json(400, {'error': '鏂囦欢鍚嶄笉鍚堟硶'})
+        handler.send_json(400, {'error': '文件名不合法'})
         return True
     os.makedirs(ENGLISH_DIR, exist_ok=True)
     filepath = os.path.join(ENGLISH_DIR, filename)
@@ -715,7 +705,7 @@ def handle_english_delete(path, body, handler):
     if p is None: return True
     filename = _safe_filename(p.get('filename', '').strip())
     if not filename:
-        handler.send_json(400, {'error': '缂哄皯鏂囦欢鍚?})
+        handler.send_json(400, {'error': '缺少文件名'})
         return True
     filepath = os.path.join(ENGLISH_DIR, filename)
     if os.path.isfile(filepath):
@@ -727,14 +717,12 @@ def handle_english_delete(path, body, handler):
 def handle_avatar_upload(path, body, handler):
     if path != '/api/admin/upload/avatar':
         return False
-    user = require_auth(handler)
-    if not user: return True
     p = _parse_json_body(handler, body)
     if p is None: return True
     content_b64 = p.get('content', '')
     filename = p.get('filename', 'avatar.png')
     if not content_b64:
-        handler.send_json(400, {'error': '缂哄皯鏂囦欢鍐呭'})
+        handler.send_json(400, {'error': '缺少文件内容'})
         return True
     ext = os.path.splitext(_safe_filename(filename))[1].lower()
     if ext not in ('.png', '.jpg', '.jpeg', '.gif', '.webp'):
@@ -748,9 +736,9 @@ def handle_avatar_upload(path, body, handler):
     return True
 
 
-# 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+# ═══════════════════════════════════════════
 #  Handler lists for dispatch
-# 鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺愨晲鈺?
+# ═══════════════════════════════════════════
 
 GET_HANDLERS = [
     handle_get_files,
