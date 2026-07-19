@@ -100,6 +100,10 @@ def handle_roster_get(path, handler, params=None):
         return False
     cls = unquote(m.group(1))
     fname = os.path.join(ROSTER_DIR, _safe_filename(cls) + '.json')
+    # Ensure path stays within ROSTER_DIR
+    if os.path.realpath(fname) != os.path.realpath(os.path.join(ROSTER_DIR, os.path.basename(fname))):
+        handler.send_json(403, {'error': '非法路径'})
+        return True
     handler.send_json(200, _read_json(fname))
     return True
 
