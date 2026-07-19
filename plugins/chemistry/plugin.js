@@ -87,7 +87,7 @@ const ChemistryPlugin = {
 
     const data = this._data.length ? this._data : [];
     const opts = data.map((el,i) =>
-      `<option value="${i}">${el.symbol} ${el.name}</option>`).join('');
+      `<option value="${i}">${SeaScribe.esc(el.symbol)} ${SeaScribe.esc(el.name)}</option>`).join('');
     container.innerHTML = `
       <span class="ctrl-label">范围</span>
       <select class="range-select" id="range-start">${opts}</select>
@@ -139,7 +139,7 @@ const ChemistryPlugin = {
     const e = container.querySelector('#range-end');
     if (!s || !e) return;
     const opts = this._data.map((el,i) =>
-      `<option value="${i}">${el.symbol} ${el.name}</option>`).join('');
+      `<option value="${i}">${SeaScribe.esc(el.symbol)} ${SeaScribe.esc(el.name)}</option>`).join('');
     s.innerHTML = opts;
     e.innerHTML = opts;
     this._rangeStart = 0;

@@ -1,15 +1,89 @@
-# SeaScribe 更新日志
+﻿# SeaScribe 更新日志
+
+## v4.7.0
+
+### 安全加固（全量代码审查修复）
+
+**后端**
+- 修复注册时覆盖全部 sessions 的严重 bug（所有已登录用户瞬间被踢出）
+- 修复 DELETE 用户路径因 `_parse_json_body` 吞 body 导致删除功能不可用
+- `_read_json` / `_write_json` 加 `threading.Lock` 防止高并发数据损坏
+- 管理员创建用户不再使用默认弱密码，要求密码至少 6 位
+- session 删除增加归属校验：非 admin 只能删除自己的会话
+- 登出时发送 `Set-Cookie: Max-Age=0` 清除浏览器端 Cookie
+- 操作日志接口改为 admin only
+- 文件列表 API 限制子目录白名单（仅 chemistry/english）
+- picker-timestamps POST 增加 list_name 校验，拒绝非法字符
+- 花名册保存拒绝空 `{}`，防止误清空
+- base64 解码加 `try/except` 防止非法输入 500
+- 登录限流字典惰性清理过期条目，防止内存泄漏
+- 头像缓存加线程锁
+- 用户名正则支持 `-` 字符
+- 提取重复 `config_map` 为模块常量 `_CONFIG_MAP`
+- 修复多处日志乱码
+
+**前端**
+- `markdown.js`：修复三条 XSS 路径（原生 HTML 白名单过滤 + 图片属性转义 + 链接协议白名单）
+- `app.js`：管理员名使用 `SeaScribe.esc()` 转义，防存储型 XSS
+- `cards.js`：插件名/描述使用 `SeaScribe.esc()` 转义
+- `chemistry/plugin.js`：CSV 元素名使用 `SeaScribe.esc()` 转义
+- picker 动画/显示模块：加超时保护防止 Promise 泄漏和 rAF 永久运行
+- `CustomSelect` 添加 `destroy()` 方法
+- `cards.js`：用 `DocumentFragment` 批量插入 DOM 减少重排
+- `canvas-confetti` CDN 固定版本 1.9.4 并加 SRI 完整性校验
+- `common.js`：401 非 JSON 响应仍能触发登出跳转
+- `sessions.js`：token 不再渲染到 DOM，改用内存索引
+- `users.js`：username 拼入 URL 路径前 `encodeURIComponent`
+- 空 catch 块改为 `console.error`
+
+## v4.6.0
+
+### 项目结构重构
+- **code/data 分离**：所有代码移入 `main/`，运行时数据统一到 `data/`
+  - `main/server.py` — 服务器入口
+  - `main/server/` — Python 模块（config.py / auth.py / routes.py）
+  - `main/admin/` — 管理后台前端
+  - `main/client/` — 主站前端（原 main/）
+  - `data/` — 整合原 data/ + admin/_store/
+- **translate_path 映射**：HTTP 服务自动路由 `/main/`→`/main/client/`、`/admin/`→`/main/admin/`
+- **配置结构化**：config/ 下所有 JS 配置改用统一 `window._CONF.{namespace}` 模式，保留向后兼容变量
+
+### 会话管理（新功能）
+- 登录时记录 IP 和 User-Agent，支持多设备同时登录
+- 管理后台 → **设备管理**：查看所有活跃会话的设备类型、IP、登录时间
+- 支持强制退出指定设备（除当前设备外）
+- Session 有效期延长至 30 天
+
+### 操作日志（新功能）
+- 记录所有关键操作：登录/退出/注册、修改资料/密码、增删改用户、保存配置/名单、上传头像、强制退出设备
+- 管理后台 → **操作日志**：表格展示时间/操作/详情/IP/操作人，可按类型筛选
+- 日志自动保留最近 2000 条
+
+### API 扩增
+- `GET /api/admin/sessions` — 列出当前账号所有活跃会话
+- `POST /api/admin/sessions` — 强制退出指定设备
+- `GET /api/admin/logs` — 获取操作日志
+
+### BUG 修复
+- **B5 缺少 auth 检查**：`handle_user_last_pick`、`handle_user_class`、`handle_admin_records`、`handle_admin_profile`、`handle_avatar_upload` 五个 handler 缺少 `require_auth` / `require_role`，直接引用未定义变量 `user` 导致 NameError。已全部加回正确位置的 auth 检查。
+- `handle_admin_session` 恢复 `require_auth` 调用（此前被误删）
+
+### 文档更新
+- README / PLUGINS / RULES / UPDATE 全面更新，反映最新目录结构和功能
+- start.sh 修正路径 `server.py` → `main/server.py`
+
+---
 
 ## v4.5.1
 
 ### 阻断修复
 - **B1 roster.js 数据静默丢失**：`saveRoster()` 未检查 `res.ok`，网络故障时所有非当前班级的名单数据被覆盖为空数组 → 增加 `res.ok` 检查并阻断写入
 - **B2 users.js 隐式全局变量**：`va`/`vb` 缺少 `var` 声明 → 泄漏为 `window.va`/`window.vb`，严格模式下排序崩溃
-- **B3 roster.js 绑定竞态**：`loadBindMap()` fire-and-forget 无 `await` → 绑定状态列始终为空 → 改 `await loadBindMap()`
+- **B3 roster.js 绑定竞态**：`loadBindMap()` fire-and-forget 无 `await` → 绑定状态始终为空 → 改 `await loadBindMap()`
 - **B4 custom-select.js 全局事件破坏**：捕获阶段 `preventDefault()` + `stopPropagation()` → 下拉框展开时页面所有链接、按钮失效 → 删除两行
 
 ### CustomSelect v2
-- **捕获阶段拦截点击穿透**：改用 `addEventListener('click', handler, true)` 替代 `fixed` 遮罩层（避开了 `overflow: hidden` 层叠上下文陷阱）
+- **捕获阶段拦截点击穿透**：改用 `addEventListener('click', handler, true)` 替代 `fixed` 遮罩层（避开 `overflow: hidden` 层叠上下文陷阱）
 - **Admin 页面导航自动刷新**：hook `PageRegistry.navigate` 替代 `init`（之前切换页面不走 `init`，下拉框回退成原生）
 - **`const PageRegistry` 检测修复**：`window.PageRegistry` → `typeof PageRegistry !== 'undefined'`（`const` 不挂 `window`）
 - **下拉选项动态刷新**：admin 各页面修改 `<select>` 选项后补调 `_customSelect.refresh()`（共 9 处）
@@ -19,7 +93,7 @@
 
 ### 滚动条全局统一
 - **4px 窄滚动条**：`base.css`（主站+admin）、`custom-select.css`、`picker.css`、`changelog.css` 全覆盖
-- 提升 `.changelog-card` 桌面端宽度：460→540px（更新日志）、600→680px（关于）、80→85vw（系统日志）
+- 提升 `.changelog-card` 桌面端宽度：460→540px（更新日志）、500→580px（关于）、50→55vw（系统日志）
 - 新增 1024px 平板断点 + 修复点名调试模式展开裁剪
 
 ### 文档更新
@@ -31,14 +105,12 @@
 ## v4.5.0
 
 ### 项目模块化
-
 **后端拆分**
 - `server.py` 从 809 行单体拆分为 `server/` 包：
   - `config.py` — 常量集中管理
   - `auth.py` — 用户/密码/会话/令牌/限流/鉴权
   - `routes.py` — 15 GET + 14 POST handler 统一分发
   - `server.py` — 精简至 106 行入口
-
 **CSS 去重**
 - 全局设计令牌统一到 `theme.css`（圆角 7 级、阴影 4 级、时长 3 级、缓动 4 种）
 - CustomSelect 样式提取到 `custom-select.css`，主站和管理后台共享
@@ -49,11 +121,11 @@
 - 跳过随机算法和时间戳记录，方便调试动画效果
 
 ### 全局滚动条
-- 滚动条样式统一全局定义（v4.5.0 为 6px，v4.5.1 统一为 4px）
+- 滚动条样式统一全局定义（v4.5.0 中 6px，v4.5.1 统一为 4px）
 - 原删除 5 处分散样式，v4.5.1 补全 3 个组件区域（changelog / picker / custom-select）
 
 ### 性能优化
-- 移除所有 `filter: blur()` 动画（19 处）— 低端 GPU 最大瓶颈
+- 移除所有 `filter: blur()` 动画（9 处）— 低端 GPU 最大瓶颈
 - 移除 `backdrop-filter` 毛玻璃效果 — 实时模糊极耗 GPU
 - 移除 `rotateX()` 3D 变换 — 简化为 2D translate
 - 保留 `spring` 弹性缓动 + `scale`/`translate`/`opacity` 等 GPU 友好属性
@@ -74,13 +146,13 @@
 
 **开屏动画**
 - Logo：旋转弹性入场
-- 标题/作者/版本：模糊渐显 + 弹性缓动
+- 标题/作者/版本：模糊渐现 + 弹性缓动
 - 日志行：逐条渐入动画
 - 提示文字：持续浮动效果
 - 退出动画：缩放 + 模糊消失
 
 **卡片动画**
-- 听写卡片：3D 旋转 + 模糊入场
+- 听写卡片：2D 旋转 + 模糊入场
 - 卡片 hover：上浮 + 阴影
 - 答案展开：弹性缓动
 - 网格切换：缩放弹性
@@ -114,7 +186,7 @@
 ## v4.3.2
 
 ### 启动界面优化
-- 初始延迟 500ms→100ms，条间间隔 60ms→20ms
+- 初始延迟 500ms→300ms，条间间隔 60ms→30ms
 - 9 阶段 31 项分组检查
 - 新增浏览器检测、在线状态、CSS 文件计数
 
@@ -160,7 +232,7 @@
 
 ### 安全加固
 - PBKDF2-HMAC-SHA256 600k 迭代、session 4h 过期
-- 登录限流、路径穿越修复、UUID 用户标识
+- 登录限流、路径穿越修复、UID 用户标识
 
 ---
 
@@ -184,44 +256,3 @@
 
 ### 点名系统重做
 - 模块化架构、三种随机方式、双层动画、时间戳服务端存储
-
----
-
-## v3.3.0
-
-### 化学数据文件化
-- CSV 文件扫描切换、confetti 彩带、关于页面
-
----
-
-## v3.2.0
-
-### 名单系统重构
-- CSV 名单替代 JS 硬编码、启动日志、start.bat
-
----
-
-## v3.1.0
-
-### 品牌与工程化
-- Logo 设计、Git 托管、目录拍平、RULES.md
-
----
-
-## v3.0.0
-
-### 代码模块化
-- CSS/JS 拆分、命名空间、index.html 瘦身
-
----
-
-## v2.0
-
-### 布局双模式
-- 网格/列表切换、配置系统重构、插件增强
-
----
-
-## v1.0
-
-- 化学+英语插件、随机点名、夜间模式、开屏动画
