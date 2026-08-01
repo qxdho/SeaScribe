@@ -1,10 +1,19 @@
-﻿# SeaScribe 编码规范
+# SeaScribe 编码规范
 
 > 每次修改代码前阅读本文档。
 
 ---
 
 ## 一、文件操作
+
+### 禁止 PowerShell 写文件（最高优先级，违反必究）
+- **严禁**使用 PowerShell 写入/修改任何文本文件！`Out-File`、`Set-Content`、`>`、`>>`、`-replace` 管道一律禁止
+- 原因：破坏 UTF-8 编码、添加 BOM、损坏中文等多字节字符
+- **必须**使用 `write_file` / `edit_file` 工具，或 Python 脚本写文件（仅用于清理类操作）
+- 历史教训：
+  - 2026-07-12：`-replace | Set-Content` 导致 `server.py` 中文全部乱码
+  - 2026-07-20：`-replace | Set-Content` 导致 `debug/tests.py` 乱码 + BOM + 缩进损坏
+- 每次动手写文件前先自问：我是不是在用 PowerShell 写文件？如果是，立刻改用工具
 
 ### 路径管理
 - 移动文件后必须更新所有 `src`、`href`、`fetch` 路径

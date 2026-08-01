@@ -1,4 +1,4 @@
-﻿# SeaScribe API route handlers
+# SeaScribe API route handlers
 import base64
 import binascii
 import json

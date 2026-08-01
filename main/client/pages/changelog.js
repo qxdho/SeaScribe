@@ -13,7 +13,7 @@ if (clBtn) {
     overlay.classList.remove('hidden');
     var body = document.getElementById('changelog-body');
     if (body && !body.dataset.loaded) {
-      fetch('CHANGELOG.md').then(function(r) { return r.text(); }).then(function(md) {
+      fetch('UPDATE.md').then(function(r) { return r.text(); }).then(function(md) {
         body.innerHTML = SeaScribe.renderMarkdown(md);
         body.dataset.loaded = '1';
       }).catch(function() {

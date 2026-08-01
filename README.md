@@ -1,10 +1,10 @@
-﻿<p align="center"><img src="main/logo.png" width="80" alt="SeaScribe"></p>
+<p align="center"><img src="main/logo.png" width="80" alt="SeaScribe"></p>
 
 # SeaScribe
 
 > 课堂听写投屏系统 — 教师大屏随机出题，学生纸笔作答，一键公布答案
 >
-> by **谦虚の海鸥** · v5.0.1 · [GitHub](https://github.com/qxdho/SeaScribe)
+> by **谦虚の海鸥** · v5.1.0 · [GitHub](https://github.com/qxdho/SeaScribe)
 
 ---
 
@@ -15,8 +15,18 @@
 | 本地使用 | 双击 `index.html` → 选择学科 → 随机出题 |
 | 一键启动 | 双击 `start.bat`（需安装 Python） |
 | 服务器部署 | `python3 main/server.py 9060` |
+| 调试自检 | `python debug_api.py`（离线检查 + 在线全量 API 测试，详见下） |
 
 管理后台：`/admin/`（默认 `admin` / `admin123`）
+
+### 调试工具
+
+`debug_api.py` 是独立调试/自检工具，无需改动服务器代码：
+
+- 离线静态检查：编码/BOM、Python/JS 语法、引用完整性、数据健康、配置一致性
+- 在线 API 测试：覆盖全部 18 GET + 15 POST 接口（含越权校验），临时数据自动清理
+- 常用参数：`--skip-online` 只做离线检查、`--list` 打印用例清单、`--plain` 纯文本输出
+- 运行 `python debug_api.py` 后按提示输入管理员密码
 
 ---
 

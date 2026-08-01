@@ -1,4 +1,4 @@
-﻿# SeaScribe server configuration
+# SeaScribe server configuration
 import os
 import sys
 from types import SimpleNamespace

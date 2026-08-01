@@ -1,4 +1,4 @@
-﻿# SeaScribe — Plugin Development Guide
+# SeaScribe — Plugin Development Guide
 
 4 steps to add a new subject:
 copy template → write config → write logic → register loading.

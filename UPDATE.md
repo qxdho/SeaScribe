@@ -1,4 +1,27 @@
-﻿# SeaScribe 更新日志
+# SeaScribe 更新日志
+
+## v5.1.0
+
+### 独立调试工具（debug_api.py + debug/ 包）
+
+新增通用调试框架，零依赖（Python 标准库 + node），可离线可在线：
+
+- **离线静态检查**（无需服务器，`--skip-online` 单独运行）：
+  编码 UTF-8 无 BOM（发现 BOM 自动修复）、Python ast / JS node --check 语法、
+  引用完整性（src/href/fetch/import，含 /main/→main/client/ URL 映射）、
+  data/*.json 可解析、users.json 索引互指、config ↔ plugins 一致性
+- **在线 API 测试**：49 条用例四组覆盖全部 18 GET + 15 POST 接口
+  （公开 / admin 登录态 / admin+teacher / 学生越权），含负向校验
+- **声明式注册表**：新增 API 用例或检查项只改注册表，不改引擎；
+  自动解析 routes.py 与实际路由比对，未覆盖路径输出 WARN
+- **分级日志**：INFO/PASS/FAIL/WARN/SKIP 彩色输出，分组小计 + 汇总表 + 失败回放，
+  退出码 0/1/2；`--plain` 纯文本、`--list` 清单、`--safe` 预留
+- 用法：`python debug_api.py`（交互式输入管理员密码）
+
+### 修复
+- changelog.js 引用不存在的 `CHANGELOG.md` → 改为 `UPDATE.md`（更新日志弹窗 404）
+- 清理 8 个历史 UTF-8 BOM（index.html/README/UPDATE/PLUGINS/RULES/server.py/config.py/routes.py）
+- node --check 在 Windows 下按 GBK 编码 stdin 崩溃 → 改传 UTF-8 bytes
 
 ## v5.0.1
 

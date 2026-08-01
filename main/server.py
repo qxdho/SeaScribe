@@ -1,4 +1,4 @@
-﻿"""SeaScribe -- HTTP server entry point
+"""SeaScribe -- HTTP server entry point
 Usage: python server.py 9060
 """
 import http.server
