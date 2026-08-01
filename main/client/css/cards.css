@@ -48,8 +48,8 @@
 .card-grid.list .card-answers:not(.visible) { display: none; }
 
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--glass-bg); /* 半透明（不 blur：卡片数量多，保证性能） */
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   padding: 18px 16px;
   display: flex; flex-direction: column; gap: 8px;

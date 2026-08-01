@@ -48,13 +48,16 @@
 
 .picker-modal-card {
   position: relative;
-  background: var(--bg);
+  background: var(--glass-bg-strong);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-2xl);
+  box-shadow: var(--glass-shadow);
   padding: 24px 28px;
   min-width: 380px;
   max-width: 480px;
   width: auto;
-  box-shadow: var(--shadow-xl);
   display: flex;
   flex-direction: column;
   gap: 12px;

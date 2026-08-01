@@ -18,6 +18,10 @@
   --shadow-md: 0 6px 20px rgba(0,0,0,0.12);
   --shadow-lg: 0 12px 32px rgba(0,0,0,0.12);
   --shadow-xl: 0 12px 40px rgba(0,0,0,0.2);
+
+  /* Glass tokens（玻璃化设计令牌） */
+  --glass-blur: 14px;
+  --glass-sat: 140%;
 }
 
 /* ---- Light Theme ---- */
@@ -32,6 +36,10 @@
   --hover:    #f5f5f5;
   --orb-bg:   #f0f0f0;
   --slider-track: #ddd;
+  --glass-bg:        rgba(255, 255, 255, 0.6);
+  --glass-bg-strong: rgba(255, 255, 255, 0.78);
+  --glass-border:    rgba(255, 255, 255, 0.6);
+  --glass-shadow:    0 8px 32px rgba(0, 0, 0, 0.08);
   --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%23999' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
 }
 
@@ -47,5 +55,18 @@
   --hover:    #333;
   --orb-bg:   #333;
   --slider-track: #444;
+  --glass-bg:        rgba(38, 38, 38, 0.55);
+  --glass-bg-strong: rgba(38, 38, 38, 0.75);
+  --glass-border:    rgba(255, 255, 255, 0.09);
+  --glass-shadow:    0 8px 32px rgba(0, 0, 0, 0.35);
   --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%23888' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+
+/* ---- 不支持 backdrop-filter 时：玻璃变量降级为实色（所有玻璃元素自动降级） ---- */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --glass-bg: var(--surface);
+    --glass-bg-strong: var(--surface);
+    --glass-border: var(--border);
+  }
 }

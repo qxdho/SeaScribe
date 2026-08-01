@@ -28,9 +28,12 @@
 
 /* ---- Cards ---- */
 .admin-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--glass-bg-strong);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
+  box-shadow: var(--glass-shadow);
   padding: 24px 28px;
   margin-bottom: 14px;
 }

@@ -21,8 +21,12 @@
 
 .changelog-card {
   position: relative;
-  background: var(--surface);
+  background: var(--glass-bg-strong);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-2xl);
+  box-shadow: var(--glass-shadow);
   padding: 24px 32px 20px;
   max-width: 540px;
   width: auto;

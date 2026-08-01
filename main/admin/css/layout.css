@@ -12,8 +12,10 @@
   align-items: center;
   gap: 12px;
   padding: 12px 28px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  border-bottom: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
   flex-shrink: 0;
 }
 .admin-topbar-brand {

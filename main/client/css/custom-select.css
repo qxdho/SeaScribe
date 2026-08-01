@@ -29,10 +29,12 @@
 .cs-drop {
   position: absolute; top: calc(100% + 4px); left: 0; z-index: 100;
   min-width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  background: var(--glass-bg-strong);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--glass-shadow);
   max-height: 0; overflow: hidden;
   opacity: 0;
   transition: max-height 0.25s var(--ease), opacity var(--dur-md);

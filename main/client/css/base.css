@@ -27,4 +27,17 @@ body {
   transition: background-color 0.3s, color 0.3s;
 }
 
+/* 背景柔和光晕：给玻璃模糊提供可透的细微色彩层次 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 50% at 12% -5%, rgba(214, 57, 78, 0.06), transparent 70%),
+    radial-gradient(ellipse 55% 45% at 88% 108%, rgba(63, 130, 255, 0.06), transparent 70%),
+    radial-gradient(ellipse 40% 35% at 70% 20%, rgba(180, 120, 255, 0.04), transparent 70%);
+}
+
 .hidden { display: none; }
