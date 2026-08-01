@@ -504,11 +504,11 @@
   display: none;
 }
 
-/* ====== 紧凑态过渡：先原地缩小，再直线平移（头像/名字/签名同时播放，路径清晰不交叉） ====== */
+/* ====== 紧凑态过渡：L 形路径 —— 横向移动+同步缩小，再纵向归位（头像左、名字右，互不交叉） ====== */
 @keyframes flipCompact {
   0%   { transform: translate(var(--fx), var(--fy)) scale(var(--fs)); }
-  40%  { transform: translate(var(--fx), var(--fy)) scale(1); } /* 原地缩小到位 */
-  100% { transform: translate(0, 0) scale(1); }                  /* 直线平移归位 */
+  55%  { transform: translate(0, var(--fy)) scale(1); } /* 横向到位 + 同步缩小 */
+  100% { transform: translate(0, 0) scale(1); }         /* 纵向归位 */
 }
 .flip-el {
   transform-origin: top left;
