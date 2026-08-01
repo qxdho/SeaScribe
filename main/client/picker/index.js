@@ -23,7 +23,7 @@ var timestampCheck = document.getElementById('picker-timestamp');
 var btnTsView = document.getElementById('picker-ts-view');
 var tsPanel = document.getElementById('picker-ts-panel');
 var tsBody = document.getElementById('picker-ts-body');
-var methodRadios, processModeRadios, multiRadios;
+var processModeRadios, multiRadios;
 
 var _currentList = [];   // [{name, signature}, ...]
 var _currentFileName = '';
@@ -35,7 +35,7 @@ var countMinus = document.getElementById('picker-count-minus');
 var countPlus = document.getElementById('picker-count-plus');
 var countValueEl = document.getElementById('picker-count-value');
 var countHint = document.getElementById('picker-count-hint');
-var multiSection = document.getElementById('picker-multi-section');
+var methodSelect = document.getElementById('picker-method-select');
 
 // 调试 DOM
 var debugToggle = document.getElementById('picker-debug-toggle');
@@ -45,17 +45,11 @@ var debugPlay = document.getElementById('picker-debug-play');
 
 /* ====== 初始化配置 UI ====== */
 (function() {
-  // 随机方式 radio
-  var methodGroup = document.getElementById('picker-method-group');
-  methodGroup.innerHTML = (cfg.methods || []).map(function(m) {
-    var checked = m.id === cfg.defaultMethod ? ' checked' : '';
-    return '<label class="picker-radio-item">' +
-      '<input type="radio" name="picker-method" value="' + escAttr(m.id) + '"' + checked + '>' +
-      '<span class="picker-radio-item-label">' +
-        '<span class="title">' + SeaScribe.esc(m.name) + '</span>' +
-        '<span class="desc">' + SeaScribe.esc(m.desc) + '</span>' +
-      '</span>' +
-    '</label>';
+  // 随机方式下拉（替代原 radio 卡片组，紧凑布局）
+  var methodSelect = document.getElementById('picker-method-select');
+  methodSelect.innerHTML = (cfg.methods || []).map(function(m) {
+    var sel = m.id === cfg.defaultMethod ? ' selected' : '';
+    return '<option value="' + escAttr(m.id) + '"' + sel + ' title="' + SeaScribe.esc(m.desc || '') + '">' + SeaScribe.esc(m.name) + '</option>';
   }).join('');
 
   // 修饰动画 select
@@ -72,7 +66,6 @@ var debugPlay = document.getElementById('picker-debug-play');
   processModeGroup.classList.add('collapsed');
 
   // 重新获取动态创建的 radio 引用
-  methodRadios = document.getElementsByName('picker-method');
   processModeRadios = document.getElementsByName('picker-process-mode');
   multiRadios = document.getElementsByName('picker-multi-mode');
 })();
@@ -84,7 +77,12 @@ function updateCountUI() {
   if (countMinus) countMinus.disabled = _count <= 1;
   if (countPlus) countPlus.disabled = _count >= max;
   if (countHint) countHint.classList.toggle('hidden', _count < max);
-  if (multiSection) multiSection.classList.toggle('hidden', _count <= 1);
+  // 多人动画常驻占位，人数=1 时置灰（页面不因显隐跳动）
+  if (multiRadios) {
+    for (var i = 0; i < multiRadios.length; i++) {
+      multiRadios[i].disabled = _count <= 1;
+    }
+  }
 }
 if (countMinus) {
   countMinus.addEventListener('click', function() {
@@ -227,7 +225,7 @@ btnStart.addEventListener('click', async function() {
   modal.classList.add('hidden');
 
   // 读取配置
-  var method = getRadioValue(methodRadios, cfg.defaultMethod);
+  var method = methodSelect.value || cfg.defaultMethod;
   var decorativeType = decorativeSelect.value || cfg.defaultDecorative;
   var showProcess = showProcessCheck.checked;
   var processMode = getRadioValue(processModeRadios, cfg.processMode);

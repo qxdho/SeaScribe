@@ -56,74 +56,96 @@
     <button id="picker-close-x" class="modal-close-x" title="关闭">✕</button>
     <div class="picker-modal-title">🎲 随机点名</div>
 
-    <div class="picker-section">
-      <span class="picker-section-label">📋 班级名单</span>
-      <select id="picker-list-select" class="picker-select"></select>
-    </div>
-
-    <div class="picker-section">
-      <span class="picker-section-label">🎲 随机方式</span>
-      <div id="picker-method-group" class="picker-radio-group">
-        <!-- JS 动态渲染 -->
+    <div class="picker-grid">
+      <div class="picker-section">
+        <span class="picker-section-label">📋 班级名单</span>
+        <select id="picker-list-select" class="picker-select"></select>
+      </div>
+      <div class="picker-section">
+        <span class="picker-section-label">🎲 随机方式</span>
+        <select id="picker-method-select" class="picker-select"></select>
       </div>
     </div>
 
-    <div class="picker-section">
-      <span class="picker-section-label">👥 点几人</span>
-      <div class="picker-count-row">
-        <button id="picker-count-minus" class="btn btn-ghost btn-sm-picker" title="减少人数" type="button">−</button>
-        <span id="picker-count-value" class="picker-count-value">1</span>
-        <button id="picker-count-plus" class="btn btn-ghost btn-sm-picker" title="增加人数" type="button">+</button>
-        <span class="picker-count-unit">人</span>
-        <span id="picker-count-hint" class="picker-count-hint hidden">一次最多 10 人</span>
-      </div>
-    </div>
-
-    <div class="picker-section picker-multi-section hidden" id="picker-multi-section">
-      <span class="picker-section-label">🎬 多人动画</span>
-      <div class="picker-multi-radio-row">
-        <label class="picker-radio-item-slim"><input type="radio" name="picker-multi-mode" value="simultaneous" checked><span>同时定格</span></label>
-        <label class="picker-radio-item-slim"><input type="radio" name="picker-multi-mode" value="sequential"><span>逐个定格</span></label>
-      </div>
-    </div>
-
-    <div class="picker-section">
-      <span class="picker-section-label">✨ 修饰动画</span>
-      <select id="picker-decorative" class="picker-select">
-        <!-- JS 动态渲染 -->
-      </select>
-    </div>
-
-    <div class="picker-section picker-section-advanced">
-      <label class="picker-checkbox">
-        <input type="checkbox" id="picker-show-process">
-        <span>显示真实随机过程</span>
-      </label>
-      <div id="picker-process-mode-group" class="picker-process-mode-row">
-        <!-- JS 动态渲染 -->
-      </div>
-    </div>
-
-    <div class="picker-section">
-      <label class="picker-checkbox">
-        <input type="checkbox" id="picker-timestamp" checked>
-        <span>记录点名时间（避免重复）</span>
-      </label>
-      <div class="picker-ts-actions">
-        <button id="picker-ts-view" class="btn btn-ghost btn-sm-picker" disabled>📋 查看记录</button>
-      </div>
-      <div id="picker-ts-panel" class="picker-ts-panel hidden">
-        <div class="picker-ts-panel-header">
-          <span class="picker-ts-panel-title">📋 点名记录</span>
-          <button id="picker-ts-panel-close" class="modal-close-x" title="关闭" style="position:static;width:24px;height:24px;font-size:0.85rem">✕</button>
+    <div class="picker-grid">
+      <div class="picker-section">
+        <span class="picker-section-label">👥 点几人</span>
+        <div class="picker-count-row">
+          <button id="picker-count-minus" class="btn btn-ghost btn-sm-picker" title="减少人数" type="button">−</button>
+          <span id="picker-count-value" class="picker-count-value">1</span>
+          <button id="picker-count-plus" class="btn btn-ghost btn-sm-picker" title="增加人数" type="button">+</button>
+          <span class="picker-count-unit">人</span>
+          <span id="picker-count-hint" class="picker-count-hint hidden">最多 10 人</span>
         </div>
-        <div id="picker-ts-body" class="picker-ts-body"></div>
       </div>
-      <label class="picker-checkbox" style="margin-top:8px">
-        <input type="checkbox" id="picker-debug-toggle">
-        <span>🔧 调试模式（跳过随机，指定姓名播动画）</span>
-      </label>
+      <div class="picker-section">
+        <span class="picker-section-label">🎬 多人动画</span>
+        <div id="picker-multi-section" class="picker-multi-radio-row">
+          <label class="picker-radio-item-slim"><input type="radio" name="picker-multi-mode" value="simultaneous" checked><span>同时定格</span></label>
+          <label class="picker-radio-item-slim"><input type="radio" name="picker-multi-mode" value="sequential"><span>逐个定格</span></label>
+        </div>
+      </div>
     </div>
+
+    <div class="picker-grid">
+      <div class="picker-section">
+        <span class="picker-section-label">✨ 修饰动画</span>
+        <select id="picker-decorative" class="picker-select"></select>
+      </div>
+      <div class="picker-section">
+        <span class="picker-section-label">🎭 过程动画</span>
+        <label class="picker-checkbox">
+          <input type="checkbox" id="picker-show-process">
+          <span>显示随机过程</span>
+        </label>
+        <div id="picker-process-mode-group" class="picker-process-mode-row">
+          <!-- JS 动态渲染 -->
+        </div>
+      </div>
+    </div>
+
+    <div class="picker-grid">
+      <div class="picker-section">
+        <span class="picker-section-label">🕒 点名记录</span>
+        <label class="picker-checkbox">
+          <input type="checkbox" id="picker-timestamp" checked>
+          <span>记录时间（避免重复）</span>
+        </label>
+        <div class="picker-ts-actions">
+          <button id="picker-ts-view" class="btn btn-ghost btn-sm-picker" disabled>📋 查看记录</button>
+        </div>
+        <div id="picker-ts-panel" class="picker-ts-panel hidden">
+          <div class="picker-ts-panel-header">
+            <span class="picker-ts-panel-title">📋 点名记录</span>
+            <button id="picker-ts-panel-close" class="modal-close-x" title="关闭" style="position:static;width:24px;height:24px;font-size:0.85rem">✕</button>
+          </div>
+          <div id="picker-ts-body" class="picker-ts-body"></div>
+        </div>
+      </div>
+      <div class="picker-section">
+        <span class="picker-section-label">🔧 调试</span>
+        <label class="picker-checkbox">
+          <input type="checkbox" id="picker-debug-toggle">
+          <span>调试模式（指定姓名播动画）</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="picker-section picker-debug-collapsed" id="picker-debug-section">
+      <span class="picker-section-label">🔧 调试动画</span>
+      <div class="picker-debug-row">
+        <select id="picker-debug-name" class="picker-select">
+          <option value="">— 选择姓名后播放动画 —</option>
+        </select>
+        <button id="picker-debug-play" class="btn btn-dark btn-sm" disabled>🎬 播放</button>
+      </div>
+    </div>
+
+    <div class="picker-actions">
+      <button id="picker-start" class="btn btn-dark" disabled>开始点名</button>
+    </div>
+  </div>
+</div>
 
     <div class="picker-section picker-section-advanced picker-debug-collapsed" id="picker-debug-section">
       <span class="picker-section-label">🔧 调试动画</span>

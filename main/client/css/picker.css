@@ -548,7 +548,29 @@
 }
 .picker-count-hint.hidden { display: none; }
 
-.picker-multi-section.hidden { display: none; }
+/* 面板两栏网格 —— 紧凑不杂乱 */
+.picker-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 16px;
+}
+@media (max-width: 520px) {
+  .picker-grid { grid-template-columns: 1fr; }
+}
+
+/* 多人动画：人数=1 时置灰（常驻占位，页面不跳动） */
+.picker-radio-item-slim input[type=radio]:disabled + span {
+  opacity: 0.4;
+}
+
+/* 调试动画行 */
+.picker-debug-row {
+  display: flex;
+  gap: 8px;
+  margin-top: 6px;
+}
+.picker-debug-row .picker-select { flex: 1; }
+
 .picker-multi-radio-row {
   display: flex;
   gap: 16px;
