@@ -14,7 +14,7 @@ window._CONF.main = {
   theme: "light",
 
   // 【版本号】唯一版本源 —— 开屏动画/顶栏自动读取显示，升级只需改这里
-  version: "6.2.2"
+  version: "6.2.3"
 
 };
 

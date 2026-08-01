@@ -19,6 +19,9 @@ window._CONF.enword = {
   // 【起始序号】默认从第几个单词开始朗读（1-based）
   startIndex: 1,
 
+  // 【显示字号】跟读页面字号百分比（60 ~ 200，100 = 默认）
+  defaultFontSize: 100,
+
 };
 
 // 向后兼容

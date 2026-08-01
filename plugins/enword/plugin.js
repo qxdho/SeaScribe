@@ -13,17 +13,20 @@ const EnwordPlugin = {
   readInterval: 3,
   ttsRate: 0.8,
   startIndex: 1,
+  defaultFontSize: 100,
 
   _data: [],
   _currentIdx: 0,
   _timer: null,
   _paused: false,
   _files: [],
+  _fontPct: 100,
 
   loadConfig() {
     PluginUtils.loadConfig(this, window.__ENWORD_CONFIG__, {
       ttsRate: 'ttsRate', readInterval: 'readInterval',
       startIndex: 'startIndex', defaultFile: 'defaultFile',
+      defaultFontSize: 'defaultFontSize',
     });
   },
 
@@ -152,15 +155,17 @@ const EnwordPlugin = {
     container.style.minHeight = '0';
     container.style.height = 'auto';
 
+    this._fontPct = this.defaultFontSize || 100; // 每次进入使用配置默认字号
+
     container.innerHTML =
       '<div style="display:flex;flex-direction:column;align-items:center;padding:24px 20px 120px;width:100%">' +
-        '<div id="enword-display" style="text-align:center;max-width:900px">' +
-          '<div id="enword-english" style="font-size:clamp(3rem, 8vw, 7rem);font-weight:700;line-height:1.1;color:var(--text);margin-bottom:20px;letter-spacing:0.03em;word-break:break-all"></div>' +
-          '<div id="enword-chinese" style="font-size:clamp(1.7rem, 5vw, 3rem);color:var(--text);opacity:0.9;line-height:1.7;max-width:900px;margin:0 auto;font-weight:500"></div>' +
-          '<div id="enword-memo" style="font-size:clamp(1.4rem, 3.5vw, 2rem);color:var(--text);opacity:0.75;margin-top:20px;max-width:900px;line-height:1.65"></div>' +
+        '<div id="enword-display" style="text-align:center;max-width:900px;--enword-fs:' + (this._fontPct / 100) + '">' +
+          '<div id="enword-english" style="font-size:calc(clamp(3rem, 8vw, 7rem) * var(--enword-fs, 1));font-weight:700;line-height:1.1;color:var(--text);margin-bottom:20px;letter-spacing:0.03em;word-break:break-all"></div>' +
+          '<div id="enword-chinese" style="font-size:calc(clamp(1.7rem, 5vw, 3rem) * var(--enword-fs, 1));color:var(--text);opacity:0.9;line-height:1.7;max-width:900px;margin:0 auto;font-weight:500"></div>' +
+          '<div id="enword-memo" style="font-size:calc(clamp(1.4rem, 3.5vw, 2rem) * var(--enword-fs, 1));color:var(--text);opacity:0.75;margin-top:20px;max-width:900px;line-height:1.65"></div>' +
         '</div>' +
         '<div style="position:fixed;bottom:0;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px 20px 14px;background:var(--bg);border-top:1px solid var(--border)">' +
-          '<div style="font-size:0.82rem;color:var(--muted);display:flex;align-items:center;gap:8px">' +
+          '<div style="font-size:0.82rem;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center">' +
             '<span id="enword-progress"></span>' +
             '<span>· 间隔</span>' +
             '<span class="stepper">' +
@@ -169,6 +174,13 @@ const EnwordPlugin = {
               '<button class="stepper-btn" id="enword-int-plus">+</button>' +
             '</span>' +
             '<span>秒</span>' +
+            '<span>· 字号</span>' +
+            '<span class="stepper">' +
+              '<button class="stepper-btn" id="enword-fs-minus">−</button>' +
+              '<input type="number" class="stepper-input" id="enword-fs" value="' + this._fontPct + '" min="60" max="200" step="10" style="width:56px">' +
+              '<button class="stepper-btn" id="enword-fs-plus">+</button>' +
+            '</span>' +
+            '<span>%</span>' +
           '</div>' +
           '<button class="btn btn-dark" id="enword-pause" style="padding:10px 34px;font-size:1rem;min-width:130px">⏸ 暂停</button>' +
           '<div style="display:flex;gap:8px">' +
@@ -203,6 +215,27 @@ const EnwordPlugin = {
       var inp = document.getElementById('enword-interval');
       inp.value = clampInterval(parseFloat(inp.value) + 0.5);
       self.readInterval = parseFloat(inp.value);
+    });
+    // ── 字号调节（60% ~ 200%）──
+    var fsDisplay = container.querySelector('#enword-display');
+    var applyFontSize = function() {
+      var pct = Math.max(60, Math.min(200, self._fontPct));
+      var inp = document.getElementById('enword-fs');
+      if (inp) inp.value = pct;
+      if (fsDisplay) fsDisplay.style.setProperty('--enword-fs', pct / 100);
+    };
+    container.querySelector('#enword-fs-minus').addEventListener('click', function() {
+      self._fontPct = Math.max(60, (self._fontPct || 100) - 10);
+      applyFontSize();
+    });
+    container.querySelector('#enword-fs-plus').addEventListener('click', function() {
+      self._fontPct = Math.min(200, (self._fontPct || 100) + 10);
+      applyFontSize();
+    });
+    container.querySelector('#enword-fs').addEventListener('change', function() {
+      var v = parseInt(this.value, 10);
+      self._fontPct = isNaN(v) ? 100 : Math.max(60, Math.min(200, v));
+      applyFontSize();
     });
   },
 
