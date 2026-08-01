@@ -74,7 +74,8 @@ def global_cleanup(ctx, log):
 
 def main():
     ap = argparse.ArgumentParser(description='SeaScribe 独立调试工具')
-    ap.add_argument('--url', default='http://localhost:9060', help='服务器地址（默认 http://localhost:9060）')
+    ap.add_argument('--url', default='http://127.0.0.1:9060',
+                    help='服务器地址（默认 http://127.0.0.1:9060；勿用 localhost，避免 IPv6 回退 2 秒延迟）')
     ap.add_argument('--admin-user', default='admin', help='管理员用户名（默认 admin）')
     ap.add_argument('--admin-pass', default=None, help='管理员密码（不传则交互式输入）')
     ap.add_argument('--skip-online', action='store_true', help='只做离线静态检查，不调用服务器')
@@ -138,6 +139,7 @@ def main():
     if not args.skip_online:
         http = HttpClient(args.url)
         ctx['_http'] = http
+        ctx['_case_total'] = len(tests.API_CASES)
         log.grp('在线 API 测试（%s）' % args.url)
         for case in tests.API_CASES:
             run_case(case, http, ctx, log, results)

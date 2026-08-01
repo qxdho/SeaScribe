@@ -231,6 +231,10 @@ def run_case(case, http, ctx, log, results):
     """
     name = case['name']
     group = case.get('group', '未分组')
+    idx = ctx.get('_case_idx', 0) + 1
+    ctx['_case_idx'] = idx
+    total = ctx.get('_case_total', 0)
+    progress = '[%d/%d] ' % (idx, total) if total else ''
     skip = case.get('skip')
     if callable(skip):
         try:
@@ -265,7 +269,7 @@ def run_case(case, http, ctx, log, results):
             results.add(group, name, 'SKIP', '缺少 %s 登录态' % auth)
             return
 
-    log.test('%s — %s %s' % (name, case['method'], path))
+    log.test('%s%s — %s %s' % (progress, name, case['method'], path))
     if body is not None:
         log.req('body: ' + _trunc(json.dumps(body, ensure_ascii=False), 160))
     status, data, dt = http.request(case['method'], path, body=body, token=token)

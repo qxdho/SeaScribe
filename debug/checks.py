@@ -98,8 +98,34 @@ _IMPORT_RE = re.compile(r'\b(import|export)\b')
 
 
 def check_js_syntax(root):
-    errors = []
-    n = 0
+    from concurrent.futures import ThreadPoolExecutor
+    jobs = []
+
+    def collect(fp):
+        rel = os.path.relpath(fp, root)
+        try:
+            with open(fp, encoding='utf-8') as f:
+                src = f.read()
+        except Exception as e:
+            return '%s: 读取失败 %r' % (rel, e)
+        is_esm = bool(_IMPORT_RE.search(src))
+        cmd = ['node', '--check', '-']
+        if is_esm:
+            cmd = ['node', '--input-type=module', '--check', '-']
+        try:
+            # 传入 UTF-8 bytes，避免 Windows 下按 GBK 编码 stdin 抛错/卡死
+            p = subprocess.run(cmd, input=src.encode('utf-8'),
+                               capture_output=True, timeout=20)
+        except FileNotFoundError:
+            return 'NODE_MISSING'
+        except subprocess.TimeoutExpired:
+            return '%s: node 检查超时' % rel
+        if p.returncode != 0:
+            raw = (p.stderr or p.stdout) or b''
+            err = raw.decode('utf-8', 'replace').strip().splitlines()
+            return '%s: %s' % (rel, err[-1] if err else 'node 报错')
+        return None
+
     for d in JS_DIRS:
         base = os.path.join(root, d)
         if not os.path.isdir(base):
@@ -107,37 +133,18 @@ def check_js_syntax(root):
         for dirpath, dirnames, filenames in os.walk(base):
             dirnames[:] = [d2 for d2 in dirnames if d2 not in EXCLUDE_DIRS]
             for fn in filenames:
-                if not fn.endswith('.js'):
-                    continue
-                fp = os.path.join(dirpath, fn)
-                rel = os.path.relpath(fp, root)
-                n += 1
-                try:
-                    with open(fp, encoding='utf-8') as f:
-                        src = f.read()
-                except Exception as e:
-                    errors.append('%s: 读取失败 %r' % (rel, e))
-                    continue
-                is_esm = bool(_IMPORT_RE.search(src))
-                cmd = ['node', '--check', '-']
-                if is_esm:
-                    cmd = ['node', '--input-type=module', '--check', '-']
-                try:
-                    # 传入 UTF-8 bytes，避免 Windows 下按 GBK 编码 stdin 抛错/卡死
-                    p = subprocess.run(cmd, input=src.encode('utf-8'),
-                                       capture_output=True, timeout=20)
-                except FileNotFoundError:
-                    return False, 'node 未安装，无法执行 JS 语法检查'
-                except subprocess.TimeoutExpired:
-                    errors.append('%s: node 检查超时' % rel)
-                    continue
-                if p.returncode != 0:
-                    raw = (p.stderr or p.stdout) or b''
-                    err = raw.decode('utf-8', 'replace').strip().splitlines()
-                    errors.append('%s: %s' % (rel, err[-1] if err else 'node 报错'))
+                if fn.endswith('.js'):
+                    jobs.append(os.path.join(dirpath, fn))
+
+    n = len(jobs)
+    with ThreadPoolExecutor(max_workers=8) as ex:
+        errors = [r for r in ex.map(collect, jobs) if r]
+    if any(e == 'NODE_MISSING' for e in errors):
+        return False, 'node 未安装，无法执行 JS 语法检查'
+    errors = [e for e in errors if e != 'NODE_MISSING']
     if errors:
         return False, '%d 个文件语法错误: %s' % (len(errors), '; '.join(errors[:5]))
-    return True, '%d 个 .js 文件语法全部通过（含 ESM 识别）' % n
+    return True, '%d 个 .js 文件语法全部通过（并发 %d，含 ESM 识别）' % (n, 8)
 
 
 # ════════════════════════════════════════════════════════════════

@@ -28,7 +28,7 @@ set CODE=3
 goto end
 
 :running
-echo [INFO] Server already running (http://localhost:%PORT%), start debug
+echo [INFO] Server already running (http://127.0.0.1:%PORT%), start debug
 goto debug
 
 :ready
@@ -46,6 +46,15 @@ if %SELF%==1 (
 )
 
 :end
+echo.
+echo ============================================================
 echo Debug exit code: %CODE%
-pause
+echo Copy the results above, then type "exit" to close this window.
+set /a tries=0
+:confirm
+set EXIT_INPUT=
+set /p EXIT_INPUT=Type "exit" to close: 
+if /i "%EXIT_INPUT%"=="exit" exit /b %CODE%
+set /a tries+=1
+if %tries% lss 10 goto confirm
 exit /b %CODE%
