@@ -394,7 +394,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* 顶部对齐：名字水平线一致（卡片高度不同也齐） */
   gap: 3vw;
   max-width: 92vw;
 }
@@ -434,11 +434,12 @@
   color: var(--text);
   opacity: 0.55;
   margin-top: 6px;
-  max-width: 16vw;
+  max-width: 22vw;
   text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  line-height: 1.35;
+  min-height: 1.4em; /* 无签名也占一行，名字位置恒定 */
+  white-space: normal; /* 完整显示，自动换行 */
+  word-break: break-word;
 }
 .pick-decorative-card-sig.empty { opacity: 0; }
 
