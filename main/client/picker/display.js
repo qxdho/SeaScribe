@@ -149,10 +149,10 @@ function fillMany(persons, mode) {
     cardEls.forEach(releaseAnim);
   }
 
-  // 展示态停顿后，逐卡 FLIP 过渡到紧凑态（头像名字缩小横排，给签名让位）
+  // 展示态短暂停顿后，逐卡 FLIP 过渡到紧凑态（头像名字缩小横排，给签名让位）
   setTimeout(function() {
     flipToCompact(cards, mode);
-  }, 1800);
+  }, 1200);
 
   // 提示信息
   if (hintEl) hintEl.style.display = '';
