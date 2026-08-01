@@ -328,13 +328,21 @@ function shrinkToResult(names) {
     var target = resultTarget;
     var label = (Array.isArray(names) ? names : [names]).join(' ');
 
-    // ── 多人：名字 ghost 副本从卡片原位飞到顶栏中心并淡出，卡片独立淡出 ──
+    // ── 多人：名字 ghost 副本一起从卡片原位飞到顶栏各自位置并淡出 ──
     if ((Array.isArray(names) ? names : [names]).length > 1) {
       var cards = document.getElementById('pick-decorative-cards');
       var nameEls = cards ? cards.querySelectorAll('.pick-decorative-card-name') : [];
-      // 顶栏先显示结果
-      target.textContent = label;
-      // 复制名字为 ghost（fixed 定位到原位，脱离卡片容器，互不影响）
+      var nameList = Array.isArray(names) ? names : [names];
+      // 顶栏用 span 包裹每个名字：测量每个名字在顶栏的各自目标位置
+      target.textContent = '';
+      var spans = nameList.map(function(n, i) {
+        var s = document.createElement('span');
+        s.textContent = n + (i < nameList.length - 1 ? ' ' : '');
+        s.style.whiteSpace = 'pre';
+        target.appendChild(s);
+        return s;
+      });
+      // 复制名字为 ghost（fixed 定位到原位，脱离卡片容器）
       var ghosts = [];
       nameEls.forEach(function(el, i) {
         var r = el.getBoundingClientRect();
@@ -342,24 +350,26 @@ function shrinkToResult(names) {
         ghost.style.cssText = 'position:fixed;left:' + r.left + 'px;top:' + r.top + 'px;margin:0;z-index:10003;pointer-events:none;';
         overlay.appendChild(ghost);
         ghosts.push(ghost);
-        setTimeout(function() {
-          var tr = target.getBoundingClientRect();
-          var dx = tr.left + tr.width / 2 - (r.left + r.width / 2);
-          var dy = tr.top + tr.height / 2 - (r.top + r.height / 2);
-          ghost.style.transition = 'transform 0.42s cubic-bezier(0.33, 1, 0.68, 1), opacity 0.36s ease';
-          ghost.style.transform = 'translate(' + dx + 'px,' + dy + 'px)';
-          ghost.style.opacity = '0';
-        }, 30 + i * 50);
+        var sr = spans[i] ? spans[i].getBoundingClientRect() : target.getBoundingClientRect();
+        ghost._dx = sr.left + sr.width / 2 - (r.left + r.width / 2);
+        ghost._dy = sr.top + sr.height / 2 - (r.top + r.height / 2);
       });
-      // 卡片整体淡出（ghost 已脱离，不受影响）
-      if (cards) {
-        cards.style.transition = 'opacity 0.4s ease';
-        cards.style.opacity = '0';
-      }
+      // 一起飞入（0 延迟同时），各自飞到顶栏对应位置
+      requestAnimationFrame(function() {
+        ghosts.forEach(function(g) {
+          g.style.transition = 'transform 0.5s cubic-bezier(0.33, 1, 0.68, 1), opacity 0.3s ease 0.2s';
+          g.style.transform = 'translate(' + g._dx + 'px,' + g._dy + 'px)';
+          g.style.opacity = '0';
+        });
+        // 卡片整体同步淡出
+        if (cards) {
+          cards.style.transition = 'opacity 0.45s ease';
+          cards.style.opacity = '0';
+        }
+      });
       // 背景淡出
       overlay.classList.add('shrink');
       // 飞入完成后收尾
-      var total = 30 + Math.max(0, nameEls.length - 1) * 50 + 420 + 150;
       setTimeout(function() {
         ghosts.forEach(function(g) { if (g.parentNode) g.parentNode.removeChild(g); });
         overlay.classList.add('hidden');
@@ -373,7 +383,7 @@ function shrinkToResult(names) {
         var innerEl = overlay ? overlay.querySelector('.pick-decorative-inner') : null;
         if (innerEl) innerEl.style.display = '';
         resolve();
-      }, total);
+      }, 600);
       return;
     }
 
