@@ -851,7 +851,9 @@ def _compress_avatar(raw_data, ext):
 def handle_avatar_upload(path, body, handler):
     if path != '/api/admin/upload/avatar':
         return False
-    user = require_role(handler, "admin", "teacher")
+    # 任何已登录用户（含学生）都可上传自己的头像；文件名以 uid 为前缀，
+    # 只能覆盖本人的旧头像，不存在越权
+    user = require_auth(handler)
     if not user: return True
     p = _parse_json_body(handler, body)
     if p is None: return True
