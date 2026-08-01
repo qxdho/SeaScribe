@@ -328,9 +328,52 @@ function shrinkToResult(names) {
     var target = resultTarget;
     var label = (Array.isArray(names) ? names : [names]).join(' ');
 
-    // 收起多人卡片
-    var cards = document.getElementById('pick-decorative-cards');
-    if (cards) { cards.classList.add('hidden'); cards.innerHTML = ''; }
+    // ── 多人：每个名字从卡片原位向上飞到顶栏高度并淡出 ──
+    if ((Array.isArray(names) ? names : [names]).length > 1) {
+      var cards = document.getElementById('pick-decorative-cards');
+      var nameEls = cards ? cards.querySelectorAll('.pick-decorative-card-name') : [];
+      var targetRect = target.getBoundingClientRect();
+      var ty = targetRect.top + targetRect.height / 2;
+      var maxI = nameEls.length;
+      nameEls.forEach(function(el, i) {
+        var rect = el.getBoundingClientRect();
+        var dy = ty - (rect.top + rect.height / 2);
+        // 逐个稍作延迟，飞入更有层次
+        var delay = i * 40;
+        setTimeout(function() {
+          el.style.transition = 'transform 0.42s cubic-bezier(0.33, 1, 0.68, 1), opacity 0.36s ease';
+          el.style.transform = 'translateY(' + dy + 'px)';
+          el.style.opacity = '0';
+        }, delay);
+        maxI = i;
+      });
+      // 卡片其余内容同步淡出
+      if (cards) {
+        cards.style.transition = 'opacity 0.4s ease';
+        cards.style.opacity = '0';
+      }
+      // 背景淡出
+      overlay.classList.add('shrink');
+      // 飞入完成后收尾
+      setTimeout(function() {
+        target.textContent = label;
+        overlay.classList.add('hidden');
+        overlay.classList.remove('shrink');
+        if (cards) {
+          cards.style.opacity = '';
+          cards.style.transition = '';
+          cards.classList.add('hidden');
+          cards.innerHTML = '';
+        }
+        resolve();
+      }, 420 + maxI * 40 + 120);
+      return;
+    }
+
+    // ── 单人：名字淡入后平移到顶栏 ──
+    // 收起多人卡片（理论上单人无卡片，兜底清理）
+    var cardsEl = document.getElementById('pick-decorative-cards');
+    if (cardsEl) { cardsEl.classList.add('hidden'); cardsEl.innerHTML = ''; }
 
     // 恢复单卡布局，但清空头像/签名/时间/提示——只留名字用于飞入
     var inner = overlay ? overlay.querySelector('.pick-decorative-inner') : null;
@@ -358,13 +401,13 @@ function shrinkToResult(names) {
 
     // 等淡入完成后，测量稳定布局并播放飞入动画
     setTimeout(function() {
-      var targetRect = target.getBoundingClientRect();
+      var targetRect2 = target.getBoundingClientRect();
       var overlayRect = textEl.getBoundingClientRect();
-      var dx = targetRect.left + targetRect.width / 2 - (overlayRect.left + overlayRect.width / 2);
-      var dy = targetRect.top + targetRect.height / 2 - (overlayRect.top + overlayRect.height / 2);
-      var targetFontSize = parseFloat(getComputedStyle(target).fontSize);
+      var dx = targetRect2.left + targetRect2.width / 2 - (overlayRect.left + overlayRect.width / 2);
+      var dy = targetRect2.top + targetRect2.height / 2 - (overlayRect.top + overlayRect.height / 2);
+      var targetFontSize2 = parseFloat(getComputedStyle(target).fontSize);
       var overlayFontSize = parseFloat(getComputedStyle(textEl).fontSize);
-      var scale = targetFontSize / overlayFontSize;
+      var scale = targetFontSize2 / overlayFontSize;
 
       overlay.style.setProperty('--dx', dx + 'px');
       overlay.style.setProperty('--dy', dy + 'px');
@@ -384,7 +427,7 @@ function shrinkToResult(names) {
         overlay.style.removeProperty('--scale');
         resolve();
       });
-    }, 200);
+    }, 150);
   });
 }
 
