@@ -63,12 +63,14 @@ var debugPlay = document.getElementById('picker-debug-play');
     var chk = m.id === cfg.processMode ? ' checked' : '';
     return '<label><input type="radio" name="picker-process-mode" value="' + escAttr(m.id) + '"' + chk + '><span>' + SeaScribe.esc(m.name) + '</span></label>';
   }).join('');
-  processModeGroup.classList.add('collapsed');
 
   // 重新获取动态创建的 radio 引用
   processModeRadios = document.getElementsByName('picker-process-mode');
   multiRadios = document.getElementsByName('picker-multi-mode');
 })();
+
+// 初始状态：过程动画 radio 置灰（未勾选"显示随机过程"）
+updateProcessUI();
 
 /* ====== 人数控件 ====== */
 function updateCountUI() {
@@ -190,29 +192,24 @@ document.getElementById('picker-ts-panel-close').addEventListener('click', funct
   tsPanel.classList.add('hidden');
 });
 
-/* ====== 过程动画开关联动 ====== */
-showProcessCheck.addEventListener('change', function() {
-  if (showProcessCheck.checked) {
-    processModeGroup.classList.remove('collapsed');
-  } else {
-    processModeGroup.classList.add('collapsed');
+/* ====== 过程动画开关联动（常驻置灰，不显隐，界面不跳动） ====== */
+function updateProcessUI() {
+  var on = showProcessCheck.checked;
+  for (var i = 0; i < processModeRadios.length; i++) {
+    processModeRadios[i].disabled = !on;
   }
-});
+}
+showProcessCheck.addEventListener('change', updateProcessUI);
 
-/* ====== 调试模式开关 ====== */
+/* ====== 调试模式开关（常驻置灰） ====== */
 if (debugToggle) {
   debugToggle.addEventListener('change', function() {
-    if (debugToggle.checked) {
-      debugSection.classList.remove('picker-debug-collapsed');
-      debugPlay.disabled = !debugSelect.value;
-      btnStart.style.display = 'none';
-    } else {
-      debugSection.classList.add('picker-debug-collapsed');
-      btnStart.style.display = '';
-    }
+    var on = debugToggle.checked;
+    if (debugSelect) debugSelect.disabled = !on;
+    if (debugPlay) debugPlay.disabled = !on || !debugSelect.value;
   });
   debugSelect.addEventListener('change', function() {
-    debugPlay.disabled = !debugSelect.value;
+    debugPlay.disabled = debugToggle.checked ? !debugSelect.value : true;
   });
 }
 
