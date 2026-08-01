@@ -803,11 +803,16 @@
   font-weight: 700;
   color: var(--text);
   min-width: 5em;
+  max-width: 38vw; /* 限宽：多人名字多时不挤占其他顶栏元素 */
   text-align: center;
   display: inline-block;
   white-space: nowrap;
+  overflow-x: auto; /* 名字多时左右滑动查看 */
+  scrollbar-width: none; /* Firefox 隐藏滚动条 */
+  -webkit-overflow-scrolling: touch;
   transition: color var(--dur-slow);
 }
+.pick-result::-webkit-scrollbar { display: none; } /* Chrome/Edge/Safari 隐藏滚动条 */
 
 /* ====== Keyframes ====== */
 @keyframes pickPop {
