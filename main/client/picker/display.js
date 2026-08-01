@@ -191,8 +191,10 @@ function flipToCompact(cards, mode) {
       });
       void card.offsetWidth; // 强制重排
       // 平滑过渡到紧凑态自然位置（更慢更柔的缓动）
-      elems.forEach(function(el) {
-        el.style.transition = 'transform 0.8s cubic-bezier(0.33, 1, 0.68, 1)';
+      // 错开 stagger：名字先让路 → 头像跟上 → 签名最后，避免移动路径交叉"撞车"
+      var delays = [0.1, 0, 0.2]; // [avatar, name, sig]
+      elems.forEach(function(el, idx) {
+        el.style.transition = 'transform 0.8s cubic-bezier(0.33, 1, 0.68, 1) ' + (delays[idx] != null ? delays[idx] : 0) + 's';
         el.style.transform = '';
       });
     }, delay);
