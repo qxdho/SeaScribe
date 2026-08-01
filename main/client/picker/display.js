@@ -125,6 +125,9 @@ function fillMany(persons, mode) {
     loadAvatar(img, p.name);
   });
 
+  // 按人数自适应列数（人多列多，卡片不超屏）
+  applyCardGrid(cards, persons.length);
+
   // 弹出动画：逐个 / 同时；动画结束后脱离 animation 以便 FLIP 接管 transform
   var cardEls = cards.querySelectorAll('.pick-decorative-card');
   function releaseAnim(card) {
@@ -153,6 +156,25 @@ function fillMany(persons, mode) {
 
   // 提示信息
   if (hintEl) hintEl.style.display = '';
+}
+
+/**
+ * 按人数设置网格列数：人多列多，保证卡片高度在屏幕内
+ * @param {HTMLElement} cards — 多卡容器
+ * @param {number} n — 人数
+ */
+function applyCardGrid(cards, n) {
+  var cols;
+  if (n >= 18) cols = 6;
+  else if (n >= 12) cols = 5;
+  else if (n >= 8) cols = 4;
+  else if (n >= 5) cols = 3;
+  else if (n >= 3) cols = 2;
+  else cols = 1;
+  // 窄屏限制列数，避免卡片过窄
+  if (window.innerWidth < 640 && cols > 3) cols = 3;
+  if (window.innerWidth < 480 && cols > 2) cols = 2;
+  cards.style.gridTemplateColumns = 'repeat(' + cols + ', minmax(0, 1fr))';
 }
 
 /**
