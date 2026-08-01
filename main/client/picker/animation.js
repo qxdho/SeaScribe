@@ -241,15 +241,18 @@ function renderProcessStep(el, data, idx) {
       '<div class="proc-subset">' + SeaScribe.esc(subsetNames) + '</div>' +
       '<div class="proc-rest-label">淘汰 ' + restCount + ' 人</div>';
   } else if (data.phase === 'select') {
-    // 时间加权随机法 —— 显示选中逻辑
+    // 时间加权随机法 —— 显示选中逻辑（多人：一次选中 N 人）
+    var chosenList = Array.isArray(data.chosen) ? data.chosen : (data.chosen ? [data.chosen] : []);
+    var chosenNames = chosenList.map(function(c) { return c.name; });
     var neverCount = (data.neverPicked || []).length;
-    var chosenName = data.chosen ? data.chosen.name : '';
     var reasonText;
     var detailHtml = '';
 
     if (data.reason === 'never') {
       reasonText = '子集中有 <strong>' + neverCount + '</strong> 人从未被点过';
-      if (neverCount > 1) {
+      if (chosenNames.length > 1) {
+        reasonText += '，从中随机选出 ' + chosenNames.length + ' 人';
+      } else {
         reasonText += '，从中随机选出一人';
       }
       // 高亮从未点过的人
@@ -263,15 +266,18 @@ function renderProcessStep(el, data, idx) {
       }).join('、');
       detailHtml = '<div class="proc-subset">' + subsetNames + '</div>';
     } else {
-      reasonText = '子集中所有人均已点过名，选<strong>距上次点名最久</strong>的人';
+      reasonText = '子集中所有人均已点过名，选<strong>距上次点名最久</strong>' +
+        (chosenNames.length > 1 ? '的 ' + chosenNames.length + ' 人' : '的人');
       var subsetNames2 = (data.subset || []).map(function(p) { return p.name; }).join('、');
       detailHtml = '<div class="proc-subset">' + SeaScribe.esc(subsetNames2) + '</div>';
     }
 
+    var size = chosenNames.length >= 6 ? '1.4rem' : chosenNames.length >= 3 ? '1.8rem' : '2.5rem';
     el.innerHTML = '<div class="proc-phase">时间加权随机法 · 选定结果</div>' +
       '<div class="proc-reason">' + reasonText + '</div>' +
       detailHtml +
-      '<div class="proc-chosen-name">🎯 ' + SeaScribe.esc(chosenName) + '</div>';
+      '<div class="proc-chosen-name" style="font-size:' + size + ';max-width:84vw;line-height:1.5">🎯 ' +
+      chosenNames.map(function(n) { return SeaScribe.esc(n); }).join('、') + '</div>';
   } else {
     // 二分法
     var leftNames = (data.left || []).map(function(p) { return p.name; });

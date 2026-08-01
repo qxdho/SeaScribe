@@ -148,45 +148,31 @@ async function* fairPick(list, timestamps, count, options) {
     }
   }
 
-  var person;
-
-  if (neverPicked.length > 0) {
-    var pickIdx = _cryptoRandom(neverPicked.length);
-    person = neverPicked[pickIdx];
-
-    yield {
-      type: 'step', phase: 'select',
-      subset: subset, neverPicked: neverPicked,
-      chosen: person, reason: 'never', total: total,
-    };
-  } else {
-    var now = Date.now();
-    var best = subset[0];
-    var bestInterval = -1;
-    for (var m = 0; m < subset.length; m++) {
-      var ts = timestamps[subset[m].name];
-      if (ts) {
-        var interval = now - new Date(ts).getTime();
-        if (interval > bestInterval) {
-          bestInterval = interval;
-          best = subset[m];
-        }
-      }
-    }
-    person = best;
-
-    yield {
-      type: 'step', phase: 'select',
-      subset: subset, neverPicked: [],
-      chosen: person, reason: 'interval',
-      bestInterval: bestInterval, total: total,
-    };
+  // 候选池：优先未点名者（公平性），从中无重复抽 count 人（不足时逐级补抽）
+  var base = neverPicked.length > 0 ? neverPicked : subset;
+  var drawn = _draw(base, count);
+  if (drawn.length < count) {
+    var restA = subset.filter(function(p) { return drawn.indexOf(p) < 0; });
+    drawn = drawn.concat(_draw(restA, count - drawn.length));
   }
+  if (drawn.length < count) {
+    var restB = list.filter(function(p) { return drawn.indexOf(p) < 0; });
+    drawn = drawn.concat(_draw(restB, count - drawn.length));
+  }
+
+  yield {
+    type: 'step', phase: 'select',
+    subset: subset, neverPicked: neverPicked,
+    chosen: drawn, reason: neverPicked.length > 0 ? 'never' : 'interval',
+    total: total,
+  };
 
   if (!skip) await SeaScribe.delay(cfg.fairResultDelay || 1000);
 
-  var lastTime = timestamps[person.name] || null;
-  yield _composeResults(person, lastTime, list, timestamps, count);
+  var persons = drawn.map(function(p) {
+    return { person: p, lastPickedTime: timestamps[p.name] || null };
+  });
+  yield { type: 'results', persons: persons };
 }
 
 export const PickerRandom = { pick: pick };
