@@ -164,32 +164,37 @@ def main():
                 results.add('自动发现', p, 'WARN', 'routes.py 中未注册用例的路径')
 
     # ── 在线 API 测试 ──
+    cases = None
     if not args.skip_online:
         if not args.admin_pass:
             try:
                 args.admin_pass = read_password('请输入管理员密码（%s）: ' % args.admin_user)
             except (EOFError, KeyboardInterrupt):
-                log.bad('未提供管理员密码，跳过在线 API 测试')
-                args.skip_online = True
+                args.admin_pass = None
+                log.warn('未提供管理员密码：仅执行公开 API 组，跳过需要登录的用例')
             else:
                 if not args.admin_pass:
-                    log.bad('密码为空，跳过在线 API 测试')
-                    args.skip_online = True
-                else:
-                    ctx['admin_pass'] = args.admin_pass
-    if not args.skip_online:
+                    log.warn('密码为空：仅执行公开 API 组，跳过需要登录的用例')
+        if args.admin_pass:
+            ctx['admin_pass'] = args.admin_pass
+            cases = tests.API_CASES
+        else:
+            # 无密码：只执行公开 API 组（无需登录），其余组自动跳过
+            cases = [c for c in tests.API_CASES if c.get('group') == '公开 API']
+            log.info('本次仅执行公开 API 组（%d 条用例）' % len(cases))
+    if cases is not None:
         http = HttpClient(args.url)
         ctx['_http'] = http
-        ctx['_case_total'] = len(tests.API_CASES)
+        ctx['_case_total'] = len(cases)
         log.grp('在线 API 测试（%s）' % args.url)
-        for case in tests.API_CASES:
+        for case in cases:
             run_case(case, http, ctx, log, results)
 
     # ── 汇总 ──
     t, fails = engine.print_summary(results, log, uncovered)
 
     # ── 全局清理 ──
-    if not args.skip_online:
+    if cases is not None:
         global_cleanup(ctx, log)
 
     if fails:
