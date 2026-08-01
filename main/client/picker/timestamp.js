@@ -27,11 +27,21 @@ async function load(listName) {
  * @param {Object} person — { name, signature }
  */
 async function save(listName, person) {
-  if (!isEnabled()) return;
+  await saveMany(listName, person ? [person.name] : []);
+}
 
-  // 先读取现有时间戳，再更新当前人
+/**
+ * 批量保存多人时间戳（一次读取 + 一次写入）
+ * @param {string} listName — 如 "11班"
+ * @param {string[]} names — 姓名列表
+ */
+async function saveMany(listName, names) {
+  if (!isEnabled() || !names || !names.length) return;
+
+  // 先读取现有时间戳，再更新本次点到的所有人
   var timestamps = await load(listName);
-  timestamps[person.name] = new Date().toISOString();
+  var now = new Date().toISOString();
+  names.forEach(function(n) { timestamps[n] = now; });
 
   try {
     await fetch('/api/picker-timestamps', {
@@ -85,6 +95,7 @@ function format(isoStr) {
 export const PickerTimestamp = {
   load: load,
   save: save,
+  saveMany: saveMany,
   clear: clear,
   isEnabled: isEnabled,
   format: format,

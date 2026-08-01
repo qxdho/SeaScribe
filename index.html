@@ -45,6 +45,7 @@
     <span id="pick-decorative-text" class="pick-decorative-text"></span>
     <span id="pick-decorative-sig" class="pick-decorative-sig"></span>
   </div>
+  <div id="pick-decorative-cards" class="pick-decorative-cards hidden"></div>
   <span class="pick-decorative-hint">点击屏幕继续</span>
 </div>
 <div id="pick-process" class="pick-process hidden"></div>
@@ -64,6 +65,25 @@
       <span class="picker-section-label">🎲 随机方式</span>
       <div id="picker-method-group" class="picker-radio-group">
         <!-- JS 动态渲染 -->
+      </div>
+    </div>
+
+    <div class="picker-section">
+      <span class="picker-section-label">👥 点几人</span>
+      <div class="picker-count-row">
+        <button id="picker-count-minus" class="btn btn-ghost btn-sm-picker" title="减少人数" type="button">−</button>
+        <span id="picker-count-value" class="picker-count-value">1</span>
+        <button id="picker-count-plus" class="btn btn-ghost btn-sm-picker" title="增加人数" type="button">+</button>
+        <span class="picker-count-unit">人</span>
+        <span id="picker-count-hint" class="picker-count-hint hidden">一次最多 10 人</span>
+      </div>
+    </div>
+
+    <div class="picker-section picker-multi-section hidden" id="picker-multi-section">
+      <span class="picker-section-label">🎬 多人动画</span>
+      <div class="picker-multi-radio-row">
+        <label class="picker-radio-item-slim"><input type="radio" name="picker-multi-mode" value="simultaneous" checked><span>同时定格</span></label>
+        <label class="picker-radio-item-slim"><input type="radio" name="picker-multi-mode" value="sequential"><span>逐个定格</span></label>
       </div>
     </div>
 

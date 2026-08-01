@@ -22,13 +22,14 @@ function initRefs() {
 /**
  * 运行动画编排
  * @param {Array} list — 完整名单 [{name, signature}, ...]
- * @param {AsyncGenerator} generator — 随机算法 generator
- * @param {Object} options — { showProcess, processMode, decorativeType }
- * @returns {Promise<{name, signature, lastPickedTime}>}
+ * @param {AsyncGenerator} generator — 随机算法 generator（yield {type:'results', persons})
+ * @param {Object} options — { showProcess, processMode, decorativeType, count, multiMode }
+ * @returns {Promise<{persons: [{name, signature, lastPickedTime}]}>}
  */
 async function run(list, generator, options) {
   initRefs();
   options = options || {};
+  var multiMode = options.multiMode || 'simultaneous';
 
   // 全部初始化到干净状态
   resetAll();
@@ -53,56 +54,80 @@ async function run(list, generator, options) {
   }
 
   // 消费 generator 直到拿到结果
-  var finalPerson = null;
+  var finalPersons = null;
   var lastPickedTime = null;
 
   if (!options.showProcess) {
     // 不显示过程动画：静默消费 generator
-    finalPerson = await consumeSilent(generator);
+    finalPersons = await consumeSilent(generator);
   }
 
   // 等待过程动画完成（它会自己消费 generator）
   if (processPromise) {
     var pResult = await processPromise;
-    finalPerson = pResult.person;
+    finalPersons = pResult.persons;
     lastPickedTime = pResult.lastPickedTime;
     // 过程动画结束后自动消失
     if (processEl) processEl.classList.add('hidden');
   }
 
-  // 停止修饰动画（会等待最少 _decorMinMs 后真正停止）
-  stopDecorative(finalPerson ? finalPerson.name : (list[0] ? list[0].name : ''));
-
-  // 从时间戳查询上次点名时间
-  if (options.timestamps && finalPerson) {
-    lastPickedTime = options.timestamps[finalPerson.name] || null;
+  // 兜底：generator 未产出结果时
+  if (!finalPersons || !finalPersons.length) {
+    finalPersons = [{ person: list[0] || { name: '', signature: '' }, lastPickedTime: null }];
   }
 
-  // 等待滚动动画真正结束
+  // 停止修饰动画（会等待最少 _decorMinMs 后真正停止）
+  stopDecorative(finalPersons[0].person.name);
+
+  // 从时间戳查询上次点名时间
+  if (options.timestamps && !lastPickedTime) {
+    finalPersons.forEach(function(entry) {
+      if (!entry.lastPickedTime) {
+        entry.lastPickedTime = options.timestamps[entry.person.name] || null;
+      }
+    });
+  }
+
+  // 等待滚动动画真正结束（名字定格并开始弹跳）
   await decorativeDone;
+
+  // 名字定格弹跳的同时立即填充头像/签名 —— 不再等彩带与 300ms 延迟
+  if (decorativeEl) {
+    if (finalPersons.length > 1) {
+      PickerDisplay.fillMany(
+        finalPersons.map(function(p) {
+          return { name: p.person.name, signature: p.person.signature || '', lastPickedTime: p.lastPickedTime };
+        }),
+        multiMode
+      );
+    } else if (decorativeText) {
+      PickerDisplay.fill({
+        name: finalPersons[0].person.name,
+        signature: finalPersons[0].person.signature || '',
+        lastPickedTime: finalPersons[0].lastPickedTime,
+      });
+    }
+  }
 
   // 彩带
   fireConfetti();
 
+  // 弹跳（pickPop 0.35s）与彩带播放期间等待
   await SeaScribe.delay(300);
 
-  // 直接在修饰层上追加签名和时间（不再用独立 display 层）
-  if (decorativeEl && decorativeText) {
-    decorativeText.classList.remove('pop');
-    await PickerDisplay.showOnDecorative(decorativeEl, decorativeText, {
-      name: finalPerson.name,
-      signature: finalPerson.signature || '',
-      lastPickedTime: lastPickedTime,
-    });
-  }
+  // 弹跳结束，移除 pop
+  if (decorativeText) decorativeText.classList.remove('pop');
 
-  // 缩小飞入（固定动画）
-  await shrinkToResult(finalPerson.name);
+  // 等待用户点击关闭
+  await PickerDisplay.waitForClick();
+
+  // 缩小飞入（固定动画，多人拼接名字）
+  await shrinkToResult(finalPersons.map(function(p) { return p.person.name; }));
 
   return {
-    name: finalPerson.name,
-    signature: finalPerson.signature || '',
-    lastPickedTime: lastPickedTime,
+    persons: finalPersons.map(function(p) {
+      return { name: p.person.name, signature: p.person.signature || '', lastPickedTime: p.lastPickedTime };
+    }),
   };
 }
 
@@ -184,10 +209,10 @@ async function runProcess(list, generator, el) {
     if (step.done) break;
 
     var data = step.value;
-    if (data.type === 'result') {
-      result = data.person;
-      lastTime = data.lastPickedTime;
-      renderProcessResult(el, data.person);
+    if (data.type === 'results') {
+      result = data.persons; // [{person, lastPickedTime}, ...]
+      lastTime = data.persons.length ? data.persons[0].lastPickedTime : null;
+      renderProcessResult(el, data.persons);
       await SeaScribe.delay(cfg.processResultMs || 800);
       break;
     } else if (data.type === 'step') {
@@ -202,7 +227,7 @@ async function runProcess(list, generator, el) {
   el.style.opacity = '';
   el.style.transition = '';
 
-  return { person: result, lastPickedTime: lastTime };
+  return { persons: result, lastPickedTime: lastTime };
 }
 
 function renderProcessStep(el, data, idx) {
@@ -277,9 +302,10 @@ function renderProcessStep(el, data, idx) {
   }
 }
 
-function renderProcessResult(el, person) {
+function renderProcessResult(el, persons) {
+  var names = (persons || []).map(function(p) { return p.person.name; });
   el.innerHTML = '<div class="proc-phase">结果</div>' +
-    '<div class="proc-result-name">🎯 ' + SeaScribe.esc(person.name) + '</div>' +
+    '<div class="proc-result-name">🎯 ' + names.map(function(n) { return SeaScribe.esc(n); }).join('、') + '</div>' +
     '<div class="proc-result-sub">点击屏幕继续</div>';
 }
 
@@ -287,22 +313,35 @@ async function consumeSilent(generator) {
   while (true) {
     var step = await generator.next();
     if (step.done) break;
-    if (step.value.type === 'result') {
-      return step.value.person;
+    if (step.value.type === 'results') {
+      return step.value.persons; // [{person, lastPickedTime}, ...]
     }
   }
   return null;
 }
 
 /* ====== 缩小飞入 ====== */
-function shrinkToResult(name) {
+function shrinkToResult(names) {
   return new Promise(function(resolve) {
     var overlay = decorativeEl;
     var textEl = decorativeText;
     var target = resultTarget;
+    var label = (Array.isArray(names) ? names : [names]).join(' ');
+
+    // 多人模式：收起卡片，恢复单卡布局承载飞入名字
+    var cards = document.getElementById('pick-decorative-cards');
+    if (cards) { cards.classList.add('hidden'); cards.innerHTML = ''; }
+    if (overlay) {
+      var inner = overlay.querySelector('.pick-decorative-inner');
+      if (inner) inner.style.display = '';
+    }
 
     target.textContent = '';
-    textEl.textContent = name;
+    textEl.textContent = label;
+    // 多人拼接名字时缩小字号，避免飞入动画溢出
+    var isMulti = (Array.isArray(names) ? names : [names]).length > 1;
+    if (isMulti) textEl.style.fontSize = '6vw';
+    else textEl.style.removeProperty('font-size');
 
     var targetRect = target.getBoundingClientRect();
     var overlayRect = textEl.getBoundingClientRect();
@@ -319,7 +358,8 @@ function shrinkToResult(name) {
 
     textEl.addEventListener('animationend', function handler() {
       textEl.removeEventListener('animationend', handler);
-      target.textContent = name;
+      textEl.style.removeProperty('font-size');
+      target.textContent = label;
       overlay.classList.add('hidden');
       overlay.classList.remove('shrink');
       overlay.style.removeProperty('--dx');
@@ -360,6 +400,14 @@ function resetAll() {
     decorativeEl.style.removeProperty('--dx');
     decorativeEl.style.removeProperty('--dy');
     decorativeEl.style.removeProperty('--scale');
+    var inner = decorativeEl.querySelector('.pick-decorative-inner');
+    if (inner) inner.style.display = '';
+  }
+  var cards = document.getElementById('pick-decorative-cards');
+  if (cards) {
+    cards.classList.add('hidden');
+    cards.classList.remove('pop-all');
+    cards.innerHTML = '';
   }
   if (decorativeText) {
     decorativeText.classList.remove('pop');

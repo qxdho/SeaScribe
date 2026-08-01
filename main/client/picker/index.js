@@ -23,11 +23,19 @@ var timestampCheck = document.getElementById('picker-timestamp');
 var btnTsView = document.getElementById('picker-ts-view');
 var tsPanel = document.getElementById('picker-ts-panel');
 var tsBody = document.getElementById('picker-ts-body');
-var methodRadios, processModeRadios;
+var methodRadios, processModeRadios, multiRadios;
 
 var _currentList = [];   // [{name, signature}, ...]
 var _currentFileName = '';
 var _animating = false;
+var _count = Math.min(Math.max(1, cfg.defaultCount || 1), cfg.countMax || 10);
+
+// 人数与多人模式 DOM
+var countMinus = document.getElementById('picker-count-minus');
+var countPlus = document.getElementById('picker-count-plus');
+var countValueEl = document.getElementById('picker-count-value');
+var countHint = document.getElementById('picker-count-hint');
+var multiSection = document.getElementById('picker-multi-section');
 
 // 调试 DOM
 var debugToggle = document.getElementById('picker-debug-toggle');
@@ -66,7 +74,30 @@ var debugPlay = document.getElementById('picker-debug-play');
   // 重新获取动态创建的 radio 引用
   methodRadios = document.getElementsByName('picker-method');
   processModeRadios = document.getElementsByName('picker-process-mode');
+  multiRadios = document.getElementsByName('picker-multi-mode');
 })();
+
+/* ====== 人数控件 ====== */
+function updateCountUI() {
+  var max = cfg.countMax || 10;
+  if (countValueEl) countValueEl.textContent = _count;
+  if (countMinus) countMinus.disabled = _count <= 1;
+  if (countPlus) countPlus.disabled = _count >= max;
+  if (countHint) countHint.classList.toggle('hidden', _count < max);
+  if (multiSection) multiSection.classList.toggle('hidden', _count <= 1);
+}
+if (countMinus) {
+  countMinus.addEventListener('click', function() {
+    if (_count > 1) { _count--; updateCountUI(); }
+  });
+}
+if (countPlus) {
+  countPlus.addEventListener('click', function() {
+    var max = cfg.countMax || 10;
+    if (_count < max) { _count++; updateCountUI(); }
+  });
+}
+updateCountUI();
 
 /* ====== Modal 控制 ====== */
 SeaScribe.bindModal('picker-modal', 'picker-close-x');
@@ -200,6 +231,8 @@ btnStart.addEventListener('click', async function() {
   var decorativeType = decorativeSelect.value || cfg.defaultDecorative;
   var showProcess = showProcessCheck.checked;
   var processMode = getRadioValue(processModeRadios, cfg.processMode);
+  var pickCount = _count;
+  var multiMode = getRadioValue(multiRadios, cfg.defaultMultiMode);
 
   // 读取时间戳
   var timestamps = {};
@@ -209,7 +242,10 @@ btnStart.addEventListener('click', async function() {
   }
 
   // 启动随机算法
-  var generator = PickerRandom.pick(_currentList, method, timestamps, { skipDelays: !showProcess });
+  var generator = PickerRandom.pick(_currentList, method, timestamps, {
+    count: pickCount,
+    skipDelays: !showProcess,
+  });
 
   // 运行动画编排
   var result = await PickerAnimation.run(_currentList, generator, {
@@ -217,11 +253,13 @@ btnStart.addEventListener('click', async function() {
     processMode: processMode,
     decorativeType: decorativeType,
     timestamps: timestamps,
+    count: pickCount,
+    multiMode: multiMode,
   });
 
-  // 保存时间戳
-  if (doTimestamp) {
-    await PickerTimestamp.save(_currentFileName, result);
+  // 保存时间戳（多人批量）
+  if (doTimestamp && result.persons) {
+    await PickerTimestamp.saveMany(_currentFileName, result.persons.map(function(p) { return p.name; }));
   }
 
   _animating = false;
@@ -254,9 +292,9 @@ debugPlay.addEventListener('click', async function() {
   }
   var lastTime = timestamps[name] || null;
 
-  // 构造 fake generator：直接返回指定结果
+  // 构造 fake generator：直接返回指定结果（单卡）
   async function* fakeGen() {
-    yield { type: 'result', person: person, lastPickedTime: lastTime };
+    yield { type: 'results', persons: [{ person: person, lastPickedTime: lastTime }] };
   }
 
   // 运行动画（不保存时间戳）

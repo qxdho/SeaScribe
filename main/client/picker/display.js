@@ -1,9 +1,14 @@
 /* ============================================================
    SeaScribe — Picker Display Module (ESM)
-   在修饰层占位元素中填入签名 + 上次时间，等待用户点击
+   在修饰层占位元素中填入签名 + 上次时间 + 头像，等待用户点击
+   v6.1.0: fill()/fillMany() 与 waitForClick() 分离 —— 头像/签名
+   可与名字定格弹跳同时出现；支持点多人（同时/逐个定格）
    ============================================================ */
 
+import { SeaScribe } from '../core/state.js';
 import { PickerTimestamp } from './timestamp.js';
+
+var DEFAULT_AVATAR = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="%23ccc"/><circle cx="50" cy="40" r="18" fill="%23999"/><ellipse cx="50" cy="82" rx="30" ry="22" fill="%23999"/></svg>';
 
 var sigEl, timeEl, avatarEl, hintEl, overlay;
 
@@ -15,10 +20,36 @@ function initRefs() {
   hintEl = overlay ? overlay.querySelector('.pick-decorative-hint') : null;
 }
 
+/** 异步加载头像到指定 img 元素 */
+function loadAvatar(imgEl, name) {
+  if (!imgEl || !name) return;
+  fetch('/api/admin/user-avatar?name=' + encodeURIComponent(name))
+    .then(function(r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    })
+    .then(function(d) {
+      if (d && d.avatar) {
+        var preloadImg = new Image();
+        preloadImg.onload = function() {
+          imgEl.src = preloadImg.src;
+          imgEl.style.opacity = '1';
+        };
+        preloadImg.onerror = function() {
+          imgEl.src = d.avatar;
+          imgEl.style.opacity = '1';
+        };
+        preloadImg.src = d.avatar;
+      }
+    })
+    .catch(function(e) { console.error('Avatar preload failed:', e); });
+}
+
 /**
- * 更新修饰层的签名和时间，等待点击
+ * 填充签名 / 上次点名时间 / 头像（单卡，幂等，可在弹跳动画期间调用）
+ * @param {Object} data — { name, signature, lastPickedTime }
  */
-function showOnDecorative(_overlay, _nameEl, data) {
+function fill(data) {
   initRefs();
 
   // 填入签名
@@ -40,35 +71,68 @@ function showOnDecorative(_overlay, _nameEl, data) {
     timeEl.classList.add('never');
   }
 
-  // 加载头像 —— 没有则用默认 logo
+  // 加载头像 —— 没有则用默认占位
   if (avatarEl && data.name) {
     avatarEl.classList.remove('hidden');
-    avatarEl.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="%23ccc"/><circle cx="50" cy="40" r="18" fill="%23999"/><ellipse cx="50" cy="82" rx="30" ry="22" fill="%23999"/></svg>';
+    avatarEl.src = DEFAULT_AVATAR;
     avatarEl.style.opacity = '0.5';
-    fetch('/api/admin/user-avatar?name=' + encodeURIComponent(data.name))
-      .then(function(r) {
-        if (!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      })
-      .then(function(d) {
-        if (d && d.avatar) {
-          var preloadImg = new Image();
-          preloadImg.onload = function() {
-            avatarEl.src = preloadImg.src;
-            avatarEl.style.opacity = '1';
-          };
-          preloadImg.onerror = function() {
-            avatarEl.src = d.avatar;
-            avatarEl.style.opacity = '1';
-          };
-          preloadImg.src = d.avatar;
-        }
-      })
-      .catch(function(e) { console.error('Avatar preload failed:', e); });
+    loadAvatar(avatarEl, data.name);
   }
 
   // 提示信息
   if (hintEl) hintEl.style.display = '';
+}
+
+/**
+ * 多人结果填充为卡片列表
+ * @param {Array} persons — [{name, signature, lastPickedTime}, ...]
+ * @param {string} mode — "simultaneous" 同时弹出 / "sequential" 逐个弹出
+ */
+function fillMany(persons, mode) {
+  initRefs();
+  var cards = document.getElementById('pick-decorative-cards');
+  if (!cards) return;
+
+  // 隐藏单卡布局，切到多卡容器
+  var inner = overlay ? overlay.querySelector('.pick-decorative-inner') : null;
+  if (inner) inner.style.display = 'none';
+  if (avatarEl) avatarEl.src = '';
+  cards.classList.remove('hidden');
+  cards.classList.remove('pop-all');
+  cards.innerHTML = persons.map(function(p, i) {
+    return '<div class="pick-decorative-card" data-idx="' + i + '">' +
+      '<img class="pick-decorative-card-avatar" src="' + DEFAULT_AVATAR + '" alt="">' +
+      '<span class="pick-decorative-card-name">' + SeaScribe.esc(p.name) + '</span>' +
+      '<span class="pick-decorative-card-sig' + (p.signature ? '' : ' empty') + '">' + SeaScribe.esc(p.signature || '') + '</span>' +
+    '</div>';
+  }).join('');
+
+  // 异步加载每张卡的头像
+  persons.forEach(function(p, i) {
+    var img = cards.querySelector('.pick-decorative-card[data-idx="' + i + '"] .pick-decorative-card-avatar');
+    loadAvatar(img, p.name);
+  });
+
+  // 弹出动画：逐个 / 同时
+  if (mode === 'sequential') {
+    var cardEls = cards.querySelectorAll('.pick-decorative-card');
+    cardEls.forEach(function(card, i) {
+      setTimeout(function() { card.classList.add('pop'); }, i * 380);
+    });
+  } else {
+    cards.classList.add('pop-all');
+  }
+
+  // 提示信息
+  if (hintEl) hintEl.style.display = '';
+}
+
+/**
+ * 等待点击（或超时）关闭装饰层
+ * @returns {Promise<void>}
+ */
+function waitForClick() {
+  initRefs();
 
   return new Promise(function(resolve) {
     var resolved = false;
@@ -82,6 +146,15 @@ function showOnDecorative(_overlay, _nameEl, data) {
       timeEl.textContent = '';
       if (avatarEl) { avatarEl.src = ''; avatarEl.style.opacity = ''; }
       if (hintEl) hintEl.style.display = 'none';
+      // 清理多卡容器并恢复单卡布局
+      var cards = document.getElementById('pick-decorative-cards');
+      if (cards) {
+        cards.classList.add('hidden');
+        cards.classList.remove('pop-all');
+        cards.innerHTML = '';
+      }
+      var inner = overlay ? overlay.querySelector('.pick-decorative-inner') : null;
+      if (inner) inner.style.display = '';
       resolve();
     }
     function onClick(e) {
@@ -96,4 +169,4 @@ function showOnDecorative(_overlay, _nameEl, data) {
   });
 }
 
-export const PickerDisplay = { showOnDecorative: showOnDecorative };
+export const PickerDisplay = { fill: fill, fillMany: fillMany, waitForClick: waitForClick };

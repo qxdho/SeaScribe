@@ -15,6 +15,12 @@ window._CONF.picker = {
   processMode: "fullscreen",
   timestampEnabled: true,
 
+  // ── 点多人 ──
+
+  defaultCount: 1,              // 默认一次点几人（面板可调 1-countMax）
+  countMax: 10,                 // 人数上限
+  defaultMultiMode: "simultaneous",  // 多人动画模式："simultaneous" 同时定格 / "sequential" 逐个定格
+
   // ── Fair 算法参数 ──
 
   fairSubsetRatio: 0.3,
@@ -22,12 +28,12 @@ window._CONF.picker = {
 
   // ── 动画时长 (ms) ──
 
-  decorMinMs: 2000,
-  decorIntervalMs: 80,
+  decorMinMs: 1700,
+  decorIntervalMs: 65,
   processResultMs: 800,
   processFadeMs: 300,
-  binaryStepDelay: 1000,
-  fairStepDelay: 1200,
+  binaryStepDelay: 800,
+  fairStepDelay: 1000,
   fairResultDelay: 1000,
 
   // ── 特效 ──

@@ -331,7 +331,7 @@
 }
 
 .pick-decorative-text.pop {
-  animation: pickPop 0.4s var(--spring);
+  animation: pickPop 0.35s var(--spring);
 }
 
 /* 签名 —— 始终占位，min-height 防止名字跳动 */
@@ -389,12 +389,112 @@
   opacity: 0.2;
 }
 
+/* ====== 多人卡片 ====== */
+.pick-decorative-cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 3vw;
+  max-width: 92vw;
+}
+.pick-decorative-cards.hidden { display: none; }
+
+.pick-decorative-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  transform: scale(0.6) translateY(20px);
+}
+.pick-decorative-cards.pop-all .pick-decorative-card {
+  animation: pickCardIn 0.35s var(--spring) forwards;
+}
+.pick-decorative-card.pop {
+  animation: pickCardIn 0.35s var(--spring) forwards;
+}
+.pick-decorative-card-avatar {
+  width: 8vw; height: 8vw;
+  max-width: 96px; max-height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px var(--bg);
+  margin-bottom: 8px;
+  opacity: 0.5;
+  transition: opacity var(--dur-slow);
+}
+.pick-decorative-card-name {
+  font-size: 3.2vw;
+  font-weight: 800;
+  color: var(--text);
+  line-height: 1.2;
+}
+.pick-decorative-card-sig {
+  font-size: 1.4vw;
+  color: var(--text);
+  opacity: 0.55;
+  margin-top: 6px;
+  max-width: 16vw;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pick-decorative-card-sig.empty { opacity: 0; }
+
+@keyframes pickCardIn {
+  from { opacity: 0; transform: scale(0.6) translateY(20px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ====== 人数控件 ====== */
+.picker-count-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.picker-count-value {
+  font-size: 1.4rem;
+  font-weight: 800;
+  min-width: 2.2ch;
+  text-align: center;
+  color: var(--text);
+}
+.picker-count-unit {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.picker-count-hint {
+  color: var(--muted);
+  font-size: 0.8rem;
+  margin-left: 4px;
+}
+.picker-count-hint.hidden { display: none; }
+
+.picker-multi-section.hidden { display: none; }
+.picker-multi-radio-row {
+  display: flex;
+  gap: 16px;
+  padding-top: 2px;
+}
+.picker-radio-item-slim {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 0.95rem;
+}
+.picker-radio-item-slim input[type=radio] {
+  accent-color: var(--dark);
+}
+
 .pick-decorative.shrink {
-  animation: pickOverlayFade var(--shrink-dur, 0.25s) var(--ease) forwards;
+  animation: pickOverlayFade var(--shrink-dur, 0.2s) var(--ease) forwards;
 }
 
 .pick-decorative.shrink .pick-decorative-text {
-  animation: pickShrinkToCorner var(--shrink-dur, 0.25s) var(--ease) forwards;
+  animation: pickShrinkToCorner var(--shrink-dur, 0.2s) var(--ease) forwards;
 }
 
 /* ====== 过程动画层 ====== */
