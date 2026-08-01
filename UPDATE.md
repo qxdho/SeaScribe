@@ -1,5 +1,10 @@
 # SeaScribe 更新日志
 
+## v5.1.1
+
+### 文档
+- README 增加「给 AI 的提示」：AI 协助本项目前必须先完整阅读 RULES.md
+
 ## v5.1.0
 
 ### 独立调试工具（debug_api.py + debug/ 包）
