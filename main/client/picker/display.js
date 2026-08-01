@@ -153,7 +153,7 @@ function fillMany(persons, mode) {
 }
 
 /**
- * FLIP 过渡：捕捉展示态 rect → 切换紧凑态 → transform 反向补偿 → 平滑插值
+ * 紧凑态过渡：卡片容器固定不动，仅对内部元素（头像/名字/签名）做 FLIP
  * @param {HTMLElement} cards — 多卡容器
  * @param {string} mode — 逐卡交错间隔
  */
@@ -164,21 +164,34 @@ function flipToCompact(cards, mode) {
   cardEls.forEach(function(card, i) {
     var delay = (mode === 'sequential' ? i * 200 : 0);
     setTimeout(function() {
-      var first = card.getBoundingClientRect();
+      var elems = [
+        card.querySelector('.pick-decorative-card-avatar'),
+        card.querySelector('.pick-decorative-card-name'),
+        card.querySelector('.pick-decorative-card-sig'),
+      ].filter(Boolean);
+      if (!elems.length) return;
+      // 捕捉展示态位置
+      var firsts = elems.map(function(el) { return el.getBoundingClientRect(); });
+      // 切换紧凑态（卡片尺寸不变，仅内部重新布局）
       card.classList.add('compact');
-      var last = card.getBoundingClientRect();
-      var dx = first.left - last.left;
-      var dy = first.top - last.top;
-      var sx = first.width / Math.max(1, last.width);
-      var sy = first.height / Math.max(1, last.height);
-      // 无内联过渡，先反向补偿
-      card.style.transition = 'none';
-      card.style.transformOrigin = 'top left';
-      card.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + sx + ',' + sy + ')';
+      // 捕捉紧凑态位置，反向补偿
+      elems.forEach(function(el, idx) {
+        var first = firsts[idx];
+        var last = el.getBoundingClientRect();
+        var dx = first.left - last.left;
+        var dy = first.top - last.top;
+        var sx = first.width / Math.max(1, last.width);
+        var sy = first.height / Math.max(1, last.height);
+        el.style.transition = 'none';
+        el.style.transformOrigin = 'top left';
+        el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + sx + ',' + sy + ')';
+      });
       void card.offsetWidth; // 强制重排
-      // 过渡到自然位置
-      card.style.transition = 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)';
-      card.style.transform = '';
+      // 平滑过渡到紧凑态自然位置
+      elems.forEach(function(el) {
+        el.style.transition = 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)';
+        el.style.transform = '';
+      });
     }, delay);
   });
 }
