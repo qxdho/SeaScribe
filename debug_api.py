@@ -15,7 +15,6 @@ API 用例注册表在 debug/tests.py。新增检查/用例只改注册表，不
 """
 
 import argparse
-import getpass
 import os
 import sys
 
@@ -25,6 +24,48 @@ from debug import engine
 from debug.engine import Log, Results, HttpClient, run_case, run_offline_check
 from debug.checks import OFFLINE_CHECKS
 from debug import tests
+
+
+# ── 密码输入（Windows 控制台显示星号） ──────────────────────────
+
+def _star_input(prompt):
+    """逐字符读取，无回显、以 * 显示已输入位数（Windows msvcrt）。"""
+    import msvcrt
+    sys.stdout.write(prompt)
+    sys.stdout.flush()
+    chars = []
+    while True:
+        ch = msvcrt.getwch()
+        if ch in ('\r', '\n'):
+            break
+        if ch == '\b':  # 退格
+            if chars:
+                chars.pop()
+                sys.stdout.write('\b \b')
+                sys.stdout.flush()
+            continue
+        if ch == '\x03':  # Ctrl+C
+            raise KeyboardInterrupt
+        if ch == '\x00':  # 功能键前缀，丢弃下一字节
+            msvcrt.getwch()
+            continue
+        chars.append(ch)
+        sys.stdout.write('*')
+        sys.stdout.flush()
+    sys.stdout.write('\n')
+    sys.stdout.flush()
+    return ''.join(chars)
+
+
+def read_password(prompt):
+    """交互式密码输入：Windows 控制台显示星号；非交互环境降级为 getpass（黑屏）。"""
+    if sys.stdin.isatty() and sys.stdout.isatty():
+        try:
+            return _star_input(prompt)
+        except Exception:
+            pass
+    import getpass
+    return getpass.getpass(prompt)
 
 
 # ── 全局兜底清理 ─────────────────────────────────────────────────
@@ -126,7 +167,7 @@ def main():
     if not args.skip_online:
         if not args.admin_pass:
             try:
-                args.admin_pass = getpass.getpass('请输入管理员密码（%s）: ' % args.admin_user)
+                args.admin_pass = read_password('请输入管理员密码（%s）: ' % args.admin_user)
             except (EOFError, KeyboardInterrupt):
                 log.bad('未提供管理员密码，跳过在线 API 测试')
                 args.skip_online = True
