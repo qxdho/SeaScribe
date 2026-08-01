@@ -402,7 +402,7 @@
 
 .pick-decorative-card {
   position: relative;
-  height: clamp(120px, 14vw, 180px); /* 横版卡片：固定矮高度，宽度随 grid 铺满 */
+  height: clamp(120px, 15vw, 200px); /* 横版卡片：固定矮高度，宽度随 grid 铺满 */
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -430,7 +430,7 @@
   align-items: center;
 }
 .pick-decorative-card-avatar {
-  width: clamp(56px, 18%, 96px);
+  width: clamp(60px, 19%, 96px); /* 展示态大头像 */
   aspect-ratio: 1;
   border-radius: 50%;
   object-fit: cover;
@@ -439,7 +439,7 @@
   opacity: 0.5;
 }
 .pick-decorative-card-name {
-  font-size: clamp(1.2rem, 2.2vw, 2rem);
+  font-size: clamp(1.4rem, 2.5vw, 2.2rem); /* 展示态大名字 */
   font-weight: 800;
   color: var(--text);
   line-height: 1.2;
@@ -483,13 +483,13 @@
   gap: 10px; /* 挨近头像 */
 }
 .pick-decorative-card.compact .pick-decorative-card-avatar {
-  width: clamp(36px, 10%, 52px);
+  width: clamp(32px, 9%, 44px); /* 紧凑态小头像 —— 与展示态对比鲜明 */
   aspect-ratio: 1;
   margin: 0;
   flex-shrink: 0;
 }
 .pick-decorative-card.compact .pick-decorative-card-name {
-  font-size: clamp(1rem, 1.7vw, 1.5rem);
+  font-size: clamp(0.9rem, 1.5vw, 1.3rem); /* 紧凑态小名字 */
   text-align: left;
 }
 .pick-decorative-card.compact .pick-decorative-card-sig {
@@ -505,7 +505,7 @@
 }
 
 @keyframes pickCardIn {
-  from { opacity: 0; transform: scale(0.6) translateY(20px); }
+  from { opacity: 0; transform: scale(0.85) translateY(10px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
