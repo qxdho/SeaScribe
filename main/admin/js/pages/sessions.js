@@ -35,8 +35,8 @@ function loadSessions() {
         var ua = s.user_agent || "";
         var deviceName = parseUA(ua) || "未知设备";
         var ip = s.ip || "--";
-        var time = formatTime(s.created_at);
-        var expires = formatTime(s.expires_at);
+        var time = Admin.formatTime(s.created_at);
+        var expires = Admin.formatTime(s.expires_at);
         if (!isCurrent) tokenMap[i] = s.token;
         return '<div class="session-item">' +
           '<div class="session-info">' +
@@ -87,14 +87,6 @@ function parseUA(ua) {
   }
   if (/Linux/i.test(ua)) return "Linux";
   return "未知设备";
-}
-
-function formatTime(ts) {
-  if (!ts) return "--";
-  var d = (typeof ts === "number" && ts > 1e9) ? new Date(ts * 1000) : new Date(ts);
-  if (isNaN(d.getTime())) return ts;
-  var pad = function(n) { return n < 10 ? "0" + n : "" + n; };
-  return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
 }
 
 PageRegistry.register({

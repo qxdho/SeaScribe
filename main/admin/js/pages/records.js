@@ -110,7 +110,7 @@ function renderTable(ts) {
   names.sort(function(a, b) { return (ts[b] || '').localeCompare(ts[a] || ''); });
   var html = '<table class="admin-table"><thead><tr><th>姓名</th><th>最近点名时间</th><th>操作</th></tr></thead><tbody>';
   names.forEach(function(n) {
-    html += '<tr><td>' + Admin.esc(n) + '</td><td>' + formatTime(ts[n]) + '</td>' +
+    html += '<tr><td>' + Admin.esc(n) + '</td><td>' + Admin.formatTime(ts[n]) + '</td>' +
       '<td><button class="admin-btn admin-btn-danger admin-btn-sm" data-del-name="' + Admin.esc(n) + '">删除</button></td></tr>';
   });
   html += '</tbody></table>';
@@ -134,18 +134,6 @@ function renderTable(ts) {
     });
   });
   document.getElementById('records-actions').classList.remove('hidden');
-}
-
-function formatTime(isoStr) {
-  if (!isoStr) return '—';
-  var d = new Date(isoStr);
-  if (isNaN(d.getTime())) return '—';
-  var pad = function(n) { return n < 10 ? '0' + n : '' + n; };
-  return d.getFullYear() + '-' +
-    pad(d.getMonth() + 1) + '-' +
-    pad(d.getDate()) + ' ' +
-    pad(d.getHours()) + ':' +
-    pad(d.getMinutes());
 }
 
 PageRegistry.register({

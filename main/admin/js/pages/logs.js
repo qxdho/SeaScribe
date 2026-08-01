@@ -105,7 +105,7 @@ function loadLogs() {
       logs.slice().reverse().map(function(l) {
         var actionLabel = actionMap(l.action) || l.action;
         return '<tr>' +
-          '<td class="logs-time">' + fmtTime(l.timestamp) + '</td>' +
+          '<td class="logs-time">' + Admin.formatTime(l.timestamp) + '</td>' +
           '<td><span class="logs-action-tag logs-action-' + Admin.esc(l.action) + '">' + Admin.esc(actionLabel) + '</span></td>' +
           '<td>' + Admin.esc(l.detail || "") + '</td>' +
           '<td>' + Admin.esc(l.ip || "") + '</td>' +
@@ -126,14 +126,6 @@ function actionMap(action) {
     avatar_upload: "上传头像",
   };
   return map[action] || action;
-}
-
-function fmtTime(ts) {
-  if (!ts) return "--";
-  var d = new Date(ts);
-  if (isNaN(d.getTime())) return ts;
-  var pad = function(n) { return n < 10 ? "0" + n : "" + n; };
-  return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes());
 }
 
 // Auto-refresh and filter

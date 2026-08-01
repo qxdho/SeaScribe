@@ -13,6 +13,7 @@
 """
 
 import json
+import os
 import re
 import sys
 import time
@@ -340,18 +341,29 @@ def run_offline_check(entry, root, log, results):
 # 自动发现：routes.py 路径 ↔ 注册表比对
 # ════════════════════════════════════════════════════════════════
 
-def extract_route_paths(routes_py):
-    """从 routes.py 源码提取全部路由路径（/api/... 及 /admin/_store/...）。"""
-    with open(routes_py, encoding='utf-8-sig') as f:
-        src = f.read()
+def extract_route_paths(server_dir):
+    """从 server 包源码提取全部路由路径（/api/... 及 /admin/_store/...）。
+
+    v6.0.0 起 handler 按功能域拆到多个 api_*.py，故扫描目录下全部 .py。
+    """
     paths = set()
-    for m in re.finditer(r"path\s*(?:!=\s*'([^']+)'|==\s*'([^']+)')", src):
-        p = m.group(1) or m.group(2)
-        if p.startswith('/'):
-            paths.add(p)
-    # 处理 handle_get_files 这类正则路由：/api/<name>-files
-    if re.search(r"re\.match\(r'\^/api/\(\\w\+\)-files", src):
-        paths.add('/api/{name}-files')
+    py_files = []
+    if os.path.isdir(server_dir):
+        for fn in os.listdir(server_dir):
+            if fn.endswith('.py') and fn != '__init__.py':
+                py_files.append(os.path.join(server_dir, fn))
+    else:
+        py_files = [server_dir]
+    for fp in py_files:
+        with open(fp, encoding='utf-8-sig') as f:
+            src = f.read()
+        for m in re.finditer(r"path\s*(?:!=\s*'([^']+)'|==\s*'([^']+)')", src):
+            p = m.group(1) or m.group(2)
+            if p.startswith('/'):
+                paths.add(p)
+        # 处理 handle_get_files 这类正则路由：/api/<name>-files
+        if re.search(r"re\.match\(r'\^/api/\(\\w\+\)-files", src):
+            paths.add('/api/{name}-files')
     return paths
 
 

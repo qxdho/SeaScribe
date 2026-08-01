@@ -1,5 +1,32 @@
 # SeaScribe 更新日志
 
+## v6.0.0
+
+### 架构：后端模块化重构 + 前端冗余清理
+
+**后端拆分**（routes.py 1034 行 → 8 个模块，API 完全兼容）：
+- `api_common.py` 公共辅助（user_to_dict/MIME 统一表/JSON 解析）
+- `api_auth.py` 鉴权会话、`api_user.py` 用户管理、`api_roster.py` 花名册、
+  `api_picker.py` 点名、`api_config.py` 配置、`api_file.py` 文件头像、`api_log.py` 日志
+- `routes.py` 仅保留聚合入口（GET 19 + POST 15），server.py 零改动
+
+**后端审查修复**：
+- 日志 action 语义：创建/修改/删除用户、保存名单、保存配置、注册、改密码
+  各记正确类型（原全部误记为 profile_update）；配置/注册补记日志
+- 头像 mime 查找 bug（jpg 头像 data URL 恒声明为 image/png）已修复
+- 死代码清理、send_error 统一为 send_json、config 保存加异常保护、
+  头像上传改为先压缩成功再删旧头像
+
+**前端模块化与清理**：
+- 时间格式化 5 份 → Admin.formatTime 统一（含秒级时间戳兼容）
+- 头像 HTML 2 份 → Admin.avatarHTML 统一
+- changelog/about 合并为通用 markdown 弹窗模块
+- picker 5 个 IIFE 全部迁移为 ESM（window.PickerXxx → import/export）
+- 配置页补 enword 配置项；注册昵称截断 20 → 100 与后端统一
+
+**注意**：本版本为内部架构重构，API 路径与行为不变，前端无需改动；
+后端代码结构变化，需重启服务器生效。
+
 ## v5.2.13
 
 ### 修复 start.bat 启动横幅重复输出

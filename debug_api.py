@@ -158,7 +158,7 @@ def main():
     uncovered = []
     if not args.skip_online:
         uncovered = engine.discover_uncovered(
-            os.path.join(root, 'main', 'server', 'routes.py'), tests.API_CASES, log)
+            os.path.join(root, 'main', 'server'), tests.API_CASES, log)
         if uncovered:
             for p in uncovered:
                 results.add('自动发现', p, 'WARN', 'routes.py 中未注册用例的路径')

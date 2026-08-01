@@ -157,7 +157,7 @@ function renderTable(users) {
     users.forEach(function(u, i) {
       html += '<tr>' +
         '<td style="width:32px;color:var(--muted);font-size:0.82rem">' + (i + 1) + '</td>' +
-        '<td style="width:40px">' + avatarCell(u) + '</td>' +
+        '<td style="width:40px">' + Admin.avatarHTML(u) + '</td>' +
         '<td style="white-space:nowrap"><code>' + Admin.esc(u.username) + '</code></td>' +
         '<td style="white-space:nowrap">' + Admin.esc(u.displayName || '—') + '</td>' +
         '<td>' + Admin.esc(u.nickname || '—') + '</td>' +
@@ -201,14 +201,6 @@ function renderTable(users) {
       else Admin.toast(res.data.error || '删除失败');
     });
   });
-}
-
-function avatarCell(u) {
-  var a = u.avatar || '';
-  if (!a) return '<img src="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2250%22 fill=%22%23ccc%22/><circle cx=%2250%22 cy=%2240%22 r=%2218%22 fill=%22%23999%22/><ellipse cx=%2250%22 cy=%2282%22 rx=%2230%22 ry=%2222%22 fill=%22%23999%22/></svg>" class="admin-avatar" style="opacity:0.6">';
-  if (/^https?:\/\//.test(a)) return '<img src="' + Admin.esc(a) + '" class="admin-avatar">';
-  if (/^\/admin\/_store\/avatars\//.test(a)) return '<img src="' + Admin.esc(a) + '" class="admin-avatar">';
-  return '<span style="font-size:1.3rem">' + Admin.esc(a) + '</span>';
 }
 
 function roleBadge(role) {

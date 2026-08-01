@@ -15,7 +15,7 @@ function render() {
     '<div class="admin-card">' +
       '<h3>👤 我的资料</h3>' +
       '<div class="admin-form-row" style="align-items:center;margin-bottom:16px">' +
-        '<div id="profile-avatar-preview" style="font-size:3rem;line-height:1">' + avatarHTML(user) + '</div>' +
+        '<div id="profile-avatar-preview" style="font-size:3rem;line-height:1">' + Admin.avatarHTML(user, 'admin-avatar-lg') + '</div>' +
         '<div><button id="profile-avatar-btn" class="admin-btn admin-btn-outline admin-btn-sm">更换头像</button>' +
         '<input type="file" id="profile-avatar-file" accept="image/*" style="display:none">' +
         '<p style="font-size:0.72rem;color:var(--muted);margin-top:4px">点击上传图片，自动保存</p></div>' +
@@ -79,15 +79,13 @@ function render() {
     var el = document.getElementById('profile-lastpick');
     if (!el) return;
     if (res.ok && res.data.time) {
-      var d = new Date(res.data.time);
-      el.value = d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+      el.value = Admin.formatTime(res.data.time);
     } else if (!res.ok) {
       el.value = '加载失败';
     } else {
       el.value = '未被点名';
     }
   });
-  function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
   // 刷新最新资料（管理员可能在后台改了签名等）
   Admin.api('/api/admin/session').then(function(res) {
@@ -121,7 +119,7 @@ function render() {
           body: { avatar: _avatarUrl },
         });
         if (saveRes.ok) {
-          document.getElementById('profile-avatar-preview').innerHTML = avatarHTML({ avatar: _avatarUrl });
+          document.getElementById('profile-avatar-preview').innerHTML = Admin.avatarHTML({ avatar: _avatarUrl }, 'admin-avatar-lg');
           var sess = Admin.getSession();
           sess.user.avatar = _avatarUrl;
           Admin.saveSession(sess.token, sess.user);
@@ -171,15 +169,6 @@ function render() {
     Admin.toast('密码已修改', "success");
   });
 }
-
-function avatarHTML(user) {
-  var a = user.avatar || '';
-  if (!a) return '<span style="opacity:0.3;font-size:2rem">👤</span>';
-  if (/^https?:\/\//.test(a)) return '<img src="' + Admin.esc(a) + '" class="admin-avatar-lg" onerror="this.outerHTML=\'<span>👤</span>\'">';
-  if (/^\/admin\/_store\/avatars\//.test(a)) return '<img src="' + Admin.esc(a) + '" class="admin-avatar-lg" onerror="this.outerHTML=\'<span>👤</span>\'">';
-  return '<span style="font-size:2.5rem">' + Admin.esc(a) + '</span>';
-}
-
 
 
 PageRegistry.register({

@@ -292,7 +292,7 @@
     regPw2.disabled = true;
     var res = await Admin.api('/api/admin/register', {
       method: 'POST',
-      body: { username: regUser.value.trim(), nickname: regNick.value.trim().slice(0,20), password: regPw.value },
+      body: { username: regUser.value.trim(), nickname: regNick.value.trim().slice(0,100), password: regPw.value },
     });
     regBtn.disabled = false;
     regBtn.textContent = '注 册';

@@ -8,6 +8,7 @@ var CONFIG_LIST = [
   { name: 'main',      label: '主配置',       file: 'config/config.js' },
   { name: 'chemistry', label: '化学学科配置',  file: 'config/chemistry/config.js' },
   { name: 'english',   label: '英语学科配置',  file: 'config/english/config.js' },
+  { name: 'enword',    label: '英语跟读配置',  file: 'config/enword/config.js' },
   { name: 'picker',    label: '点名配置',      file: 'config/picker/config.js' },
 ];
 
