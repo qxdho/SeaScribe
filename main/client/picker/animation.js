@@ -346,10 +346,9 @@ function shrinkToResult(names) {
 
     target.textContent = '';
     textEl.textContent = label;
-    // 飞入动画字号：用接近顶栏目标的中小字号，避免大名字闪现
-    var isMulti = (Array.isArray(names) ? names : [names]).length > 1;
-    if (isMulti) textEl.style.fontSize = '3vw';
-    else textEl.style.fontSize = '4vw';
+    // 飞入字号对齐顶栏目标：动画纯平移（scale≈1），名字不会变大/缩小跳变
+    var targetFontSize = parseFloat(getComputedStyle(target).fontSize) || 16;
+    textEl.style.fontSize = targetFontSize + 'px';
 
     // 名字柔和淡入（避免卡片收起后名字"突然"出现）
     textEl.style.opacity = '0';
