@@ -158,13 +158,16 @@ const EnwordPlugin = {
     this._fontPct = this.defaultFontSize || 100; // 每次进入使用配置默认字号
 
     container.innerHTML =
-      '<div style="display:flex;flex-direction:column;align-items:center;padding:24px 20px 200px;width:100%">' +
-        '<div id="enword-display" style="text-align:center;max-width:900px;--enword-fs:' + (this._fontPct / 100) + '">' +
-          '<div id="enword-english" style="font-size:calc(clamp(3rem, 8vw, 7rem) * var(--enword-fs, 1));font-weight:700;line-height:1.1;color:var(--text);margin-bottom:20px;letter-spacing:0.03em;word-break:break-all"></div>' +
-          '<div id="enword-chinese" style="font-size:calc(clamp(1.7rem, 5vw, 3rem) * var(--enword-fs, 1));color:var(--text);opacity:0.9;line-height:1.7;max-width:900px;margin:0 auto;font-weight:500"></div>' +
-          '<div id="enword-memo" style="font-size:calc(clamp(1.4rem, 3.5vw, 2rem) * var(--enword-fs, 1));color:var(--text);opacity:0.75;margin-top:20px;max-width:900px;line-height:1.65"></div>' +
+      '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 24px 200px;width:100%;min-height:0">' +
+        '<div id="enword-display" style="text-align:center;max-width:1300px;width:100%;--enword-fs:' + (this._fontPct / 100) + '">' +
+          '<div style="display:flex;align-items:center;justify-content:center;gap:5vw;flex-wrap:wrap;width:100%">' +
+            '<div id="enword-english" style="font-size:calc(clamp(2.2rem, 10vh, 6rem) * var(--enword-fs, 1));font-weight:700;line-height:1.1;color:var(--text);letter-spacing:0.03em;word-break:break-all;flex:1 1 45%;min-width:280px"></div>' +
+            '<div id="enword-chinese" style="font-size:calc(clamp(1.2rem, 5.5vh, 2.8rem) * var(--enword-fs, 1));color:var(--text);opacity:0.9;line-height:1.7;max-width:600px;font-weight:500;flex:1 1 40%;min-width:220px"></div>' +
+          '</div>' +
+          '<div id="enword-memo" style="font-size:calc(clamp(1.05rem, 4vh, 1.9rem) * var(--enword-fs, 1));color:var(--text);opacity:0.75;margin-top:18px;max-width:1100px;line-height:1.65;margin-left:auto;margin-right:auto"></div>' +
         '</div>' +
-        '<div style="position:fixed;bottom:0;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px 20px 14px;background:var(--bg);border-top:1px solid var(--border)">' +
+      '</div>' +
+      '<div style="position:fixed;bottom:0;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px 20px 14px;background:var(--bg);border-top:1px solid var(--border);z-index:50">' +
           '<div style="font-size:0.82rem;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center">' +
             '<span id="enword-progress"></span>' +
             '<span>· 间隔</span>' +
