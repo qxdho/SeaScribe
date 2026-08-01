@@ -37,17 +37,11 @@ if (splash) (function() {
   function logLine(label, ok, okMsg, failMsg) {
     var text = ok ? (okMsg || 'OK') : (failMsg || 'FAIL');
     window.__SEASCRIBE_LOG__.push({ label: label, ok: ok, text: text });
-    var span = document.createElement('div');
-    span.className = 'splash-log-line';
-    span.innerHTML = (ok ? '✅ ' : '❌ ') + label + ' <span style="opacity:0.6">' + text + '</span>';
-    log.appendChild(span);
+    // 完整日志仅在「系统日志」弹窗查看，开屏保持简洁
   }
 
   function logPhase(title) {
-    var span = document.createElement('div');
-    span.className = 'splash-log-line';
-    span.innerHTML = '<span style="opacity:0.35">── ' + title + ' ──</span>';
-    log.appendChild(span);
+    window.__SEASCRIBE_LOG__.push({ label: '── ' + title + ' ──', ok: true, text: '' });
   }
 
   function updateBadge() {
@@ -192,7 +186,7 @@ if (splash) (function() {
     // ====== 阶段 9：汇总 ======
     function() { logPhase('汇总'); },
     function() {
-      logLine('SeaScribe 版本', true, 'v5.0.0', '');
+      logLine('SeaScribe 版本', true, 'v' + (cfgVer || '未知'), '');
     },
   ];
 
@@ -202,11 +196,15 @@ if (splash) (function() {
   function runCheck() {
     if (i < checks.length) {
       checks[i](); i++;
-      log.scrollTop = log.scrollHeight;
-      setTimeout(runCheck, 20);
+      setTimeout(runCheck, 0); // 立即完成自检，开屏无需等待
     } else {
       _checksDone = true;
       updateBadge();
+      // 开屏仅在有问题时显示一行错误摘要（完整日志见系统日志弹窗）
+      var errs = window.__SEASCRIBE_LOG__.filter(function(l) { return !l.ok; });
+      if (errs.length > 0 && log) {
+        log.innerHTML = '<div class="splash-log-line" style="color:#ff6b6b">⚠ 发现 ' + errs.length + ' 个问题（详见系统日志）</div>';
+      }
       if (_closeQueued) closeSplashNow();
     }
   }
