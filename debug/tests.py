@@ -19,6 +19,13 @@ PREFIX = 'debugtest_'
 def _save_admin_token(status, data, ctx):
     if isinstance(data, dict) and data.get('token'):
         ctx['_http'].tokens['admin'] = data['token']
+        # 预清理上次运行可能残留的临时用户，避免“用户名已存在”
+        for uname in ('debugtest_u1', 'debugtest_stu'):
+            try:
+                ctx['_http'].request('POST', '/api/admin/users/%s/delete' % uname,
+                                     body={}, token=data['token'])
+            except Exception:
+                pass
         return True, '已取得 admin token'
     return False, '登录响应缺少 token: %r' % data
 
@@ -45,16 +52,19 @@ def _save_roster_backup(status, data, ctx):
 
 
 def _profile_backup(status, data, ctx):
-    if isinstance(data, dict) and isinstance(data.get('user'), dict):
-        ctx['admin_nickname'] = data['user'].get('nickname', '')
-        return True, '已备份 nickname'
-    return False, 'session 响应缺少 user: %r' % data
+    # /api/admin/session 返回扁平字段（username/uid/nickname/...），非嵌套 user
+    if isinstance(data, dict) and 'nickname' in data:
+        ctx['admin_nickname'] = data.get('nickname', '')
+        return True, '已备份 nickname=%r' % ctx['admin_nickname']
+    return False, 'session 响应缺少 nickname: %r' % data
 
 
 def _restore_profile(ctx):
-    nick = ctx.get('admin_nickname', '')
+    nick = ctx.get('admin_nickname')
+    if nick is None:
+        return  # 备份失败时绝不写入，防止覆盖真实资料
     ctx['_http'].request('POST', '/api/admin/profile',
-                         body={'nickname': nick or 'debugtest_orig'},
+                         body={'nickname': nick},
                          token=ctx['_http'].tokens.get('admin'))
 
 
@@ -84,10 +94,11 @@ def _avatar_cleanup(ctx):
 
 
 def _tmp_user_cleanup(ctx):
-    """兜底删除临时用户（正常流程已删则无操作）。"""
+    """兜底删除临时用户（正常流程已删则无操作；仅在删除用例失败时兜底）。"""
     if ctx.get('tmp_user'):
         ctx['_http'].request('POST', '/api/admin/users/%s/delete' % ctx['tmp_user'],
                              body={}, token=ctx['_http'].tokens.get('admin'))
+        ctx.pop('tmp_user', None)
 
 
 def _stu_cleanup(ctx):
@@ -146,6 +157,7 @@ API_CASES = [
      'auth': 'admin', 'expect': {'status': 200}},
     {'group': 'admin 登录态', 'name': '保存资料（原值恢复）', 'method': 'POST', 'path': '/api/admin/profile',
      'auth': 'admin',
+     'skip': lambda ctx: 'admin_nickname' not in ctx, 'skip_reason': '资料备份失败，跳过避免污染',
      'body': lambda ctx: {'nickname': 'debugtest_nick'},
      'expect': {'status': 200, 'ok_field': 'ok'},
      'cleanup': _restore_profile},
@@ -163,8 +175,7 @@ API_CASES = [
      'auth': 'admin',
      'body': {'username': PREFIX + 'u1', 'password': 'debugtest123', 'role': 'student'},
      'expect': {'status': 200, 'ok_field': 'ok'},
-     'validate': lambda s, d, ctx: ctx.update(tmp_user=PREFIX + 'u1') or (True, 'uid=' + d.get('uid', '')),
-     'cleanup': _tmp_user_cleanup},
+     'validate': lambda s, d, ctx: ctx.update(tmp_user=PREFIX + 'u1') or (True, 'uid=' + d.get('uid', ''))},
     {'group': 'admin 登录态', 'name': '修改临时用户', 'method': 'POST', 'path': '/api/admin/users/' + PREFIX + 'u1',
      'auth': 'admin',
      'body': {'nickname': 'debugtest_updated'},
