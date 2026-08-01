@@ -320,34 +320,44 @@ async function consumeSilent(generator) {
   return null;
 }
 
-/* ====== 缩小飞入（简化版：内容整体向上轻滑淡出，顶栏显示结果） ====== */
+/* ====== 收尾动画：内容上浮放大模糊消散 + 背景淡出 + 顶栏结果淡入 ====== */
 function shrinkToResult(names) {
   return new Promise(function(resolve) {
     var overlay = decorativeEl;
     var target = resultTarget;
     var label = (Array.isArray(names) ? names : [names]).join(' ');
 
-    // 内容（多人卡片网格或单卡）整体向上轻滑 + 淡出
+    // 顶栏结果先就位，淡入显示
+    target.textContent = label;
+    target.style.transition = 'opacity 0.28s ease';
+    target.style.opacity = '0';
+    void target.offsetWidth;
+    target.style.opacity = '1';
+
+    // 内容（多人卡片网格或单卡）上浮 + 轻微放大 + 模糊消散
     var cards = document.getElementById('pick-decorative-cards');
     var content = cards && !cards.classList.contains('hidden')
       ? cards
       : (overlay ? overlay.querySelector('.pick-decorative-inner') : null);
     if (content) {
-      content.style.transition = 'transform 0.35s cubic-bezier(0.33, 1, 0.68, 1), opacity 0.3s ease';
-      content.style.transform = 'translateY(-6vh)';
+      content.style.transition = 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.45s ease, filter 0.45s ease';
+      content.style.transform = 'translateY(-4vh) scale(1.03)';
       content.style.opacity = '0';
+      content.style.filter = 'blur(8px)';
     }
-    // 装饰层背景同步淡出
-    overlay.style.transition = 'opacity 0.35s ease';
+    // 背景稍慢淡出，营造层次
+    overlay.style.transition = 'opacity 0.55s ease';
     overlay.style.opacity = '0';
 
     setTimeout(function() {
-      target.textContent = label;
       // 收尾清理
+      target.style.transition = '';
+      target.style.opacity = '';
       if (cards) {
         cards.style.transition = '';
         cards.style.transform = '';
         cards.style.opacity = '';
+        cards.style.filter = '';
         cards.classList.add('hidden');
         cards.innerHTML = '';
       }
@@ -357,13 +367,14 @@ function shrinkToResult(names) {
         inner.style.transition = '';
         inner.style.transform = '';
         inner.style.opacity = '';
+        inner.style.filter = '';
       }
       overlay.style.transition = '';
       overlay.style.opacity = '';
       overlay.classList.add('hidden');
       overlay.classList.remove('shrink');
       resolve();
-    }, 400);
+    }, 600);
   });
 }
 
