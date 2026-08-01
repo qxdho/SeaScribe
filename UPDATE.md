@@ -1,5 +1,11 @@
 # SeaScribe 更新日志
 
+## v5.2.13
+
+### 修复 start.bat 启动横幅重复输出
+- 横幅打印了两遍：start.bat 的 echo + server.py 启动时 print
+- 删除 start.bat 中重复的两行 echo，启动后仅由 server.py 输出一遍
+
 ## v5.2.12
 
 ### 管理员面板可查看 Debug 操作日志
