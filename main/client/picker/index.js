@@ -25,6 +25,17 @@ var tsPanel = document.getElementById('picker-ts-panel');
 var tsBody = document.getElementById('picker-ts-body');
 var processModeRadios, multiRadios;
 
+// 顶栏结果位：滚轮 → 水平滚动（名字多时）
+var pickResultEl = document.getElementById('pick-result');
+if (pickResultEl) {
+  pickResultEl.addEventListener('wheel', function(e) {
+    if (pickResultEl.scrollWidth > pickResultEl.clientWidth) {
+      e.preventDefault();
+      pickResultEl.scrollLeft += (e.deltaY || e.deltaX);
+    }
+  }, { passive: false });
+}
+
 var _currentList = [];   // [{name, signature}, ...]
 var _currentFileName = '';
 var _animating = false;

@@ -44,7 +44,7 @@
   user-select: none;
 }
 
-.topbar-spacer { flex: 1; }
+.topbar-spacer { flex: 0 0 10px; }
 
 .topbar-btn {
   padding: 6px 10px;
