@@ -58,7 +58,7 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  max-height: 90vh;
+  max-height: 78vh; /* 适中限高，滚动条不再接近整屏 */
   overflow-y: auto;
 }
 
@@ -570,6 +570,10 @@
   margin-top: 6px;
 }
 .picker-debug-row .picker-select { flex: 1; }
+/* 调试姓名下拉：限高 160px，避免展开溢出弹窗触发长滚动 */
+#picker-debug-section .cs-wrap.open .cs-drop {
+  max-height: 160px;
+}
 
 .picker-multi-radio-row {
   display: flex;
