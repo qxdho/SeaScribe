@@ -45,10 +45,21 @@ def _save_classes(status, data, ctx):
 
 
 def _save_roster_backup(status, data, ctx):
-    ctx['roster_backup'] = {ctx.get('first_class', ''): data} if data else {}
     if isinstance(data, list) and data and isinstance(data[0], dict) and data[0].get('name'):
         ctx['first_student_name'] = data[0]['name']
-    return True, '已备份花名册 %s' % ctx.get('first_class', '(空)')
+    return True, '已读取花名册 %s' % ctx.get('first_class', '(空)')
+
+
+def _backup_all_roster(ctx):
+    """全量备份所有班级（花名册保存前必须完整备份，否则保存会删除未备份的班级文件）。"""
+    classes = ctx.get('roster_classes') or []
+    backup = {}
+    for cls in classes:
+        st, data, _ = ctx['_http'].request('GET', '/api/roster/' + cls)
+        if st != 200 or not isinstance(data, list):
+            raise RuntimeError('备份班级 %s 失败（HTTP %s）' % (cls, st))
+        backup[cls] = data
+    return backup
 
 
 def _profile_backup(status, data, ctx):
@@ -184,8 +195,8 @@ API_CASES = [
      'auth': 'admin', 'body': {}, 'expect': {'status': 200, 'ok_field': 'ok'}},
     {'group': 'admin 登录态', 'name': '花名册保存（原值写回）', 'method': 'POST', 'path': '/api/admin/roster',
      'auth': 'admin',
-     'skip': lambda ctx: not ctx.get('roster_backup'), 'skip_reason': '无花名册数据',
-     'body': lambda ctx: ctx.get('roster_backup', {}),
+     'skip': lambda ctx: not ctx.get('roster_classes'), 'skip_reason': '无花名册数据',
+     'body': lambda ctx: _backup_all_roster(ctx),
      'expect': {'status': 200, 'ok_field': 'ok'}},
     {'group': 'admin 登录态', 'name': '花名册空提交拒绝', 'method': 'POST', 'path': '/api/admin/roster',
      'auth': 'admin', 'body': {}, 'expect': {'status': 400}},
