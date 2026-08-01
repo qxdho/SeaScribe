@@ -1,5 +1,14 @@
 # SeaScribe 更新日志
 
+## v6.1.2
+
+### 修复：多人卡片 SVG 占位头像源码泄露
+- 占位头像的 `data:image/svg+xml` URI 含双引号，在 innerHTML 拼接时
+  提前闭合 `src` 属性，SVG 源码（`<svg xmlns=...`）作为游离文本泄露
+  到页面（多人卡片显示 `" alt="">` 等乱码）
+- 修复：改为 `encodeURIComponent` 编码的 data URI，属性闭合安全，
+  源码不再泄露
+
 ## v6.1.1
 
 ### 修复：静态资源缓存导致新样式不生效

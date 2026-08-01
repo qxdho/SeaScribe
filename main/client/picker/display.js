@@ -8,7 +8,14 @@
 import { SeaScribe } from '../core/state.js';
 import { PickerTimestamp } from './timestamp.js';
 
-var DEFAULT_AVATAR = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="50" fill="%23ccc"/><circle cx="50" cy="40" r="18" fill="%23999"/><ellipse cx="50" cy="82" rx="30" ry="22" fill="%23999"/></svg>';
+/* data URI 编码后的 SVG 占位头像 —— 避免 innerHTML 注入时
+   双引号提前闭合 src 属性导致 SVG 源码泄露到页面 */
+var DEFAULT_AVATAR = 'data:image/svg+xml,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">' +
+  '<rect width="100" height="100" rx="50" fill="#ccc"/>' +
+  '<circle cx="50" cy="40" r="18" fill="#999"/>' +
+  '<ellipse cx="50" cy="82" rx="30" ry="22" fill="#999"/></svg>'
+);
 
 var sigEl, timeEl, avatarEl, hintEl, overlay;
 
