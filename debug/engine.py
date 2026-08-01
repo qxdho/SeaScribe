@@ -26,10 +26,10 @@ import urllib.request
 
 _PREFIX = {
     'INFO': '[信息] ',
-    'PASS': '  [通过] ',
-    'FAIL': '  [失败] ',
-    'WARN': '  [警告] ',
-    'SKIP': '  [跳过] ',
+    'PASS': '      [通过] ',
+    'FAIL': '      [失败] ',
+    'WARN': '      [警告] ',
+    'SKIP': '      [跳过] ',
     'TEST': '  · 测试  ',
     'REQ':  '      → 请求  ',
     'RESP': '      ← 响应  ',
