@@ -408,11 +408,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  padding: 0 2%;
+  padding: 4%; /* 上下左右间距对称 */
+  background: linear-gradient(160deg, color-mix(in srgb, var(--surface) 94%, transparent), var(--surface));
+  border: 1px solid color-mix(in srgb, var(--border) 75%, transparent);
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 10px 28px rgba(0, 0, 0, 0.09);
   opacity: 0;
   transform: scale(0.6) translateY(20px);
 }
@@ -434,7 +434,7 @@
   aspect-ratio: 1;
   border-radius: 50%;
   object-fit: cover;
-  box-shadow: 0 0 0 1px var(--bg);
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px color-mix(in srgb, var(--border) 55%, transparent);
   margin-bottom: 6px;
   opacity: 0.5;
 }
@@ -446,13 +446,13 @@
   text-align: center;
 }
 
-/* 签名区 —— 独立分区，展示态限 2 行，左对齐 */
+/* 签名区 —— 独立分区，展示态限 2 行，从一开始就左对齐 */
 .pick-decorative-card-sig {
   font-size: clamp(0.8rem, 1vw, 1rem);
   color: var(--text);
   opacity: 0.55;
   margin-top: 6px;
-  max-width: 88%;
+  max-width: 100%;
   text-align: left;
   line-height: 1.35;
   min-height: 1.4em;
@@ -464,14 +464,13 @@
 }
 .pick-decorative-card-sig.empty { opacity: 0; }
 
-/* 紧凑态：卡片不动，内部元素重新布局 —— 头像缩小左移、名字垂直居中挨着头像、签名展开左对齐 */
+/* 紧凑态：卡片不动，内部元素重新布局 —— 头像缩小左移、名字垂直居中挨着头像、签名分区展开 */
 .pick-decorative-card.compact {
   transform: none;
   justify-content: flex-start;
+  align-items: stretch; /* 内部按 padding 对齐 */
 }
 .pick-decorative-card.compact .card-main {
-  position: absolute;
-  top: 8px; left: 4%; right: 4%;
   display: flex;
   flex-direction: row;
   align-items: center; /* 名字与头像垂直居中 */
@@ -488,11 +487,11 @@
   text-align: left;
 }
 .pick-decorative-card.compact .pick-decorative-card-sig {
-  position: absolute;
-  top: 58px; left: 4%; right: 4%; /* 头像行下方，向上展开 */
-  margin: 0;
+  margin: 10px 0 0;
+  padding-top: 8px;
+  border-top: 1px solid color-mix(in srgb, var(--border) 60%, transparent); /* 分区细线 */
   text-align: left;
-  max-width: none;
+  max-width: 100%;
   -webkit-line-clamp: 4; /* 紧凑态签名区展开，显示更多文字 */
 }
 .pick-decorative-card.compact .pick-decorative-card-sig.empty {
