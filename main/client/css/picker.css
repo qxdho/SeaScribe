@@ -391,19 +391,17 @@
 
 /* ====== 多人卡片 ====== */
 .pick-decorative-cards {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: flex-start; /* 顶部对齐：名字水平线一致 */
-  gap: 3vw;
-  max-width: 92vw;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); /* 按屏幕宽度自适应列数，均匀铺满 */
+  gap: 2vw;
+  width: 92vw;
+  max-width: 1400px;
 }
 .pick-decorative-cards.hidden { display: none; }
 
 .pick-decorative-card {
   position: relative;
-  width: 19vw;
-  height: 17vw; /* 固定尺寸：出现后不再变动，容纳展示态大头像与紧凑态 5 行签名 */
+  min-height: clamp(150px, 16vw, 240px); /* 高度随屏幕动态调整 */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -447,14 +445,14 @@
   text-align: center;
 }
 
-/* 签名区 —— 独立分区，展示态限 2 行 */
+/* 签名区 —— 独立分区，展示态限 2 行，左对齐 */
 .pick-decorative-card-sig {
   font-size: 1.4vw;
   color: var(--text);
   opacity: 0.55;
   margin-top: 8px;
   max-width: 17vw;
-  text-align: center;
+  text-align: left;
   line-height: 1.35;
   min-height: 1.4em;
   display: -webkit-box;
@@ -465,30 +463,35 @@
 }
 .pick-decorative-card-sig.empty { opacity: 0; }
 
-/* 紧凑态：卡片容器固定不动，内部元素绝对定位 —— 头像缩小左移、名字缩小移到右侧、签名向上展开 */
+/* 紧凑态：卡片容器固定不动，内部元素重新布局 —— 头像缩小左移、名字垂直居中挨着头像、签名向上展开左对齐 */
 .pick-decorative-card.compact {
   transform: none;
   justify-content: flex-start;
 }
-.pick-decorative-card.compact .pick-decorative-card-avatar {
+.pick-decorative-card.compact .card-main {
   position: absolute;
-  top: 1.2vw; left: 1.2vw;
+  top: 1.2vw; left: 1.2vw; right: 1.2vw;
+  display: flex;
+  flex-direction: row;
+  align-items: center; /* 名字与头像垂直居中 */
+  gap: 0.6vw; /* 挨近头像 */
+}
+.pick-decorative-card.compact .pick-decorative-card-avatar {
   width: 3.2vw; height: 3.2vw;
   max-width: 48px; max-height: 48px;
   margin: 0;
+  flex-shrink: 0;
 }
 .pick-decorative-card.compact .pick-decorative-card-name {
-  position: absolute;
-  top: 2vw; left: 5.2vw; /* 头像右侧 */
   font-size: 1.8vw;
   text-align: left;
-  line-height: 1.2;
 }
 .pick-decorative-card.compact .pick-decorative-card-sig {
   position: absolute;
-  top: 6vw; left: 1.2vw; right: 1.2vw; /* 名字下方，向上展开 */
+  top: 5vw; left: 1.2vw; right: 1.2vw; /* 名字下方，向上展开 */
   margin: 0;
   font-size: 1.2vw;
+  text-align: left;
   max-width: none;
   -webkit-line-clamp: 5; /* 紧凑态签名区展开，显示更多文字 */
 }
