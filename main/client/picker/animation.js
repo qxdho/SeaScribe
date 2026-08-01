@@ -328,13 +328,21 @@ function shrinkToResult(names) {
     var target = resultTarget;
     var label = (Array.isArray(names) ? names : [names]).join(' ');
 
-    // 多人模式：收起卡片，恢复单卡布局承载飞入名字
+    // 收起多人卡片
     var cards = document.getElementById('pick-decorative-cards');
     if (cards) { cards.classList.add('hidden'); cards.innerHTML = ''; }
-    if (overlay) {
-      var inner = overlay.querySelector('.pick-decorative-inner');
-      if (inner) inner.style.display = '';
-    }
+
+    // 恢复单卡布局，但清空头像/签名/时间/提示——只留名字用于飞入
+    var inner = overlay ? overlay.querySelector('.pick-decorative-inner') : null;
+    if (inner) inner.style.display = '';
+    var avatarEl = document.getElementById('pick-decorative-avatar');
+    if (avatarEl) { avatarEl.classList.add('hidden'); avatarEl.src = ''; avatarEl.style.opacity = ''; }
+    var sigEl = document.getElementById('pick-decorative-sig');
+    if (sigEl) { sigEl.textContent = ''; sigEl.classList.add('empty'); }
+    var timeEl = document.getElementById('pick-decorative-time');
+    if (timeEl) { timeEl.textContent = ''; timeEl.classList.add('never'); }
+    var hintEl = overlay ? overlay.querySelector('.pick-decorative-hint') : null;
+    if (hintEl) hintEl.style.display = 'none';
 
     target.textContent = '';
     textEl.textContent = label;
@@ -342,6 +350,9 @@ function shrinkToResult(names) {
     var isMulti = (Array.isArray(names) ? names : [names]).length > 1;
     if (isMulti) textEl.style.fontSize = '6vw';
     else textEl.style.removeProperty('font-size');
+
+    // 强制重排，确保测量的是稳定布局
+    void overlay.offsetWidth;
 
     var targetRect = target.getBoundingClientRect();
     var overlayRect = textEl.getBoundingClientRect();
