@@ -815,7 +815,7 @@
   min-width: 5em;
   flex: 1;               /* 结果区占满 picker 区域 */
   min-width: 0;
-  text-align: center;
+  text-align: right;     /* 右对齐 */
   display: inline-block;
   white-space: nowrap;
   overflow-x: auto; /* 名字多时左右滑动查看 */

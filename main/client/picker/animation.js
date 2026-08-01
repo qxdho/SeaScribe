@@ -361,9 +361,11 @@ function shrinkToResult(names) {
 
     setTimeout(function() {
       target.textContent = label;
-      // 长名字滚动到中间（视觉居中，左右可滑动）；短名字由 text-align:center 居中
+      // 右对齐：长名字显示末尾，开头向左滑动查看
       if (target.scrollWidth > target.clientWidth) {
-        target.scrollLeft = Math.max(0, Math.round((target.scrollWidth - target.clientWidth) / 2));
+        target.scrollLeft = target.scrollWidth - target.clientWidth;
+      } else {
+        target.scrollLeft = 0;
       }
       // 收尾清理
       target.style.transition = '';
