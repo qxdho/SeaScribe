@@ -218,7 +218,9 @@ API_CASES = [
      'auth': 'admin', 'expect': {'status': 200}, 'validate': _config_backup},
     {'group': 'admin/teacher', 'name': '保存配置（原值写回）', 'method': 'POST', 'path': '/api/admin/config/main',
      'auth': 'admin',
-     'body': lambda ctx: {'content': ctx.get('config_main', '')},
+     # 归一化换行：GET 的 content 含 \r\n，后端 open('w') 会再把 \n 转 \r\n 导致 \r\r\n；
+     # 先转 \n 再写，后端转回 \r\n，文件保持原样
+     'body': lambda ctx: {'content': ctx.get('config_main', '').replace('\r\n', '\n')},
      'expect': {'status': 200, 'ok_field': 'ok'}},
     {'group': 'admin/teacher', 'name': '点名记录', 'method': 'GET', 'path': '/api/admin/records',
      'auth': 'admin', 'expect': {'status': 200}},
