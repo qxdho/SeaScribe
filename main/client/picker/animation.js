@@ -304,8 +304,12 @@ function renderProcessStep(el, data, idx) {
 
 function renderProcessResult(el, persons) {
   var names = (persons || []).map(function(p) { return p.person.name; });
-  el.innerHTML = '<div class="proc-phase">结果</div>' +
-    '<div class="proc-result-name">🎯 ' + names.map(function(n) { return SeaScribe.esc(n); }).join('、') + '</div>' +
+  var count = names.length;
+  // 多人时字号自适应（人多则小），限宽自动换行，不再溢出
+  var size = count >= 12 ? '1.2rem' : count >= 6 ? '1.6rem' : count >= 3 ? '2rem' : '2.5rem';
+  el.innerHTML = '<div class="proc-phase">结果（' + count + ' 人）</div>' +
+    '<div class="proc-result-name" style="font-size:' + size + ';max-width:84vw;line-height:1.6">🎯 ' +
+    names.map(function(n) { return SeaScribe.esc(n); }).join('、') + '</div>' +
     '<div class="proc-result-sub">点击屏幕继续</div>';
 }
 
