@@ -160,9 +160,9 @@ const EnwordPlugin = {
     container.innerHTML =
       '<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 24px 200px;width:100%;min-height:0">' +
         '<div id="enword-display" style="text-align:center;max-width:1400px;width:100%;--enword-fs:' + (this._fontPct / 100) + '">' +
-          '<div id="enword-english" style="font-size:calc(clamp(3rem, 8vw, 7rem) * var(--enword-fs, 1));font-weight:700;line-height:1.1;color:var(--text);margin-bottom:20px;letter-spacing:0.03em;word-break:break-all"></div>' +
-          '<div id="enword-chinese" style="font-size:calc(clamp(1.7rem, 5vw, 3rem) * var(--enword-fs, 1));color:var(--text);opacity:0.9;line-height:1.7;max-width:1400px;margin:0 auto;font-weight:500"></div>' +
-          '<div id="enword-memo" style="font-size:calc(clamp(1.4rem, 3.5vw, 2rem) * var(--enword-fs, 1));color:var(--text);opacity:0.75;margin-top:20px;max-width:1400px;line-height:1.65"></div>' +
+          '<div id="enword-english" style="font-size:calc(clamp(3rem, 8vw, 7rem) * var(--enword-fs, 1));font-weight:700;line-height:1.05;color:var(--text);margin-bottom:10px;letter-spacing:0.03em;word-break:break-all"></div>' +
+          '<div id="enword-chinese" style="font-size:calc(clamp(1.7rem, 5vw, 3rem) * var(--enword-fs, 1));color:var(--text);opacity:0.9;line-height:1.35;max-width:1400px;margin:0 auto;font-weight:500"></div>' +
+          '<div id="enword-memo" style="font-size:calc(clamp(1.4rem, 3.5vw, 2rem) * var(--enword-fs, 1));color:var(--text);opacity:0.75;margin-top:10px;max-width:1400px;line-height:1.35"></div>' +
         '</div>' +
       '</div>' +
       '<div style="position:fixed;bottom:0;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px 20px 14px;background:var(--bg);border-top:1px solid var(--border);z-index:50">' +
