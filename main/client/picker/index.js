@@ -28,7 +28,7 @@ var processModeRadios, multiRadios;
 var _currentList = [];   // [{name, signature}, ...]
 var _currentFileName = '';
 var _animating = false;
-var _count = Math.min(Math.max(1, cfg.defaultCount || 1), cfg.countMax || 10);
+var _count = Math.min(Math.max(1, cfg.defaultCount || 1), cfg.countMax || 20);
 
 // 人数与多人模式 DOM
 var countMinus = document.getElementById('picker-count-minus');
@@ -74,7 +74,7 @@ updateProcessUI();
 
 /* ====== 人数控件 ====== */
 function updateCountUI() {
-  var max = cfg.countMax || 10;
+  var max = cfg.countMax || 20;
   if (countValueEl) countValueEl.textContent = _count;
   if (countMinus) countMinus.disabled = _count <= 1;
   if (countPlus) countPlus.disabled = _count >= max;

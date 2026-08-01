@@ -18,7 +18,7 @@ window._CONF.picker = {
   // ── 点多人 ──
 
   defaultCount: 1,              // 默认一次点几人（面板可调 1-countMax）
-  countMax: 10,                 // 人数上限
+  countMax: 20,                 // 人数上限
   defaultMultiMode: "simultaneous",  // 多人动画模式："simultaneous" 同时定格 / "sequential" 逐个定格
 
   // ── Fair 算法参数 ──
