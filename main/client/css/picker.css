@@ -392,16 +392,18 @@
 /* ====== 多人卡片 ====== */
 .pick-decorative-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); /* 按屏幕宽度自适应列数，均匀铺满 */
-  gap: 2vw;
-  width: 92vw;
-  max-width: 1400px;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* 按屏宽分列，卡片尽量大 */
+  gap: 1.5vw;
+  width: 96vw;
+  max-width: 1600px;
+  align-items: stretch;
 }
 .pick-decorative-cards.hidden { display: none; }
 
 .pick-decorative-card {
   position: relative;
-  min-height: clamp(150px, 16vw, 240px); /* 高度随屏幕动态调整 */
+  height: clamp(120px, 14vw, 180px); /* 横版卡片：固定矮高度，宽度随 grid 铺满 */
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -410,7 +412,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-  padding: 0.8vw;
+  padding: 0 2%;
   opacity: 0;
   transform: scale(0.6) translateY(20px);
 }
@@ -428,17 +430,16 @@
   align-items: center;
 }
 .pick-decorative-card-avatar {
-  width: 8vw; height: 8vw;
-  max-width: 120px; max-height: 120px;
+  width: clamp(56px, 18%, 96px);
+  aspect-ratio: 1;
   border-radius: 50%;
   object-fit: cover;
   box-shadow: 0 0 0 1px var(--bg);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   opacity: 0.5;
-  transition: opacity var(--dur-slow);
 }
 .pick-decorative-card-name {
-  font-size: 3.2vw;
+  font-size: clamp(1.2rem, 2.2vw, 2rem);
   font-weight: 800;
   color: var(--text);
   line-height: 1.2;
@@ -447,11 +448,11 @@
 
 /* 签名区 —— 独立分区，展示态限 2 行，左对齐 */
 .pick-decorative-card-sig {
-  font-size: 1.4vw;
+  font-size: clamp(0.8rem, 1vw, 1rem);
   color: var(--text);
   opacity: 0.55;
-  margin-top: 8px;
-  max-width: 17vw;
+  margin-top: 6px;
+  max-width: 88%;
   text-align: left;
   line-height: 1.35;
   min-height: 1.4em;
@@ -463,37 +464,36 @@
 }
 .pick-decorative-card-sig.empty { opacity: 0; }
 
-/* 紧凑态：卡片容器固定不动，内部元素重新布局 —— 头像缩小左移、名字垂直居中挨着头像、签名向上展开左对齐 */
+/* 紧凑态：卡片不动，内部元素重新布局 —— 头像缩小左移、名字垂直居中挨着头像、签名展开左对齐 */
 .pick-decorative-card.compact {
   transform: none;
   justify-content: flex-start;
 }
 .pick-decorative-card.compact .card-main {
   position: absolute;
-  top: 1.2vw; left: 1.2vw; right: 1.2vw;
+  top: 8px; left: 4%; right: 4%;
   display: flex;
   flex-direction: row;
   align-items: center; /* 名字与头像垂直居中 */
-  gap: 0.6vw; /* 挨近头像 */
+  gap: 10px; /* 挨近头像 */
 }
 .pick-decorative-card.compact .pick-decorative-card-avatar {
-  width: 3.2vw; height: 3.2vw;
-  max-width: 48px; max-height: 48px;
+  width: clamp(36px, 10%, 52px);
+  aspect-ratio: 1;
   margin: 0;
   flex-shrink: 0;
 }
 .pick-decorative-card.compact .pick-decorative-card-name {
-  font-size: 1.8vw;
+  font-size: clamp(1rem, 1.7vw, 1.5rem);
   text-align: left;
 }
 .pick-decorative-card.compact .pick-decorative-card-sig {
   position: absolute;
-  top: 5vw; left: 1.2vw; right: 1.2vw; /* 名字下方，向上展开 */
+  top: 58px; left: 4%; right: 4%; /* 头像行下方，向上展开 */
   margin: 0;
-  font-size: 1.2vw;
   text-align: left;
   max-width: none;
-  -webkit-line-clamp: 5; /* 紧凑态签名区展开，显示更多文字 */
+  -webkit-line-clamp: 4; /* 紧凑态签名区展开，显示更多文字 */
 }
 .pick-decorative-card.compact .pick-decorative-card-sig.empty {
   display: none;
