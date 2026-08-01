@@ -11,6 +11,14 @@ window.__SEASCRIBE_LOG__ = [];
 
 if (splash) (function() {
 
+  // 版本号自动填充 —— 唯一来源 config/config.js 的 window._CONF.main.version
+  var cfgVer = (window._CONF && window._CONF.main && window._CONF.main.version) || '';
+  var versionLabel = cfgVer ? 'v' + cfgVer : '';
+  var splashVer = document.getElementById('splash-version');
+  var topbarVer = document.getElementById('topbar-version');
+  if (splashVer) splashVer.textContent = versionLabel;
+  if (topbarVer) topbarVer.textContent = versionLabel;
+
   // 拦截 console 输出到系统日志
   (function() {
     var orig = { log: console.log, error: console.error, warn: console.warn };

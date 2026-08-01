@@ -34,6 +34,15 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             path = "/main/admin/" + path[len("/admin/"):]
         return super().translate_path(path)
 
+    def end_headers(self):
+        """所有响应加 no-cache：浏览器每次重新校验（Last-Modified），
+        文件更新后自动拉取最新，无需手动维护 ?v= 版本号"""
+        try:
+            self.send_header("Cache-Control", "no-cache")
+        except Exception:
+            pass
+        super().end_headers()
+
     def send_json(self, status, data):
         try:
             self.send_response(status)
