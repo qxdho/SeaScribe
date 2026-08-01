@@ -334,7 +334,17 @@ function shrinkToResult(names) {
       var nameEls = cards ? cards.querySelectorAll('.pick-decorative-card-name') : [];
       var targetRect = target.getBoundingClientRect();
       var ty = targetRect.top + targetRect.height / 2;
-      var maxI = nameEls.length;
+      var maxI = 0;
+      // 头像/签名先淡出，名字保留用于飞入
+      if (cards) {
+        cards.querySelectorAll('.pick-decorative-card').forEach(function(c) {
+          c.style.overflow = 'visible'; // 允许名字向上飞出卡片（默认 hidden 会裁剪）
+        });
+        cards.querySelectorAll('.pick-decorative-card-avatar, .pick-decorative-card-sig').forEach(function(el) {
+          el.style.transition = 'opacity 0.3s ease';
+          el.style.opacity = '0';
+        });
+      }
       nameEls.forEach(function(el, i) {
         var rect = el.getBoundingClientRect();
         var dy = ty - (rect.top + rect.height / 2);
@@ -347,9 +357,9 @@ function shrinkToResult(names) {
         }, delay);
         maxI = i;
       });
-      // 卡片其余内容同步淡出
+      // 卡片容器延迟淡出（名字飞完后），避免盖住名字飞入
       if (cards) {
-        cards.style.transition = 'opacity 0.4s ease';
+        cards.style.transition = 'opacity 0.3s ease 0.4s';
         cards.style.opacity = '0';
       }
       // 背景淡出
@@ -366,7 +376,7 @@ function shrinkToResult(names) {
           cards.innerHTML = '';
         }
         resolve();
-      }, 420 + maxI * 40 + 120);
+      }, 420 + maxI * 40 + 220);
       return;
     }
 

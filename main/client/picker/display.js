@@ -245,19 +245,7 @@ function waitForClick() {
       timeEl.textContent = '';
       if (avatarEl) { avatarEl.src = ''; avatarEl.style.opacity = ''; }
       if (hintEl) hintEl.style.display = 'none';
-      // 清理多卡容器并恢复单卡布局
-      var cards = document.getElementById('pick-decorative-cards');
-      if (cards) {
-        cards.classList.add('hidden');
-        cards.classList.remove('pop-all');
-        cards.querySelectorAll('.pick-decorative-card').forEach(function(c) {
-          c.classList.remove('compact', 'pop');
-          c.style.transition = '';
-          c.style.transform = '';
-          c.style.opacity = '';
-        });
-        cards.innerHTML = '';
-      }
+      // 多卡容器保留给 shrink 飞入动画使用（收尾由 shrink 清理，不清空）
       var inner = overlay ? overlay.querySelector('.pick-decorative-inner') : null;
       if (inner) inner.style.display = '';
       resolve();
