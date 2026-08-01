@@ -131,7 +131,11 @@ class HttpClient:
     def request(self, method, path, body=None, token=None):
         # URL 编码：中文等非 ASCII 字符需 percent-encoding（保留 / ? = & % 已有结构）
         url = self.base + urllib.parse.quote(path, safe="/?=&%{}")
-        headers = {'Accept': 'application/json'}
+        headers = {
+            'Accept': 'application/json',
+            # 标记 debug 自检请求：后端将操作日志写入独立文件，不混入正常日志
+            'X-Debug-Test': '1',
+        }
         data = None
         if body is not None:
             headers['Content-Type'] = 'application/json'

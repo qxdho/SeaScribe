@@ -21,6 +21,7 @@ paths.store = SimpleNamespace(
     users    = os.path.join(paths.data, "users.json"),
     sessions = os.path.join(paths.data, "sessions.json"),
     logs     = os.path.join(paths.data, "logs.json"),
+    logs_debug = os.path.join(paths.data, "logs_debug.json"),
 )
 
 paths.content = SimpleNamespace(
@@ -39,6 +40,7 @@ ENGLISH_DIR = paths.content.english
 USERS_PATH    = paths.store.users
 SESSIONS_PATH = paths.store.sessions
 LOGS_PATH     = paths.store.logs
+LOGS_DEBUG_PATH = paths.store.logs_debug
 
 
 # ── Limits ──

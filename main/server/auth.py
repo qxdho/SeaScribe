@@ -6,7 +6,7 @@ import secrets
 import threading
 import time
 
-from .config import USERS_PATH, SESSIONS_PATH, LOGS_PATH
+from .config import USERS_PATH, SESSIONS_PATH, LOGS_PATH, LOGS_DEBUG_PATH
 
 _json_lock = threading.RLock()
 
@@ -214,13 +214,17 @@ def append_log(action, detail="", handler=None, user=None):
         entry["displayName"] = user.get("displayName", "")
     if handler:
         entry["ip"] = get_client_ip(handler)
-    logs = _read_json(LOGS_PATH)
+    # debug 自检工具（带 X-Debug-Test 头）的操作日志写入独立文件，
+    # 不混入管理员界面的正常操作日志
+    is_debug = bool(handler and handler.headers.get('X-Debug-Test'))
+    log_path = LOGS_DEBUG_PATH if is_debug else LOGS_PATH
+    logs = _read_json(log_path)
     if not isinstance(logs, list):
         logs = []
     logs.append(entry)
     if len(logs) > _MAX_LOG_ENTRIES:
         logs = logs[-_MAX_LOG_ENTRIES:]
-    _write_json(LOGS_PATH, logs)
+    _write_json(log_path, logs)
 
 
 def get_logs(limit=200):

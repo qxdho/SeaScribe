@@ -1,5 +1,14 @@
 # SeaScribe 更新日志
 
+## v5.2.8
+
+### debug 操作日志与正常操作日志分离
+- debug 自检请求携带 `X-Debug-Test` 头，后端将此类操作日志写入独立的
+  `data/logs_debug.json`，不再混入管理员界面的操作日志（`data/logs.json`）
+- 历史已混入的 24 条 debug 记录迁移到独立文件
+- 涉及后端 `config.py`（新增 `LOGS_DEBUG_PATH`）、`auth.py`（append_log 分流），
+  服务器已重启生效
+
 ## v5.2.7
 
 ### 修复测试污染 config/config.js 行尾
