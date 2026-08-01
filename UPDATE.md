@@ -1,5 +1,12 @@
 # SeaScribe 更新日志
 
+## v5.2.4
+
+### 安全加固：debug 日志敏感字段脱敏
+- 请求体、响应、失败详情中的 `password` / `oldPassword` / `newPassword` /
+  `token` / `content` / `Authorization` 一律显示为 `***`，不再打印明文
+- 修复：登录请求曾把管理员密码明文输出到控制台/日志
+
 ## v5.2.3
 
 ### 调试工具测试用例修复（全量 57/57 全绿）

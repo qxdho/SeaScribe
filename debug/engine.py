@@ -167,6 +167,19 @@ def _trunc(s, n=120):
     return s if len(s) <= n else s[:n] + '…'
 
 
+# 敏感字段：打印请求/响应时脱敏，避免密码、token、文件内容泄漏到日志
+_SENSITIVE_FIELDS = ('password', 'oldPassword', 'newPassword', 'token', 'content', 'Authorization')
+
+
+def _redact(obj):
+    """递归脱敏：命中敏感字段名的值替换为 ***。"""
+    if isinstance(obj, dict):
+        return {k: ('***' if k in _SENSITIVE_FIELDS else _redact(v)) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_redact(v) for v in obj]
+    return obj
+
+
 def check_expect(case, status, data):
     """按 expect 字典校验响应。返回 (ok, detail)。"""
     exp = case.get('expect', {})
@@ -176,19 +189,19 @@ def check_expect(case, status, data):
         ok = status == exp['status']
         details.append('状态码 %s (期望 %s)' % ('✔' if ok else '✘', exp['status']))
         if not ok:
-            return False, '；'.join(details) + '，实际响应: ' + _trunc(data)
+            return False, '；'.join(details) + '，实际响应: ' + _trunc(_redact(data))
     elif 'status_in' in exp:
         ok = status in exp['status_in']
         details.append('状态码 %s ∈ %s' % ('✔' if ok else '✘', exp['status_in']))
         if not ok:
-            return False, '；'.join(details) + '，实际响应: ' + _trunc(data)
+            return False, '；'.join(details) + '，实际响应: ' + _trunc(_redact(data))
 
     if 'ok_field' in exp:
         v = data.get(exp['ok_field']) if isinstance(data, dict) else None
         ok = v is True
         details.append('%s=%s' % (exp['ok_field'], '✔' if ok else ('✘(%r)' % v)))
         if not ok:
-            return False, '；'.join(details) + '，实际响应: ' + _trunc(data)
+            return False, '；'.join(details) + '，实际响应: ' + _trunc(_redact(data))
 
     if 'json_subset' in exp:
         missing = []
@@ -198,14 +211,14 @@ def check_expect(case, status, data):
         ok = not missing
         details.append('字段子集 %s' % ('✔' if ok else '✘ 缺失: ' + ', '.join(missing)))
         if not ok:
-            return False, '；'.join(details) + '，实际响应: ' + _trunc(data)
+            return False, '；'.join(details) + '，实际响应: ' + _trunc(_redact(data))
 
     if 'text_contains' in exp:
         hay = json.dumps(data, ensure_ascii=False) if not isinstance(data, str) else data
         ok = exp['text_contains'] in hay
         details.append('包含 %r %s' % (exp['text_contains'], '✔' if ok else '✘'))
         if not ok:
-            return False, '；'.join(details) + '，实际响应: ' + _trunc(data)
+            return False, '；'.join(details) + '，实际响应: ' + _trunc(_redact(data))
 
     return True, '；'.join(details) if details else '状态码 %s' % status
 
@@ -271,10 +284,10 @@ def run_case(case, http, ctx, log, results):
 
     log.test('%s%s — %s %s' % (progress, name, case['method'], path))
     if body is not None:
-        log.req('body: ' + _trunc(json.dumps(body, ensure_ascii=False), 160))
+        log.req('body: ' + _trunc(json.dumps(_redact(body), ensure_ascii=False), 160))
     status, data, dt = http.request(case['method'], path, body=body, token=token)
     log.resp('HTTP %s  (%.0fms)' % (status, dt * 1000) +
-             ('  ' + _trunc(json.dumps(data, ensure_ascii=False), 160) if data not in (None, {}) else ''))
+             ('  ' + _trunc(json.dumps(_redact(data), ensure_ascii=False), 160) if data not in (None, {}) else ''))
 
     ok, detail = check_expect(case, status, data)
     if ok and case.get('validate'):
