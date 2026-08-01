@@ -1,5 +1,14 @@
 # SeaScribe 更新日志
 
+## v5.2.12
+
+### 管理员面板可查看 Debug 操作日志
+- 后端新增 `GET /api/admin/logs/debug`（admin/teacher 可访问），返回
+  `data/logs_debug.json` 最近 200 条
+- 管理后台「操作日志」页新增来源切换：**正常日志 / Debug 日志**
+- debug 工具用例同步覆盖新接口
+- 注意：本版本改动后端，需重启服务器生效
+
 ## v5.2.11
 
 ### 调试日志结果行降级为测试项子层

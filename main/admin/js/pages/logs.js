@@ -9,12 +9,19 @@ var _userList = [];   // cached user list for admin filter
 function render() {
   var user = Admin.getSession().user;
   var isAdmin = user.role === 'admin';
+  var canSeeDebug = isAdmin || user.role === 'teacher';
   var content = document.getElementById("admin-content");
   content.innerHTML =
     '<div class="admin-card">' +
       '<h3>📝 操作日志</h3>' +
       '<p style="color:var(--muted);margin-bottom:16px">' + (isAdmin ? '记录最近 200 条操作' : '以下是你账号最近的操作记录') + '</p>' +
       '<div class="logs-toolbar">' +
+        (canSeeDebug ? '<div class="logs-filter">' +
+          '<select id="logs-source-filter">' +
+            '<option value="normal">正常日志</option>' +
+            '<option value="debug">Debug 日志</option>' +
+          '</select>' +
+        '</div>' : '') +
         (isAdmin ? '<div class="logs-filter">' +
           '<select id="logs-user-filter">' +
             '<option value="">全部用户</option>' +
@@ -69,7 +76,10 @@ function loadLogs() {
   var actionValue = actionFilterEl ? actionFilterEl.value : "";
   var userFilterEl = document.getElementById("logs-user-filter");
   var userValue = userFilterEl ? userFilterEl.value : "";
-  Admin.api("/api/admin/logs").then(function(res) {
+  var sourceEl = document.getElementById("logs-source-filter");
+  var source = sourceEl ? sourceEl.value : "normal";
+  var apiPath = source === "debug" ? "/api/admin/logs/debug" : "/api/admin/logs";
+  Admin.api(apiPath).then(function(res) {
     var wrap = document.getElementById("logs-table-wrap");
     if (!res.ok) {
       wrap.innerHTML = '<p class="admin-msg warn">加载失败</p>';
@@ -129,7 +139,7 @@ function fmtTime(ts) {
 // Auto-refresh and filter
 (function() {
   document.addEventListener("change", function(e) {
-    if (e.target.id === "logs-action-filter" || e.target.id === "logs-user-filter") loadLogs();
+    if (e.target.id === "logs-action-filter" || e.target.id === "logs-user-filter" || e.target.id === "logs-source-filter") loadLogs();
   });
   document.addEventListener("click", function(e) {
     if (e.target.id === "logs-refresh") loadLogs();

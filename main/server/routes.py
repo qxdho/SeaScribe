@@ -10,7 +10,7 @@ from urllib.parse import unquote
 
 from .config import (
     ROOT, DATA, PICKER_DIR, ENGLISH_DIR, AVATAR_DIR, ROSTER_DIR,
-    USERS_PATH, SESSIONS_PATH, MAX_BODY_API,
+    USERS_PATH, SESSIONS_PATH, MAX_BODY_API, LOGS_DEBUG_PATH,
 )
 from .auth import (
     _read_json, _write_json, load_users, save_users,
@@ -950,6 +950,19 @@ def handle_admin_logs(path, handler, params=None):
     return True
 
 
+def handle_admin_logs_debug(path, handler, params=None):
+    """GET /api/admin/logs/debug — 查看 debug 自检工具的操作日志（admin/teacher）。"""
+    if path != '/api/admin/logs/debug':
+        return False
+    user = require_role(handler, 'admin', 'teacher')
+    if not user: return True
+    logs = _read_json(LOGS_DEBUG_PATH)
+    if not isinstance(logs, list):
+        logs = []
+    handler.send_json(200, logs[-200:])
+    return True
+
+
 #  Handler lists for dispatch
 # ═══════════════════════════════════════════
 
@@ -996,6 +1009,7 @@ GET_HANDLERS = [
     handle_avatar_file,
     handle_admin_sessions,
     handle_admin_logs,
+    handle_admin_logs_debug,
     handle_admin_config_get,
     handle_admin_records,
     handle_admin_english_files,

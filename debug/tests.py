@@ -224,6 +224,8 @@ API_CASES = [
      'expect': {'status': 200, 'ok_field': 'ok'}},
     {'group': 'admin/teacher', 'name': '点名记录', 'method': 'GET', 'path': '/api/admin/records',
      'auth': 'admin', 'expect': {'status': 200}},
+    {'group': 'admin/teacher', 'name': 'Debug 日志查询', 'method': 'GET', 'path': '/api/admin/logs/debug',
+     'auth': 'admin', 'expect': {'status': 200}},
     {'group': 'admin/teacher', 'name': '英语文件列表', 'method': 'GET', 'path': '/api/admin/english-files',
      'auth': 'admin', 'expect': {'status': 200}},
     {'group': 'admin/teacher', 'name': '英语文件上传', 'method': 'POST', 'path': '/api/admin/upload/english',
