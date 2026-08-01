@@ -346,14 +346,14 @@ function shrinkToResult(names) {
 
     target.textContent = '';
     textEl.textContent = label;
-    // 多人拼接名字时缩小字号，避免飞入动画溢出
+    // 飞入动画字号：用接近顶栏目标的中小字号，避免大名字闪现
     var isMulti = (Array.isArray(names) ? names : [names]).length > 1;
-    if (isMulti) textEl.style.fontSize = '6vw';
-    else textEl.style.removeProperty('font-size');
+    if (isMulti) textEl.style.fontSize = '3vw';
+    else textEl.style.fontSize = '4vw';
 
-    // 名字柔和淡入（避免卡片收起后名字"突然"满尺寸出现）
+    // 名字柔和淡入（避免卡片收起后名字"突然"出现）
     textEl.style.opacity = '0';
-    textEl.style.transition = 'opacity 0.18s ease';
+    textEl.style.transition = 'opacity 0.12s ease';
     void overlay.offsetWidth;
     textEl.style.opacity = '1';
 
