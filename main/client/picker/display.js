@@ -106,13 +106,16 @@ function fillMany(persons, mode) {
   if (avatarEl) avatarEl.src = '';
   cards.classList.remove('hidden');
   cards.classList.remove('pop-all');
+  var PLACEHOLDER_SIG = '这位同学很低调，还没留下签名哦~';
   cards.innerHTML = persons.map(function(p, i) {
-    return '<div class="pick-decorative-card" data-idx="' + i + '" title="' + SeaScribe.esc(p.signature || p.name) + '">' +
+    var hasSig = !!p.signature;
+    var sigText = hasSig ? p.signature : PLACEHOLDER_SIG;
+    return '<div class="pick-decorative-card" data-idx="' + i + '" title="' + SeaScribe.esc(sigText) + '">' +
       '<div class="card-main">' +
         '<img class="pick-decorative-card-avatar" src="' + DEFAULT_AVATAR + '" alt="">' +
         '<span class="pick-decorative-card-name">' + SeaScribe.esc(p.name) + '</span>' +
       '</div>' +
-      '<span class="pick-decorative-card-sig' + (p.signature ? '' : ' empty') + '">' + SeaScribe.esc(p.signature || '') + '</span>' +
+      '<span class="pick-decorative-card-sig' + (hasSig ? '' : ' placeholder') + '">' + SeaScribe.esc(sigText) + '</span>' +
     '</div>';
   }).join('');
 
@@ -146,7 +149,7 @@ function fillMany(persons, mode) {
   // 展示态停顿后，逐卡 FLIP 过渡到紧凑态（头像名字缩小横排，给签名让位）
   setTimeout(function() {
     flipToCompact(cards, mode);
-  }, 1600);
+  }, 1800);
 
   // 提示信息
   if (hintEl) hintEl.style.display = '';
@@ -187,9 +190,9 @@ function flipToCompact(cards, mode) {
         el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + sx + ',' + sy + ')';
       });
       void card.offsetWidth; // 强制重排
-      // 平滑过渡到紧凑态自然位置
+      // 平滑过渡到紧凑态自然位置（更慢更柔的缓动）
       elems.forEach(function(el) {
-        el.style.transition = 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)';
+        el.style.transition = 'transform 0.8s cubic-bezier(0.33, 1, 0.68, 1)';
         el.style.transform = '';
       });
     }, delay);

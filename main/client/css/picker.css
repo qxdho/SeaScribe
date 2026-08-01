@@ -464,6 +464,12 @@
 }
 .pick-decorative-card-sig.empty { opacity: 0; }
 
+/* 无签名者的可爱占位签名 */
+.pick-decorative-card-sig.placeholder {
+  opacity: 0.4;
+  font-style: italic;
+}
+
 /* 紧凑态：卡片不动，内部元素重新布局 —— 头像缩小左移、名字垂直居中挨着头像、签名分区展开 */
 .pick-decorative-card.compact {
   transform: none;
