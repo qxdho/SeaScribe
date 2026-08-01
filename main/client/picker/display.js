@@ -156,7 +156,7 @@ function fillMany(persons, mode) {
 }
 
 /**
- * 紧凑态过渡：卡片容器固定不动，仅对内部元素（头像/名字/签名）做 FLIP
+ * 紧凑态过渡：卡片容器固定不动，内部元素同时移动（分离路径防交叉）
  * @param {HTMLElement} cards — 多卡容器
  * @param {string} mode — 逐卡交错间隔
  */
@@ -167,33 +167,47 @@ function flipToCompact(cards, mode) {
   cardEls.forEach(function(card, i) {
     var delay = (mode === 'sequential' ? i * 200 : 0);
     setTimeout(function() {
-      var elems = [
-        card.querySelector('.pick-decorative-card-avatar'),
-        card.querySelector('.pick-decorative-card-name'),
-        card.querySelector('.pick-decorative-card-sig'),
-      ].filter(Boolean);
-      if (!elems.length) return;
-      // 捕捉展示态位置
-      var firsts = elems.map(function(el) { return el.getBoundingClientRect(); });
-      // 切换紧凑态（卡片尺寸不变，仅内部重新布局）
+      var avatar = card.querySelector('.pick-decorative-card-avatar');
+      var name = card.querySelector('.pick-decorative-card-name');
+      var sig = card.querySelector('.pick-decorative-card-sig');
+      var specs = [avatar, name, sig].filter(Boolean).map(function(el) {
+        return { el: el, first: el.getBoundingClientRect() };
+      });
+      if (!specs.length) return;
+      // 切换紧凑态，捕捉新位置并计算补偿
       card.classList.add('compact');
-      // 捕捉紧凑态位置，反向补偿
-      elems.forEach(function(el, idx) {
-        var first = firsts[idx];
-        var last = el.getBoundingClientRect();
-        var dx = first.left - last.left;
-        var dy = first.top - last.top;
-        var sx = first.width / Math.max(1, last.width);
-        var sy = first.height / Math.max(1, last.height);
-        el.style.transition = 'none';
-        el.style.transformOrigin = 'top left';
-        el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + sx + ',' + sy + ')';
+      var sepY = Math.round((card.clientHeight || 150) * 0.25); // 垂直分离量
+      specs.forEach(function(spec) {
+        var last = spec.el.getBoundingClientRect();
+        var dx = spec.first.left - last.left;
+        var dy = spec.first.top - last.top;
+        var sx = spec.first.width / Math.max(1, last.width);
+        var sy = spec.first.height / Math.max(1, last.height);
+        var isAvatar = spec.el === avatar;
+        var isName = spec.el === name;
+        // 关键帧路径变量：头像先上移、名字先下移、签名线性
+        spec.el.style.transition = 'none';
+        spec.el.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + sx + ',' + sy + ')';
+        spec.el.style.setProperty('--fx', dx + 'px');
+        spec.el.style.setProperty('--fy', dy + 'px');
+        spec.el.style.setProperty('--fs', sx + ',' + sy);
+        spec.el.style.setProperty('--ms', '0.72');
+        spec.el.style.setProperty('--my', (isAvatar ? -sepY : isName ? sepY : 0) + 'px');
+        spec._cls = isAvatar ? 'flip-up' : isName ? 'flip-down' : 'flip-plain';
       });
       void card.offsetWidth; // 强制重排
-      // 同时平滑过渡到紧凑态自然位置（头像/名字/签名同步移动，慢速不交叉）
-      elems.forEach(function(el) {
-        el.style.transition = 'transform 0.8s cubic-bezier(0.33, 1, 0.68, 1)';
-        el.style.transform = '';
+      // 同时播放（0 延迟），动画结束清理
+      specs.forEach(function(spec) {
+        spec.el.classList.add(spec._cls);
+        spec.el.addEventListener('animationend', function handler() {
+          spec.el.removeEventListener('animationend', handler);
+          spec.el.classList.remove(spec._cls);
+          spec.el.style.transition = '';
+          spec.el.style.transform = '';
+          ['--fx', '--fy', '--fs', '--ms', '--my'].forEach(function(v) {
+            spec.el.style.removeProperty(v);
+          });
+        });
       });
     }, delay);
   });

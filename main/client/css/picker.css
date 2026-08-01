@@ -504,6 +504,26 @@
   display: none;
 }
 
+/* ====== 紧凑态过渡：分离路径（头像先上、名字先下，拉开后水平归位，同时播放） ====== */
+@keyframes flipSep {
+  0%   { transform: translate(var(--fx), var(--fy)) scale(var(--fs)); }
+  45%  { transform: translate(var(--fx), var(--my)) scale(var(--ms)); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+@keyframes flipPlain {
+  0%   { transform: translate(var(--fx), var(--fy)) scale(var(--fs)); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+.flip-up,
+.flip-down {
+  transform-origin: top left;
+  animation: flipSep 0.8s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+}
+.flip-plain {
+  transform-origin: top left;
+  animation: flipPlain 0.8s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+}
+
 @keyframes pickCardIn {
   from { opacity: 0; transform: scale(0.85) translateY(10px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
