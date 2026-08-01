@@ -25,7 +25,7 @@ var tsPanel = document.getElementById('picker-ts-panel');
 var tsBody = document.getElementById('picker-ts-body');
 var processModeRadios, multiRadios;
 
-// 顶栏结果位：滚轮 → 水平滚动（名字多时）
+// 顶栏结果位：滚轮 + 鼠标拖拽 → 水平滚动（名字多时）
 var pickResultEl = document.getElementById('pick-result');
 if (pickResultEl) {
   pickResultEl.addEventListener('wheel', function(e) {
@@ -34,6 +34,19 @@ if (pickResultEl) {
       pickResultEl.scrollLeft += (e.deltaY || e.deltaX);
     }
   }, { passive: false });
+  // 鼠标按住拖动滚动
+  var _drag = null;
+  pickResultEl.addEventListener('mousedown', function(e) {
+    if (pickResultEl.scrollWidth <= pickResultEl.clientWidth) return;
+    _drag = { x: e.pageX, left: pickResultEl.scrollLeft };
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', function(e) {
+    if (!_drag) return;
+    pickResultEl.scrollLeft = _drag.left - (e.pageX - _drag.x);
+  });
+  window.addEventListener('mouseup', function() { _drag = null; });
+  window.addEventListener('mouseleave', function() { _drag = null; });
 }
 
 var _currentList = [];   // [{name, signature}, ...]
