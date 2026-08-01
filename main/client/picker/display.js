@@ -245,9 +245,7 @@ function waitForClick() {
       timeEl.textContent = '';
       if (avatarEl) { avatarEl.src = ''; avatarEl.style.opacity = ''; }
       if (hintEl) hintEl.style.display = 'none';
-      // 多卡容器保留给 shrink 飞入动画使用（收尾由 shrink 清理，不清空）
-      var inner = overlay ? overlay.querySelector('.pick-decorative-inner') : null;
-      if (inner) inner.style.display = '';
+      // 卡片/单卡布局均保留给 shrink 收尾处理，此处不清理
       resolve();
     }
     function onClick(e) {
