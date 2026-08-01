@@ -1,5 +1,14 @@
 # SeaScribe 更新日志
 
+## v6.0.2
+
+### 文档同步 + 仓库数据治理
+- README/RULES/PLUGINS 全部同步 v6.0.0 架构：后端 api_* 模块结构、
+  19 GET + 15 POST、picker ESM 化、插件注册方式、调试工具行为
+- **仓库治理**：`data/`（含学生名单/头像等隐私数据）与 `.reasonix/` 历史
+  跟踪彻底清理——git filter-repo 重写 175 个提交抹除 data/，force push 生效；
+  `.gitignore` 原为 UTF-16 编码导致 git 无法解析、忽略规则长期失效，已修复为 UTF-8
+
 ## v6.0.1
 
 ### 修复 debug 测试误删花名册班级

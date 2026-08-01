@@ -52,11 +52,20 @@
 
 ### 后端 (`main/server/`)
 ```
-config.py   常量（PORT, 路径, 限制）
-auth.py     用户/密码/会话/令牌/限流/操作日志/_require_auth
-routes.py   API handler（18 GET + 16 POST）+ 分发列表
-server.py   入口 + Handler 类 + translate_path + 静态文件服务
+config.py    常量（PORT, 路径, 限制, MIME）
+auth.py      用户/密码/会话/令牌/限流/操作日志/_require_auth
+api_common.py  公共辅助（user_to_dict / MIME_MAP / _parse_json_body）
+api_auth.py    鉴权与会话 handler（登录/登出/注册/会话）
+api_user.py    用户管理 handler（资料/创建/修改/删除/头像查询）
+api_roster.py  花名册 handler
+api_picker.py  点名时间戳/记录 handler
+api_config.py  配置读存 handler
+api_file.py    学科文件/英语/头像 handler
+api_log.py     操作日志 handler
+routes.py      API 聚合入口（19 GET + 15 POST 分发列表）
+server.py      入口 + Handler 类 + translate_path + 静态文件服务
 ```
+新增 handler：在对应 api_*.py 实现后，追加到 routes.py 的分发列表。
 
 ### 前端 JS
 

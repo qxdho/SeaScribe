@@ -100,9 +100,9 @@ const MyPlugin = {
 <script src="plugins/{your-subject}/plugin.js"></script>
 ```
 
-`main/client/js/app.js` 中：
+`main/client/core/app.js` 中（插件为普通 script 加载，app.js 内条件注册）：
 ```js
-SubjectRegistry.register(MyPlugin);
+if (typeof MyPlugin !== 'undefined') SubjectRegistry.register(MyPlugin);
 ```
 
 ---
