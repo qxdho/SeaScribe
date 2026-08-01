@@ -320,131 +320,50 @@ async function consumeSilent(generator) {
   return null;
 }
 
-/* ====== 缩小飞入 ====== */
+/* ====== 缩小飞入（简化版：内容整体向上轻滑淡出，顶栏显示结果） ====== */
 function shrinkToResult(names) {
   return new Promise(function(resolve) {
     var overlay = decorativeEl;
-    var textEl = decorativeText;
     var target = resultTarget;
     var label = (Array.isArray(names) ? names : [names]).join(' ');
 
-    // ── 多人：名字 ghost 副本一起从卡片原位飞到顶栏各自位置并淡出 ──
-    if ((Array.isArray(names) ? names : [names]).length > 1) {
-      var cards = document.getElementById('pick-decorative-cards');
-      var nameEls = cards ? cards.querySelectorAll('.pick-decorative-card-name') : [];
-      var nameList = Array.isArray(names) ? names : [names];
-      // 顶栏用 span 包裹每个名字：测量每个名字在顶栏的各自目标位置
-      target.textContent = '';
-      var spans = nameList.map(function(n, i) {
-        var s = document.createElement('span');
-        s.textContent = n + (i < nameList.length - 1 ? ' ' : '');
-        s.style.whiteSpace = 'pre';
-        target.appendChild(s);
-        return s;
-      });
-      // 复制名字为 ghost（fixed 定位到原位，脱离卡片容器）
-      var ghosts = [];
-      nameEls.forEach(function(el, i) {
-        var r = el.getBoundingClientRect();
-        var ghost = el.cloneNode(true);
-        ghost.style.cssText = 'position:fixed;left:' + r.left + 'px;top:' + r.top + 'px;margin:0;z-index:10003;pointer-events:none;';
-        overlay.appendChild(ghost);
-        ghosts.push(ghost);
-        var sr = spans[i] ? spans[i].getBoundingClientRect() : target.getBoundingClientRect();
-        ghost._dx = sr.left + sr.width / 2 - (r.left + r.width / 2);
-        ghost._dy = sr.top + sr.height / 2 - (r.top + r.height / 2);
-      });
-      // 一起飞入（0 延迟同时），各自飞到顶栏对应位置
-      requestAnimationFrame(function() {
-        ghosts.forEach(function(g) {
-          g.style.transition = 'transform 0.5s cubic-bezier(0.33, 1, 0.68, 1), opacity 0.3s ease 0.2s';
-          g.style.transform = 'translate(' + g._dx + 'px,' + g._dy + 'px)';
-          g.style.opacity = '0';
-        });
-        // 卡片整体同步淡出
-        if (cards) {
-          cards.style.transition = 'opacity 0.45s ease';
-          cards.style.opacity = '0';
-        }
-      });
-      // 背景淡出
-      overlay.classList.add('shrink');
-      // 飞入完成后收尾
-      setTimeout(function() {
-        ghosts.forEach(function(g) { if (g.parentNode) g.parentNode.removeChild(g); });
-        overlay.classList.add('hidden');
-        overlay.classList.remove('shrink');
-        if (cards) {
-          cards.style.opacity = '';
-          cards.style.transition = '';
-          cards.classList.add('hidden');
-          cards.innerHTML = '';
-        }
-        var innerEl = overlay ? overlay.querySelector('.pick-decorative-inner') : null;
-        if (innerEl) innerEl.style.display = '';
-        resolve();
-      }, 600);
-      return;
+    // 内容（多人卡片网格或单卡）整体向上轻滑 + 淡出
+    var cards = document.getElementById('pick-decorative-cards');
+    var content = cards && !cards.classList.contains('hidden')
+      ? cards
+      : (overlay ? overlay.querySelector('.pick-decorative-inner') : null);
+    if (content) {
+      content.style.transition = 'transform 0.35s cubic-bezier(0.33, 1, 0.68, 1), opacity 0.3s ease';
+      content.style.transform = 'translateY(-6vh)';
+      content.style.opacity = '0';
     }
+    // 装饰层背景同步淡出
+    overlay.style.transition = 'opacity 0.35s ease';
+    overlay.style.opacity = '0';
 
-    // ── 单人：名字淡入后平移到顶栏 ──
-    // 收起多人卡片（理论上单人无卡片，兜底清理）
-    var cardsEl = document.getElementById('pick-decorative-cards');
-    if (cardsEl) { cardsEl.classList.add('hidden'); cardsEl.innerHTML = ''; }
-
-    // 恢复单卡布局，但清空头像/签名/时间/提示——只留名字用于飞入
-    var inner = overlay ? overlay.querySelector('.pick-decorative-inner') : null;
-    if (inner) inner.style.display = '';
-    var avatarEl = document.getElementById('pick-decorative-avatar');
-    if (avatarEl) { avatarEl.classList.add('hidden'); avatarEl.src = ''; avatarEl.style.opacity = ''; }
-    var sigEl = document.getElementById('pick-decorative-sig');
-    if (sigEl) { sigEl.textContent = ''; sigEl.classList.add('empty'); }
-    var timeEl = document.getElementById('pick-decorative-time');
-    if (timeEl) { timeEl.textContent = ''; timeEl.classList.add('never'); }
-    var hintEl = overlay ? overlay.querySelector('.pick-decorative-hint') : null;
-    if (hintEl) hintEl.style.display = 'none';
-
-    target.textContent = '';
-    textEl.textContent = label;
-    // 飞入字号对齐顶栏目标：动画纯平移（scale≈1），名字不会变大/缩小跳变
-    var targetFontSize = parseFloat(getComputedStyle(target).fontSize) || 16;
-    textEl.style.fontSize = targetFontSize + 'px';
-
-    // 名字柔和淡入（避免卡片收起后名字"突然"出现）
-    textEl.style.opacity = '0';
-    textEl.style.transition = 'opacity 0.12s ease';
-    void overlay.offsetWidth;
-    textEl.style.opacity = '1';
-
-    // 等淡入完成后，测量稳定布局并播放飞入动画
     setTimeout(function() {
-      var targetRect2 = target.getBoundingClientRect();
-      var overlayRect = textEl.getBoundingClientRect();
-      var dx = targetRect2.left + targetRect2.width / 2 - (overlayRect.left + overlayRect.width / 2);
-      var dy = targetRect2.top + targetRect2.height / 2 - (overlayRect.top + overlayRect.height / 2);
-      var targetFontSize2 = parseFloat(getComputedStyle(target).fontSize);
-      var overlayFontSize = parseFloat(getComputedStyle(textEl).fontSize);
-      var scale = targetFontSize2 / overlayFontSize;
-
-      overlay.style.setProperty('--dx', dx + 'px');
-      overlay.style.setProperty('--dy', dy + 'px');
-      overlay.style.setProperty('--scale', scale);
-      overlay.classList.add('shrink');
-
-      textEl.addEventListener('animationend', function handler() {
-        textEl.removeEventListener('animationend', handler);
-        textEl.style.removeProperty('font-size');
-        textEl.style.removeProperty('opacity');
-        textEl.style.removeProperty('transition');
-        target.textContent = label;
-        overlay.classList.add('hidden');
-        overlay.classList.remove('shrink');
-        overlay.style.removeProperty('--dx');
-        overlay.style.removeProperty('--dy');
-        overlay.style.removeProperty('--scale');
-        resolve();
-      });
-    }, 150);
+      target.textContent = label;
+      // 收尾清理
+      if (cards) {
+        cards.style.transition = '';
+        cards.style.transform = '';
+        cards.style.opacity = '';
+        cards.classList.add('hidden');
+        cards.innerHTML = '';
+      }
+      var inner = overlay ? overlay.querySelector('.pick-decorative-inner') : null;
+      if (inner) {
+        inner.style.display = '';
+        inner.style.transition = '';
+        inner.style.transform = '';
+        inner.style.opacity = '';
+      }
+      overlay.style.transition = '';
+      overlay.style.opacity = '';
+      overlay.classList.add('hidden');
+      overlay.classList.remove('shrink');
+      resolve();
+    }, 400);
   });
 }
 
