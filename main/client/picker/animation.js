@@ -351,33 +351,41 @@ function shrinkToResult(names) {
     if (isMulti) textEl.style.fontSize = '6vw';
     else textEl.style.removeProperty('font-size');
 
-    // 强制重排，确保测量的是稳定布局
+    // 名字柔和淡入（避免卡片收起后名字"突然"满尺寸出现）
+    textEl.style.opacity = '0';
+    textEl.style.transition = 'opacity 0.18s ease';
     void overlay.offsetWidth;
+    textEl.style.opacity = '1';
 
-    var targetRect = target.getBoundingClientRect();
-    var overlayRect = textEl.getBoundingClientRect();
-    var dx = targetRect.left + targetRect.width / 2 - (overlayRect.left + overlayRect.width / 2);
-    var dy = targetRect.top + targetRect.height / 2 - (overlayRect.top + overlayRect.height / 2);
-    var targetFontSize = parseFloat(getComputedStyle(target).fontSize);
-    var overlayFontSize = parseFloat(getComputedStyle(textEl).fontSize);
-    var scale = targetFontSize / overlayFontSize;
+    // 等淡入完成后，测量稳定布局并播放飞入动画
+    setTimeout(function() {
+      var targetRect = target.getBoundingClientRect();
+      var overlayRect = textEl.getBoundingClientRect();
+      var dx = targetRect.left + targetRect.width / 2 - (overlayRect.left + overlayRect.width / 2);
+      var dy = targetRect.top + targetRect.height / 2 - (overlayRect.top + overlayRect.height / 2);
+      var targetFontSize = parseFloat(getComputedStyle(target).fontSize);
+      var overlayFontSize = parseFloat(getComputedStyle(textEl).fontSize);
+      var scale = targetFontSize / overlayFontSize;
 
-    overlay.style.setProperty('--dx', dx + 'px');
-    overlay.style.setProperty('--dy', dy + 'px');
-    overlay.style.setProperty('--scale', scale);
-    overlay.classList.add('shrink');
+      overlay.style.setProperty('--dx', dx + 'px');
+      overlay.style.setProperty('--dy', dy + 'px');
+      overlay.style.setProperty('--scale', scale);
+      overlay.classList.add('shrink');
 
-    textEl.addEventListener('animationend', function handler() {
-      textEl.removeEventListener('animationend', handler);
-      textEl.style.removeProperty('font-size');
-      target.textContent = label;
-      overlay.classList.add('hidden');
-      overlay.classList.remove('shrink');
-      overlay.style.removeProperty('--dx');
-      overlay.style.removeProperty('--dy');
-      overlay.style.removeProperty('--scale');
-      resolve();
-    });
+      textEl.addEventListener('animationend', function handler() {
+        textEl.removeEventListener('animationend', handler);
+        textEl.style.removeProperty('font-size');
+        textEl.style.removeProperty('opacity');
+        textEl.style.removeProperty('transition');
+        target.textContent = label;
+        overlay.classList.add('hidden');
+        overlay.classList.remove('shrink');
+        overlay.style.removeProperty('--dx');
+        overlay.style.removeProperty('--dy');
+        overlay.style.removeProperty('--scale');
+        resolve();
+      });
+    }, 200);
   });
 }
 
