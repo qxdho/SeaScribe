@@ -394,7 +394,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: flex-start; /* 顶部对齐：名字水平线一致（卡片高度不同也齐） */
+  align-items: flex-start; /* 顶部对齐：名字水平线一致 */
   gap: 3vw;
   max-width: 92vw;
 }
@@ -413,35 +413,72 @@
 .pick-decorative-card.pop {
   animation: pickCardIn 0.35s var(--spring) forwards;
 }
+
+/* 主区：头像+名字（展示态竖排 / 紧凑态横排，transition 平滑） */
+.card-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .pick-decorative-card-avatar {
   width: 8vw; height: 8vw;
-  max-width: 96px; max-height: 96px;
+  max-width: 120px; max-height: 120px;
   border-radius: 50%;
   object-fit: cover;
   box-shadow: 0 0 0 1px var(--bg);
   margin-bottom: 8px;
   opacity: 0.5;
-  transition: opacity var(--dur-slow);
+  transition: width 0.55s var(--spring), height 0.55s var(--spring),
+              margin-bottom 0.55s var(--ease), opacity var(--dur-slow);
 }
 .pick-decorative-card-name {
   font-size: 3.2vw;
   font-weight: 800;
   color: var(--text);
   line-height: 1.2;
+  text-align: center;
+  transition: font-size 0.55s var(--spring);
 }
+
+/* 签名 —— 展示态完整显示在下方 */
 .pick-decorative-card-sig {
   font-size: 1.4vw;
   color: var(--text);
   opacity: 0.55;
-  margin-top: 6px;
+  margin-top: 8px;
   max-width: 22vw;
   text-align: center;
   line-height: 1.35;
-  min-height: 1.4em; /* 无签名也占一行，名字位置恒定 */
+  min-height: 1.4em;
   white-space: normal; /* 完整显示，自动换行 */
   word-break: break-word;
+  transition: margin-top 0.55s var(--ease), font-size 0.55s var(--spring);
 }
 .pick-decorative-card-sig.empty { opacity: 0; }
+
+/* 紧凑态：头像名字缩小横排一行，签名独占下方空间 */
+.pick-decorative-card.compact .card-main {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+.pick-decorative-card.compact .pick-decorative-card-avatar {
+  width: 3.2vw; height: 3.2vw;
+  max-width: 48px; max-height: 48px;
+  margin-bottom: 0;
+}
+.pick-decorative-card.compact .pick-decorative-card-name {
+  font-size: 1.8vw;
+  text-align: left;
+}
+.pick-decorative-card.compact .pick-decorative-card-sig {
+  margin-top: 8px;
+  font-size: 1.2vw;
+  max-width: 24vw;
+}
+.pick-decorative-card.compact .pick-decorative-card-sig.empty {
+  display: none;
+}
 
 @keyframes pickCardIn {
   from { opacity: 0; transform: scale(0.6) translateY(20px); }

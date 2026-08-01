@@ -91,7 +91,7 @@ function fill(data) {
 }
 
 /**
- * 多人结果填充为卡片列表
+ * 多人结果填充为卡片列表（展示态 → 停顿 → FLIP 过渡到紧凑态）
  * @param {Array} persons — [{name, signature, lastPickedTime}, ...]
  * @param {string} mode — "simultaneous" 同时弹出 / "sequential" 逐个弹出
  */
@@ -107,9 +107,11 @@ function fillMany(persons, mode) {
   cards.classList.remove('hidden');
   cards.classList.remove('pop-all');
   cards.innerHTML = persons.map(function(p, i) {
-    return '<div class="pick-decorative-card" data-idx="' + i + '">' +
-      '<img class="pick-decorative-card-avatar" src="' + DEFAULT_AVATAR + '" alt="">' +
-      '<span class="pick-decorative-card-name">' + SeaScribe.esc(p.name) + '</span>' +
+    return '<div class="pick-decorative-card" data-idx="' + i + '" title="' + SeaScribe.esc(p.signature || p.name) + '">' +
+      '<div class="card-main">' +
+        '<img class="pick-decorative-card-avatar" src="' + DEFAULT_AVATAR + '" alt="">' +
+        '<span class="pick-decorative-card-name">' + SeaScribe.esc(p.name) + '</span>' +
+      '</div>' +
       '<span class="pick-decorative-card-sig' + (p.signature ? '' : ' empty') + '">' + SeaScribe.esc(p.signature || '') + '</span>' +
     '</div>';
   }).join('');
@@ -120,18 +122,64 @@ function fillMany(persons, mode) {
     loadAvatar(img, p.name);
   });
 
-  // 弹出动画：逐个 / 同时
+  // 弹出动画：逐个 / 同时；动画结束后脱离 animation 以便 FLIP 接管 transform
+  var cardEls = cards.querySelectorAll('.pick-decorative-card');
+  function releaseAnim(card) {
+    card.addEventListener('animationend', function handler() {
+      card.removeEventListener('animationend', handler);
+      card.classList.remove('pop');
+      card.style.opacity = '1';
+      cards.classList.remove('pop-all');
+    });
+  }
   if (mode === 'sequential') {
-    var cardEls = cards.querySelectorAll('.pick-decorative-card');
     cardEls.forEach(function(card, i) {
       setTimeout(function() { card.classList.add('pop'); }, i * 380);
+      releaseAnim(card);
     });
   } else {
     cards.classList.add('pop-all');
+    cardEls.forEach(releaseAnim);
   }
+
+  // 展示态停顿后，逐卡 FLIP 过渡到紧凑态（头像名字缩小横排，给签名让位）
+  setTimeout(function() {
+    flipToCompact(cards, mode);
+  }, 1600);
 
   // 提示信息
   if (hintEl) hintEl.style.display = '';
+}
+
+/**
+ * FLIP 过渡：捕捉展示态 rect → 切换紧凑态 → transform 反向补偿 → 平滑插值
+ * @param {HTMLElement} cards — 多卡容器
+ * @param {string} mode — 逐卡交错间隔
+ */
+function flipToCompact(cards, mode) {
+  var cardEls = cards.querySelectorAll('.pick-decorative-card');
+  if (!cardEls.length) return;
+
+  cardEls.forEach(function(card, i) {
+    var delay = (mode === 'sequential' ? i * 200 : 0);
+    setTimeout(function() {
+      var first = card.getBoundingClientRect();
+      card.classList.add('compact');
+      var last = card.getBoundingClientRect();
+      var dx = first.left - last.left;
+      var dy = first.top - last.top;
+      var sx = first.width / Math.max(1, last.width);
+      var sy = first.height / Math.max(1, last.height);
+      // 无内联过渡，先反向补偿
+      card.style.transition = 'none';
+      card.style.transformOrigin = 'top left';
+      card.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + sx + ',' + sy + ')';
+      void card.offsetWidth; // 强制重排
+      // 过渡到自然位置
+      card.style.transition = 'transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)';
+      card.style.transform = '';
+    }, delay);
+  });
 }
 
 /**
@@ -158,6 +206,12 @@ function waitForClick() {
       if (cards) {
         cards.classList.add('hidden');
         cards.classList.remove('pop-all');
+        cards.querySelectorAll('.pick-decorative-card').forEach(function(c) {
+          c.classList.remove('compact', 'pop');
+          c.style.transition = '';
+          c.style.transform = '';
+          c.style.opacity = '';
+        });
         cards.innerHTML = '';
       }
       var inner = overlay ? overlay.querySelector('.pick-decorative-inner') : null;
