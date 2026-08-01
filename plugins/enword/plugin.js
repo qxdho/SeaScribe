@@ -158,7 +158,7 @@ const EnwordPlugin = {
     this._fontPct = this.defaultFontSize || 100; // 每次进入使用配置默认字号
 
     container.innerHTML =
-      '<div style="display:flex;flex-direction:column;align-items:center;padding:24px 20px 120px;width:100%">' +
+      '<div style="display:flex;flex-direction:column;align-items:center;padding:24px 20px 200px;width:100%">' +
         '<div id="enword-display" style="text-align:center;max-width:900px;--enword-fs:' + (this._fontPct / 100) + '">' +
           '<div id="enword-english" style="font-size:calc(clamp(3rem, 8vw, 7rem) * var(--enword-fs, 1));font-weight:700;line-height:1.1;color:var(--text);margin-bottom:20px;letter-spacing:0.03em;word-break:break-all"></div>' +
           '<div id="enword-chinese" style="font-size:calc(clamp(1.7rem, 5vw, 3rem) * var(--enword-fs, 1));color:var(--text);opacity:0.9;line-height:1.7;max-width:900px;margin:0 auto;font-weight:500"></div>' +
