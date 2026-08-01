@@ -1,5 +1,14 @@
 # SeaScribe 更新日志
 
+## v5.2.1
+
+### 调试启动脚本简化为纯 bat（debug.bat）
+- 删除 debug_run.py，启动调试只保留一个 `debug.bat`（双击即用）
+- 流程：检测 9060 端口 → 未运行则后台启动（最小化窗口）并等待就绪 → 执行
+  debug_api.py → 调试结束自动关闭本次启动的服务器（原有服务器不受影响）
+- bat 内部提示全英文 + `chcp 65001` + `PYTHONIOENCODING=utf-8`，
+  保证中文日志在控制台与重定向下均正常显示
+
 ## v5.2.0
 
 ### 调试启动脚本（debug_run.py + debug.bat）
