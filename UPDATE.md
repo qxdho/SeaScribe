@@ -1,5 +1,14 @@
 # SeaScribe 更新日志
 
+## v6.1.6
+
+### 修复：多人卡片 FLIP 动画乱跳
+- 根因：pop 弹出动画结束后移除动画 class，卡片回落到默认
+  `transform: scale(0.6) translateY(20px)`（弹出前的隐藏态）——
+  所有卡片突然缩小偏移，FLIP 测量也被污染
+- 修复：动画结束后卡片固定 `transform: none`；紧凑态 CSS 覆盖
+  `transform: none`，FLIP 结束回落自然位置不再跳动
+
 ## v6.1.5
 
 ### 点名多人卡片：两态布局 + FLIP 过渡动画

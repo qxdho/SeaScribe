@@ -129,6 +129,7 @@ function fillMany(persons, mode) {
       card.removeEventListener('animationend', handler);
       card.classList.remove('pop');
       card.style.opacity = '1';
+      card.style.transform = 'none'; // 固定完整大小，避免回落到默认 scale(0.6)
       cards.classList.remove('pop-all');
     });
   }

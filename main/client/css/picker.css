@@ -457,6 +457,9 @@
 .pick-decorative-card-sig.empty { opacity: 0; }
 
 /* 紧凑态：头像名字缩小横排一行，签名独占下方空间 */
+.pick-decorative-card.compact {
+  transform: none; /* FLIP 结束回落时保持自然位置，不回落到默认 scale(0.6) */
+}
 .pick-decorative-card.compact .card-main {
   flex-direction: row;
   align-items: center;
